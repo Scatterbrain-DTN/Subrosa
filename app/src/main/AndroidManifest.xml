@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="net.ballmerlabs.subrosa">
 
+    <uses-permission android:name="net.ballmerlabs.scatterroutingservice.permission.ACCESS"/>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
