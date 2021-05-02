@@ -5,11 +5,13 @@ package net.ballmerlabs.subrosa
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
+import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.updateLayoutParams
 
-class NewsPathFlow(context: Context, private val attributeSet: AttributeSet) : ConstraintLayout(context, attributeSet) {
+class NewsPathFlow(context: Context, private val attributeSet: AttributeSet) : MotionLayout(context, attributeSet) {
     private val elements = ArrayList<NewsPathElement>()
+    var below: Int? = null
     var spacing: Int = 32
 
 
@@ -29,7 +31,8 @@ class NewsPathFlow(context: Context, private val attributeSet: AttributeSet) : C
             } else {
                 startToStart =  LayoutParams.PARENT_ID
             }
-            topToTop = LayoutParams.PARENT_ID
+            topToBottom =  below ?: View.NO_ID
+            topToTop = if (below != null) View.NO_ID else LayoutParams.PARENT_ID
             bottomToBottom = LayoutParams.PARENT_ID
         }
     }  
