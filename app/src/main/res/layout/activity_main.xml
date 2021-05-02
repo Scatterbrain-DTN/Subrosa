@@ -16,7 +16,18 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
-            app:popupTheme="@style/Theme.Subrosa.PopupOverlay" />
+            app:popupTheme="@style/Theme.Subrosa.PopupOverlay" >
+            <HorizontalScrollView
+                android:id="@+id/pathscroll"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <net.ballmerlabs.subrosa.NewsPathFlow
+                    android:id="@+id/flowlayout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                </net.ballmerlabs.subrosa.NewsPathFlow>
+            </HorizontalScrollView>
+        </androidx.appcompat.widget.Toolbar>
 
     </com.google.android.material.appbar.AppBarLayout>
 

@@ -3,6 +3,7 @@
     package="net.ballmerlabs.subrosa">
 
     <uses-permission android:name="net.ballmerlabs.scatterroutingservice.permission.ACCESS"/>
+    <uses-permission android:name="net.ballmerlabs.scatterroutingservice.permission.ADMIN"/>
 
     <application
         android:allowBackup="true"
