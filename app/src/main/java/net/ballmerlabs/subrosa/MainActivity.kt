@@ -26,7 +26,6 @@ class MainActivity : AppCompatActivity() {
                     .setAction("Action", null).show()
         }
 
-
         binding.flowlayout.setPaths(arrayOf("fmef1", "fmef2", "fmef3", "fmefverylong4"))
         binding.pathscroll.addOnLayoutChangeListener { _: View, _: Int, _: Int, _: Int, _: Int, _: Int, _: Int, _: Int, _: Int ->
             binding.pathscroll.fullScroll(HorizontalScrollView.FOCUS_RIGHT)

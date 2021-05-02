@@ -8,27 +8,36 @@
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="200dp"
         android:theme="@style/Theme.Subrosa.AppBarOverlay">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
+        <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/Theme.Subrosa.PopupOverlay" >
+            android:layout_height="match_parent"
+            app:collapsedTitleTextAppearance="@style/Transparent"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed">
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/colorPrimary"
+                app:layout_collapseMode="pin"
+                app:popupTheme="@style/Theme.Subrosa.PopupOverlay">
+            </androidx.appcompat.widget.Toolbar>
+
             <HorizontalScrollView
                 android:id="@+id/pathscroll"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="match_parent"
+                app:layout_collapseMode="parallax">
+
                 <net.ballmerlabs.subrosa.NewsPathFlow
                     android:id="@+id/flowlayout"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-                </net.ballmerlabs.subrosa.NewsPathFlow>
+                    android:layout_height="match_parent"/>
             </HorizontalScrollView>
-        </androidx.appcompat.widget.Toolbar>
 
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
     <include layout="@layout/content_main" />
