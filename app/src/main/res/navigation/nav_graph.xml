@@ -7,8 +7,8 @@
 
     <fragment
         android:id="@+id/FirstFragment"
-        android:name="net.ballmerlabs.subrosa.FirstFragment"
+        android:name="net.ballmerlabs.subrosa.GroupListFragment"
         android:label="@string/first_fragment_label"
-        tools:layout="@layout/fragment_first">
+        tools:layout="@layout/fragment_group_list">
     </fragment>
 </navigation>
