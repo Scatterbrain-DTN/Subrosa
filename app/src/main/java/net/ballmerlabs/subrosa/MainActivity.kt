@@ -9,12 +9,45 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.HorizontalScrollView
 import androidx.core.view.size
+import com.google.android.material.appbar.AppBarLayout
 import net.ballmerlabs.subrosa.databinding.ActivityMainBinding
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.math.abs
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private var titleSet = false
+    
+    enum class State {
+        IDLE,
+        COLLAPSED,
+        EXPANDED
+    }
 
+    private var barState = State.IDLE
+    
+    private fun onExpanded() {
+        if (!titleSet) {
+            val s = binding.flowlayout.removePath()
+            if (s != null) {
+                binding.collapsingToolbar.title = s
+                titleSet = true
+            } else {
+                binding.collapsingToolbar.title = "Empty"
+            }
+        }
+    }
+
+    private fun onCollapsed() {
+        if (titleSet) {
+            binding.flowlayout.addPath(binding.collapsingToolbar.title.toString())
+            binding.collapsingToolbar.title = ""
+            titleSet = false
+        }
+    }
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -26,6 +59,26 @@ class MainActivity : AppCompatActivity() {
                     .setAction("Action", null).show()
         }
 
+        binding.appbarlayout.addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener { 
+                appBarLayout, verticalOffset ->
+            when (abs(verticalOffset)) {
+                appBarLayout.totalScrollRange -> {
+                    if (barState != State.COLLAPSED) {
+                        onCollapsed()
+                    }
+                    barState = State.COLLAPSED
+                }
+                0 ->  {
+                    if (barState != State.EXPANDED) {
+                        onExpanded()
+                    }
+                    barState = State.EXPANDED
+                }
+                else -> {
+                    barState = State.IDLE
+                }
+            }
+        })
         binding.flowlayout.setPaths(arrayOf("fmef1", "fmef2", "fmef3", "fmefverylong4"))
         binding.pathscroll.addOnLayoutChangeListener { _: View, _: Int, _: Int, _: Int, _: Int, _: Int, _: Int, _: Int, _: Int ->
             binding.pathscroll.fullScroll(HorizontalScrollView.FOCUS_RIGHT)

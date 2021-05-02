@@ -4,6 +4,7 @@ package net.ballmerlabs.subrosa
 
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -14,13 +15,25 @@ class NewsPathFlow(context: Context, private val attributeSet: AttributeSet) : M
     var below: Int? = null
     var spacing: Int = 32
 
-
     private fun createElement(name: String): NewsPathElement {
         val path = NewsPathElement(context, attributeSet)
         path.text = name
         path.id = View.generateViewId()
         addView(path)
         return path
+    }
+
+    private fun removeParams(path: NewsPathElement) {
+        path.updateLayoutParams<LayoutParams> {
+            startToEnd = View.NO_ID
+            startToStart = View.NO_ID
+            endToEnd = View.NO_ID
+            endToStart = View.NO_ID
+            topToBottom = View.NO_ID
+            topToTop = View.NO_ID
+            bottomToBottom = View.NO_ID
+            bottomToTop = View.NO_ID
+        }
     }
 
     private fun setParams(path: NewsPathElement, prev: Int? = null) {
@@ -53,11 +66,13 @@ class NewsPathFlow(context: Context, private val attributeSet: AttributeSet) : M
         elements.add(path)
     }
 
-    fun removePath() {
+    fun removePath() : String? {
         if (elements.size > 0) {
-            val path = elements[elements.size - 1]
+            val path = elements.removeAt(elements.size - 1)
+            removeParams(path)
             removeView(path)
-            elements.removeAt(elements.size-1)
+            return path.text
         }
+        return null
     }
 }

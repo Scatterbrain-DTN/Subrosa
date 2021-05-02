@@ -7,11 +7,13 @@
     tools:context=".MainActivity">
 
     <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbarlayout"
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:theme="@style/Theme.Subrosa.AppBarOverlay">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:id="@+id/collapsing_toolbar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:collapsedTitleTextAppearance="@style/Transparent"
