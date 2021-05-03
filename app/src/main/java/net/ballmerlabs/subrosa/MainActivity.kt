@@ -11,8 +11,12 @@ import android.view.View
 import android.view.animation.Animation
 import android.widget.HorizontalScrollView
 import androidx.core.view.size
+import androidx.navigation.NavArgument
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.navArgs
+import androidx.navigation.get
+import androidx.navigation.navArgs
 import com.google.android.material.appbar.AppBarLayout
 import net.ballmerlabs.subrosa.databinding.ActivityMainBinding
 import java.time.Duration
@@ -24,7 +28,10 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private var titleSet = false
-    
+    private val args: GroupListFragmentArgs by navArgs()
+
+
+
     enum class State {
         IDLE,
         COLLAPSED,
@@ -104,6 +111,10 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment)
         val inflater = navController.navInflater
         val graph = inflater.inflate(R.navigation.nav_graph)
+        val arg = NavArgument.Builder().setDefaultValue(arrayOf("femf1", "fmef2")).build()
+        graph[R.id.FirstFragment].arguments.keys.forEach {
+            graph.addArgument(it, arg)
+        }
         navController.graph = graph
     }
 
