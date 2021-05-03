@@ -11,6 +11,8 @@ import android.view.View
 import android.view.animation.Animation
 import android.widget.HorizontalScrollView
 import androidx.core.view.size
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.appbar.AppBarLayout
 import net.ballmerlabs.subrosa.databinding.ActivityMainBinding
 import java.time.Duration
@@ -98,6 +100,11 @@ class MainActivity : AppCompatActivity() {
         binding.pathscroll.addOnLayoutChangeListener { _: View, _: Int, _: Int, _: Int, _: Int, _: Int, _: Int, _: Int, _: Int ->
             binding.pathscroll.fullScroll(HorizontalScrollView.FOCUS_RIGHT)
         }
+
+        val navController = findNavController(R.id.nav_host_fragment)
+        val inflater = navController.navInflater
+        val graph = inflater.inflate(R.navigation.nav_graph)
+        navController.graph = graph
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
