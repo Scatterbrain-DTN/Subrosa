@@ -8,14 +8,43 @@
     android:paddingStart="8dp"
     android:paddingEnd="8dp">
 
+    <com.lelloman.identicon.view.GithubIdenticonView
+        android:id="@+id/item_identicon"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintDimensionRatio="W,1:1"
+        app:hash="1832232836"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
     <TextView
         android:layout_width="wrap_content"
         android:id="@+id/name"
         android:layout_height="wrap_content"
         android:text="example newsgroup"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        android:paddingHorizontal="16dp"
+        app:layout_constraintStart_toEndOf="@id/item_identicon"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.chip.Chip
+        android:id="@+id/unread_num"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:chipBackgroundColor="@color/design_default_color_secondary_variant"
+        android:text="0"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toStartOf="@id/total_num"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <com.google.android.material.chip.Chip
+        android:id="@+id/total_num"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
