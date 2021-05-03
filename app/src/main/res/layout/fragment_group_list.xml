@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:id="@+id/listconstraintlayout"
-    tools:context=".GroupListFragment">
+    tools:context=".listing.GroupListFragment">
     <androidx.constraintlayout.helper.widget.Flow
         android:layout_width="0dp"
         android:layout_height="wrap_content"

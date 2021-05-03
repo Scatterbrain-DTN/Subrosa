@@ -1,4 +1,4 @@
-package net.ballmerlabs.subrosa
+package net.ballmerlabs.subrosa.listing
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -33,9 +33,5 @@ class GroupListFragment : Fragment() {
         }
         binding.listflow.referencedIds = a
         return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
     }
 }

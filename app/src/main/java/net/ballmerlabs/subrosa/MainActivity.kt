@@ -1,29 +1,19 @@
 package net.ballmerlabs.subrosa
 
 import android.os.Bundle
-import android.util.Log
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
-import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.animation.Animation
 import android.widget.HorizontalScrollView
-import androidx.core.view.size
+import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavArgument
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.fragment.navArgs
 import androidx.navigation.get
 import androidx.navigation.navArgs
 import com.google.android.material.appbar.AppBarLayout
-import com.lelloman.identicon.drawable.GithubIdenticonDrawable
-import com.lelloman.identicon.drawable.IdenticonDrawable
+import com.google.android.material.snackbar.Snackbar
 import net.ballmerlabs.subrosa.databinding.ActivityMainBinding
-import java.time.Duration
-import java.util.*
-import kotlin.collections.ArrayList
+import net.ballmerlabs.subrosa.listing.GroupListFragmentArgs
 import kotlin.math.abs
 
 class MainActivity : AppCompatActivity() {
