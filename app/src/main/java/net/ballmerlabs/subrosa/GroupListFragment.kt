@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.navigation.fragment.navArgs
 import net.ballmerlabs.subrosa.databinding.FragmentGroupListBinding
+import net.ballmerlabs.subrosa.databinding.GroupItemBinding
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
@@ -24,21 +25,19 @@ class GroupListFragment : Fragment() {
             savedInstanceState: Bundle?
     ): View {
         _binding = FragmentGroupListBinding.inflate(inflater)
+        val a = arrayListOf<Int>()
+        for (x in args.grouplist.indices) {
+            val v = GroupItemBinding.inflate(inflater, binding.listconstraintlayout, false)
+            v.root.id = View.generateViewId()
+            v.name.text = args.grouplist[x]
+            binding.listconstraintlayout.addView(v.root)
+            a.add(v.root.id)
+        }
+        binding.listflow.referencedIds = a.toIntArray()
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val a = arrayListOf<Int>()
-        for (x in args.grouplist.indices) {
-            Log.e("debug", "adding $x")
-            val text = TextView(context)
-            text.text = args.grouplist[x]
-            text.id = View.generateViewId()
-            a.add(text.id)
-            binding.listconstraintlayout.addView(text)
-        }
-        binding.listflow.referencedIds = a.toIntArray()
-
     }
 }
