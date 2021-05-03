@@ -1,16 +1,19 @@
 package net.ballmerlabs.subrosa
 
 import android.os.Bundle
+import android.util.Log
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.animation.Animation
 import android.widget.HorizontalScrollView
 import androidx.core.view.size
 import com.google.android.material.appbar.AppBarLayout
 import net.ballmerlabs.subrosa.databinding.ActivityMainBinding
+import java.time.Duration
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.abs
