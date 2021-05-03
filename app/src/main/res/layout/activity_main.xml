@@ -36,8 +36,17 @@
                 <net.ballmerlabs.subrosa.NewsPathFlow
                     android:id="@+id/flowlayout"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"/>
+                    android:layout_height="match_parent">
+                </net.ballmerlabs.subrosa.NewsPathFlow>
             </HorizontalScrollView>
+
+            <com.lelloman.identicon.view.GithubIdenticonView
+                android:id="@+id/current_identicon"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_gravity="end|center"
+                android:layout_marginHorizontal="32dp"
+                app:hash="923757579" />
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>

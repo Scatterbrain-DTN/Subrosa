@@ -18,6 +18,8 @@ import androidx.navigation.fragment.navArgs
 import androidx.navigation.get
 import androidx.navigation.navArgs
 import com.google.android.material.appbar.AppBarLayout
+import com.lelloman.identicon.drawable.GithubIdenticonDrawable
+import com.lelloman.identicon.drawable.IdenticonDrawable
 import net.ballmerlabs.subrosa.databinding.ActivityMainBinding
 import java.time.Duration
 import java.util.*
