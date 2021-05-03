@@ -111,7 +111,12 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment)
         val inflater = navController.navInflater
         val graph = inflater.inflate(R.navigation.nav_graph)
-        val arg = NavArgument.Builder().setDefaultValue(arrayOf("femf1", "fmef2")).build()
+        val manyFmefs = sequence {
+            for (x in 0..30) {
+                yield("fmef $x")
+            }
+        }.toList().toTypedArray()
+        val arg = NavArgument.Builder().setDefaultValue(manyFmefs).build()
         graph[R.id.FirstFragment].arguments.keys.forEach {
             graph.addArgument(it, arg)
         }
