@@ -26,12 +26,25 @@ class MainActivity : AppCompatActivity() {
     enum class State {
         IDLE,
         COLLAPSED,
-        EXPANDED
+        EXPANDED,
+        EXPANDING
     }
 
     private var barState = State.IDLE
     
     private fun onExpanded() {
+
+    }
+
+    private fun onCollapsed() {
+        if (titleSet) {
+            binding.flowlayout.addPath(binding.collapsingToolbar.title.toString())
+            binding.collapsingToolbar.title = ""
+            titleSet = false
+        }
+    }
+
+    private fun onExpanding() {
         if (!titleSet) {
             val s = binding.flowlayout.removePath()
             if (s != null) {
@@ -40,14 +53,6 @@ class MainActivity : AppCompatActivity() {
             } else {
                 binding.collapsingToolbar.title = "Empty"
             }
-        }
-    }
-
-    private fun onCollapsed() {
-        if (titleSet) {
-            binding.flowlayout.addPath(binding.collapsingToolbar.title.toString())
-            binding.collapsingToolbar.title = ""
-            titleSet = false
         }
     }
     
@@ -62,6 +67,7 @@ class MainActivity : AppCompatActivity() {
                     .setAction("Action", null).show()
         }
 
+        binding.appbarlayout.setExpanded(false)
         binding.appbarlayout.addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener { 
                 appBarLayout, verticalOffset ->
             when (abs(verticalOffset)) {
@@ -76,6 +82,12 @@ class MainActivity : AppCompatActivity() {
                         onExpanded()
                     }
                     barState = State.EXPANDED
+                }
+                in 1..appBarLayout.totalScrollRange -> {
+                    if (barState != State.EXPANDING) {
+                        onExpanding()
+                    }
+                    barState = State.EXPANDING
                 }
                 else -> {
                     barState = State.IDLE
