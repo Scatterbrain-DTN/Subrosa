@@ -109,7 +109,7 @@ class MainActivity : AppCompatActivity() {
             }
         }.toList().toTypedArray()
         val arg = NavArgument.Builder().setDefaultValue(manyFmefs).build()
-        graph[R.id.FirstFragment].arguments.keys.forEach {
+        graph[R.id.GroupListFragment].arguments.keys.forEach {
             graph.addArgument(it, arg)
         }
         navController.graph = graph

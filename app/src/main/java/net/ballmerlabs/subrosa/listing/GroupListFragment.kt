@@ -31,7 +31,7 @@ class GroupListFragment : Fragment() {
             v.root.id = View.generateViewId()
             v.root.setOnClickListener {  v
                 val action =
-                    GroupListFragmentDirections.actionFirstFragmentToThreadFragment(v.name.text.toString())
+                    GroupListFragmentDirections.actionGroupListFragmentToThreadFragment(v.name.text.toString())
                 findNavController().navigate(action)
             }
             v.name.text = args.grouplist[x]
