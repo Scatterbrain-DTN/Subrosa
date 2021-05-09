@@ -14,6 +14,7 @@ import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
 import net.ballmerlabs.subrosa.databinding.ActivityMainBinding
 import net.ballmerlabs.subrosa.listing.GroupListFragmentArgs
+import net.ballmerlabs.subrosa.user.UserViewFragmentArgs
 import kotlin.math.abs
 
 class MainActivity : AppCompatActivity() {
@@ -101,6 +102,17 @@ class MainActivity : AppCompatActivity() {
         }
 
         val navController = findNavController(R.id.nav_host_fragment)
+
+        navController.addOnDestinationChangedListener { _, destination, arguments ->
+            when(destination.id) {
+                R.id.UserViewFragment -> {
+                    val args = UserViewFragmentArgs.fromBundle(arguments!!)
+                    binding.pathscroll.visibility = View.GONE
+                }
+                else -> binding.pathscroll.visibility = View.VISIBLE
+            }
+        }
+
         val inflater = navController.navInflater
         val graph = inflater.inflate(R.navigation.nav_graph)
         val manyFmefs = sequence {

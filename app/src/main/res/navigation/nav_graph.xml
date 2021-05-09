@@ -27,5 +27,18 @@
         <argument
             android:name="group"
             app:argType="string"/>
+        <action
+            android:id="@+id/action_ThreadFragment_to_UserViewFragment"
+            app:destination="@id/UserViewFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/UserViewFragment"
+        android:name="net.ballmerlabs.subrosa.user.UserViewFragment"
+        android:label="@string/user_view_fragment_label"
+        tools:layout="@layout/user_view_fragment">
+        <argument
+            android:name="fingerprint"
+            app:argType="string"/>
     </fragment>
 </navigation>
