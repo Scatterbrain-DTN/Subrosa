@@ -13,5 +13,19 @@
         <argument
             android:name="grouplist"
             app:argType="string[]"/>
+        <action
+            android:id="@+id/action_FirstFragment_to_ThreadFragment"
+            app:destination="@id/ThreadFragment" />
+    </fragment>
+
+
+    <fragment
+        android:id="@+id/ThreadFragment"
+        android:name="net.ballmerlabs.subrosa.thread.ThreadFragment"
+        android:label="@string/thread_fragment_label"
+        tools:layout="@layout/thread_fragment">
+        <argument
+            android:name="group"
+            app:argType="string"/>
     </fragment>
 </navigation>

@@ -6,4 +6,8 @@
         <attr name="backgroundColor" format="color"/>
         <attr name="edgeRadius" format="dimension"/>
     </declare-styleable>
+
+    <declare-styleable name="Post">
+
+    </declare-styleable>
 </resources>

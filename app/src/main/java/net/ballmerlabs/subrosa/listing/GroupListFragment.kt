@@ -5,9 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import net.ballmerlabs.subrosa.databinding.FragmentGroupListBinding
 import net.ballmerlabs.subrosa.databinding.GroupItemBinding
+import net.ballmerlabs.subrosa.thread.ThreadFragmentArgs
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
@@ -27,6 +29,11 @@ class GroupListFragment : Fragment() {
         for (x in args.grouplist.indices) {
             val v = GroupItemBinding.inflate(inflater, binding.listconstraintlayout, false)
             v.root.id = View.generateViewId()
+            v.root.setOnClickListener {  v
+                val action =
+                    GroupListFragmentDirections.actionFirstFragmentToThreadFragment(v.name.text.toString())
+                findNavController().navigate(action)
+            }
             v.name.text = args.grouplist[x]
             binding.listconstraintlayout.addView(v.root)
             a[x] = v.root.id
