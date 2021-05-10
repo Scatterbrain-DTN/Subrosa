@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import dagger.hilt.android.AndroidEntryPoint
@@ -22,6 +23,8 @@ class GroupListFragment : Fragment() {
     private var _binding: FragmentGroupListBinding? = null
     private val binding get() = _binding!!
 
+    private lateinit var viewModel: GroupListViewModel
+    
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
             savedInstanceState: Bundle?
@@ -42,5 +45,10 @@ class GroupListFragment : Fragment() {
         }
         binding.listflow.referencedIds = a
         return binding.root
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        viewModel = ViewModelProvider(this).get(GroupListViewModel::class.java)
     }
 }
