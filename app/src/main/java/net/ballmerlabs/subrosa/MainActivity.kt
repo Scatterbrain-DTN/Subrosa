@@ -13,9 +13,11 @@ import androidx.navigation.navArgs
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import net.ballmerlabs.scatterbrainsdk.ScatterbrainBroadcastReceiver
 import net.ballmerlabs.subrosa.databinding.ActivityMainBinding
 import net.ballmerlabs.subrosa.listing.GroupListFragmentArgs
 import net.ballmerlabs.subrosa.user.UserViewFragmentArgs
+import javax.inject.Inject
 import kotlin.math.abs
 
 @AndroidEntryPoint
@@ -23,6 +25,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private var titleSet = false
+    
+    @Inject lateinit var broadcastReceiver: ScatterbrainBroadcastReceiver
 
 
     enum class State {
@@ -56,6 +60,16 @@ class MainActivity : AppCompatActivity() {
                 binding.collapsingToolbar.title = "Empty"
             }
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        broadcastReceiver.unregister()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        broadcastReceiver.register()
     }
     
     override fun onCreate(savedInstanceState: Bundle?) {
