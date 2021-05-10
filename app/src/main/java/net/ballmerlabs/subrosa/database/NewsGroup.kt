@@ -1,13 +1,15 @@
 package net.ballmerlabs.subrosa.database
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.PrimaryKey
+import androidx.room.*
 import java.util.*
 
 @Entity(
     tableName = "newsgroup",
+    indices = [
+      Index(
+          value = ["parent"]
+      )
+    ],
     foreignKeys = [
         ForeignKey(
             entity = NewsGroup::class,
