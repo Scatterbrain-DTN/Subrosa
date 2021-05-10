@@ -16,6 +16,9 @@
         <action
             android:id="@+id/action_GroupListFragment_to_ThreadFragment"
             app:destination="@id/ThreadFragment" />
+        <action
+            android:id="@+id/action_GroupListFragment_to_UserCreationDialog"
+            app:destination="@id/UserCreationDialog" />
     </fragment>
 
 
@@ -30,6 +33,9 @@
         <action
             android:id="@+id/action_ThreadFragment_to_UserViewFragment"
             app:destination="@id/UserViewFragment" />
+        <action
+            android:id="@+id/action_ThreadFragment_to_UserCreationDialog"
+            app:destination="@id/UserCreationDialog" />
     </fragment>
 
     <fragment
@@ -40,5 +46,16 @@
         <argument
             android:name="fingerprint"
             app:argType="string"/>
+        <action
+            android:id="@+id/action_UserViewFragment_to_UserCreationDialog"
+            app:destination="@id/UserCreationDialog" />
     </fragment>
+
+    <dialog
+        android:id="@+id/UserCreationDialog"
+        android:name="net.ballmerlabs.subrosa.user.UserCreationDialog"
+        android:label="@string/label_user_creation_dialog"
+        tools:layout="@layout/fragment_user_creation_dialog">
+
+    </dialog>
 </navigation>

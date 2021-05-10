@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="net.ballmerlabs.subrosa.MainActivity">
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/action_create_user"
         android:orderInCategory="100"
-        android:title="@string/action_settings"
+        android:title="@string/label_user_creation_dialog"
         app:showAsAction="never" />
 </menu>

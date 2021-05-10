@@ -1,5 +1,7 @@
 package net.ballmerlabs.subrosa.user
 
+import android.content.res.Resources
+import android.graphics.Rect
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -18,12 +20,29 @@ class UserCreationDialog : DialogFragment() {
     private var _binding: FragmentUserCreationDialogBinding? = null
     private val binding get() = _binding!!
 
+
+    private fun DialogFragment.setWidth(percent: Int) {
+        val p = percent.toFloat() / 100
+        val dm = Resources.getSystem().displayMetrics
+        val rect = dm.run { Rect(0, 0, widthPixels, heightPixels) }
+        val percentWidth = rect.width() * p
+        dialog?.window?.setLayout(percentWidth.toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentUserCreationDialogBinding.inflate(inflater)
+        binding.dismissbutton.setOnClickListener {
+            dismiss()
+        }
         return binding.root
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        setWidth(90)
     }
 
     companion object {
