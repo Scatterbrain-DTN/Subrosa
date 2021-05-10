@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
+import dagger.hilt.android.AndroidEntryPoint
 import net.ballmerlabs.subrosa.R
 import net.ballmerlabs.subrosa.databinding.FragmentUserCreationDialogBinding
 
@@ -16,6 +17,7 @@ import net.ballmerlabs.subrosa.databinding.FragmentUserCreationDialogBinding
  * Use the [UserCreationDialog.newInstance] factory method to
  * create an instance of this fragment.
  */
+@AndroidEntryPoint
 class UserCreationDialog : DialogFragment() {
     private var _binding: FragmentUserCreationDialogBinding? = null
     private val binding get() = _binding!!

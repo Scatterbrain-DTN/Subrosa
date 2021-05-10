@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import dagger.hilt.android.AndroidEntryPoint
 import net.ballmerlabs.subrosa.databinding.FragmentGroupListBinding
 import net.ballmerlabs.subrosa.databinding.GroupItemBinding
 import net.ballmerlabs.subrosa.thread.ThreadFragmentArgs
@@ -14,6 +15,7 @@ import net.ballmerlabs.subrosa.thread.ThreadFragmentArgs
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
+@AndroidEntryPoint
 class GroupListFragment : Fragment() {
 
     private val args: GroupListFragmentArgs by navArgs()

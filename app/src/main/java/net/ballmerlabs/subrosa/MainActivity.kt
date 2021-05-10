@@ -12,11 +12,13 @@ import androidx.navigation.get
 import androidx.navigation.navArgs
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 import net.ballmerlabs.subrosa.databinding.ActivityMainBinding
 import net.ballmerlabs.subrosa.listing.GroupListFragmentArgs
 import net.ballmerlabs.subrosa.user.UserViewFragmentArgs
 import kotlin.math.abs
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding

@@ -8,10 +8,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.navArgs
+import dagger.hilt.android.AndroidEntryPoint
 import net.ballmerlabs.scatterbrainsdk.Identity
 import net.ballmerlabs.subrosa.R
 import net.ballmerlabs.subrosa.databinding.ThreadFragmentBinding
 
+@AndroidEntryPoint
 class ThreadFragment : Fragment() {
     private val args: ThreadFragmentArgs by navArgs()
     private var _binding: ThreadFragmentBinding? = null
