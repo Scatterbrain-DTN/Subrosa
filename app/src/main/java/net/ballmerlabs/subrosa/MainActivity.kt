@@ -21,8 +21,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private var titleSet = false
-    private val args: GroupListFragmentArgs by navArgs()
-
 
 
     enum class State {
