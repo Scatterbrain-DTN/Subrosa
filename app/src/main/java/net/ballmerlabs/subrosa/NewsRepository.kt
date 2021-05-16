@@ -6,6 +6,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import net.ballmerlabs.scatterbrainsdk.BinderWrapper
 import net.ballmerlabs.scatterbrainsdk.SdkComponent
 import net.ballmerlabs.subrosa.database.NewsGroupDao
+import net.ballmerlabs.subrosa.database.Post
 import javax.inject.Inject
 
 class NewsRepository @Inject constructor(
@@ -14,4 +15,7 @@ class NewsRepository @Inject constructor(
     val sdkComponent: SdkComponent
     ) {
 
+    suspend fun sendPost(post: Post) {
+        
+    }
 }
