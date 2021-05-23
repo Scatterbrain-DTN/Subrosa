@@ -29,26 +29,26 @@ data class Parent(
 
 
 class NewsGroup(
-    val newsGroup: SubrosaProto.NewsGroup
-) {
+    packet: SubrosaProto.NewsGroup
+): Message<SubrosaProto.NewsGroup>(packet) {
     val uuid
-    get() = uuidConvert(newsGroup.uuid)
+    get() = uuidConvert(packet.uuid)
 
     val parent
     get() = if(hasParent)
-        Parent(uuidConvert(newsGroup.parent.parentuuid), newsGroup.parent.parenthash.toByteArray())
+        Parent(uuidConvert(packet.parent.parentuuid), packet.parent.parenthash.toByteArray())
     else
         null
 
     val hasParent
-    get() = newsGroup.parentOptionCase == SubrosaProto.NewsGroup.ParentOptionCase.PARENT
+    get() = packet.parentOptionCase == SubrosaProto.NewsGroup.ParentOptionCase.PARENT
 
     val isTopLevel
-    get() = newsGroup.parentOptionCase == SubrosaProto.NewsGroup.ParentOptionCase.TOPLEVEL
+    get() = packet.parentOptionCase == SubrosaProto.NewsGroup.ParentOptionCase.TOPLEVEL
 
 
     val name
-    get() = newsGroup.name
+    get() = packet.name
 
     constructor(
         uuid: UUID,
@@ -73,5 +73,9 @@ class NewsGroup(
                 .setUuid(uuidConvert(uuid))
                 .build()
     )
+
+    companion object {
+        class Parser: Message.Companion.Parser<SubrosaProto.NewsGroup, NewsGroup>(SubrosaProto.NewsGroup.parser())
+    }
 
 }

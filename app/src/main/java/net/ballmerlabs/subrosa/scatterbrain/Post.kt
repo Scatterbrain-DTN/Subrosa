@@ -5,22 +5,22 @@ import net.ballmerlabs.subrosa.SubrosaProto
 import java.util.*
 
 class Post(
-    val post: SubrosaProto.Post
-) {
+    packet: SubrosaProto.Post
+): Message<SubrosaProto.Post>(packet) {
     val parent
-    get() = post.parent
+    get() = packet.parent
 
     val author
-    get() = uuidConvert(post.author)
+    get() = uuidConvert(packet.author)
 
     val header
-    get() = post.header
+    get() = packet.header
 
     val body
-    get() = post.body
+    get() = packet.body
 
     val sig
-    get() = post.sig.toByteArray()
+    get() = packet.sig.toByteArray()
 
 
     constructor(
@@ -31,11 +31,16 @@ class Post(
         sig: ByteArray
     ): this(
         SubrosaProto.Post.newBuilder()
-            .setParent(parent.newsGroup)
+            .setParent(parent.packet)
             .setAuthor(uuidConvert(author))
             .setHeader(header)
             .setBody(body)
             .setSig(ByteString.copyFrom(sig))
             .build()
     )
+
+
+    companion object {
+        class Parser: Message.Companion.Parser<SubrosaProto.Post, Post>(SubrosaProto.Post.parser())
+    }
 }
