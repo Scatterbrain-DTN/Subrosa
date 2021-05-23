@@ -1,27 +1,39 @@
 package net.ballmerlabs.subrosa.scatterbrain
 
+import androidx.room.*
 import com.google.protobuf.ByteString
 import net.ballmerlabs.subrosa.SubrosaProto
 import java.util.*
 
+@Entity(
+    tableName = "posts",
+    foreignKeys = [
+        ForeignKey(
+            entity = NewsGroup::class,
+            parentColumns = ["uuid"],
+            childColumns = ["parent"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ])
 class Post(
     packet: SubrosaProto.Post
 ): Message<SubrosaProto.Post>(packet) {
-    val parent
-    get() = packet.parent
 
-    val author
-    get() = uuidConvert(packet.author)
+    @Embedded
+    var parent: NewsGroup = NewsGroup(packet.parent)
 
-    val header
-    get() = packet.header
+    @Ignore
+    val parentObj = packet.parent
 
-    val body
-    get() = packet.body
+    var author = uuidConvert(packet.author)
 
-    val sig
-    get() = packet.sig.toByteArray()
+    var header = packet.header
 
+    var body = packet.body
+
+    var sig = packet.sig.toByteArray()
+
+    @PrimaryKey(autoGenerate = true) var id = 0
 
     constructor(
         parent: NewsGroup,

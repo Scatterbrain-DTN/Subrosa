@@ -1,5 +1,6 @@
 package net.ballmerlabs.subrosa.scatterbrain
 
+import androidx.room.*
 import com.google.protobuf.ByteString
 import net.ballmerlabs.subrosa.SubrosaProto
 import java.util.*
@@ -27,35 +28,56 @@ data class Parent(
     }
 }
 
-
+@Entity(
+    tableName = "newsgroup",
+    indices = [
+        Index(
+            value = ["parent"]
+        )
+    ],
+    foreignKeys = [
+        ForeignKey(
+            entity = NewsGroup::class,
+            parentColumns = ["uuid"],
+            childColumns = ["parent"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ]
+)
 class NewsGroup(
     packet: SubrosaProto.NewsGroup
 ): Message<SubrosaProto.NewsGroup>(packet) {
-    val uuid
-    get() = uuidConvert(packet.uuid)
 
-    val parent
-    get() = if(hasParent)
+    @PrimaryKey
+    var uuid: UUID = uuidConvert(packet.uuid)
+
+    @Ignore
+    val hasParent = packet.parentOptionCase == SubrosaProto.NewsGroup.ParentOptionCase.PARENT
+
+    var parentHash: ByteArray? = if (hasParent) packet.parent.parenthash.toByteArray() else null
+
+    @ColumnInfo(name = "parent")
+    var parentCol: UUID = if (hasParent) uuidConvert(packet.parent.parentuuid) else uuid
+
+    @Ignore
+    val parent = if(hasParent)
         Parent(uuidConvert(packet.parent.parentuuid), packet.parent.parenthash.toByteArray())
     else
         null
 
-    val hasParent
-    get() = packet.parentOptionCase == SubrosaProto.NewsGroup.ParentOptionCase.PARENT
-
-    val isTopLevel
-    get() = packet.parentOptionCase == SubrosaProto.NewsGroup.ParentOptionCase.TOPLEVEL
+    @Ignore
+    val isTopLevel = packet.parentOptionCase == SubrosaProto.NewsGroup.ParentOptionCase.TOPLEVEL
 
 
-    val name
-    get() = packet.name
+    var name = packet.name
 
     constructor(
         uuid: UUID,
-        parent: Parent?,
-        name: String
+        parentCol: UUID,
+        name: String,
+        parentHash: ByteArray
     ): this(
-        if (parent == null)
+        if (parentCol.equals(uuid))
             SubrosaProto.NewsGroup.newBuilder()
                 .setToplevel(true)
                 .setName(name)
@@ -65,8 +87,8 @@ class NewsGroup(
             SubrosaProto.NewsGroup.newBuilder()
                 .setParent(
                     SubrosaProto.Parent.newBuilder()
-                        .setParenthash(ByteString.copyFrom(parent.parentHash))
-                        .setParentuuid(uuidConvert(parent.parentUUID))
+                        .setParenthash(ByteString.copyFrom(parentHash))
+                        .setParentuuid(uuidConvert(parentCol))
                         .build()
                 )
                 .setName(name)

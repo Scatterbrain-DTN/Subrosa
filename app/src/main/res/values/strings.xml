@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Subrosa</string>
+    <string name="scatterbrainapplication">newsnet</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
     <!-- TODO: Remove or change this placeholder text -->

@@ -4,6 +4,8 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
+import net.ballmerlabs.subrosa.scatterbrain.NewsGroup
+import net.ballmerlabs.subrosa.scatterbrain.Post
 import java.util.*
 
 
