@@ -3,7 +3,6 @@ package net.ballmerlabs.subrosa.scatterbrain
 import androidx.room.*
 import com.google.protobuf.ByteString
 import net.ballmerlabs.subrosa.SubrosaProto
-import java.util.*
 
 @Entity(
     tableName = "posts",
@@ -19,13 +18,16 @@ class Post(
     packet: SubrosaProto.Post
 ): Message<SubrosaProto.Post>(packet) {
 
+    @Ignore
+    override val type: TypeVal = TypeVal.POST
+
     @Embedded
     var parent: NewsGroup = NewsGroup(packet.parent)
 
     @Ignore
     val parentObj = packet.parent
 
-    var author = uuidConvert(packet.author)
+    var author = packet.author
 
     var header = packet.header
 
@@ -37,14 +39,14 @@ class Post(
 
     constructor(
         parent: NewsGroup,
-        author: UUID,
+        author: String,
         header: String,
         body: String,
         sig: ByteArray
     ): this(
         SubrosaProto.Post.newBuilder()
             .setParent(parent.packet)
-            .setAuthor(uuidConvert(author))
+            .setAuthor(author)
             .setHeader(header)
             .setBody(body)
             .setSig(ByteString.copyFrom(sig))
@@ -53,6 +55,9 @@ class Post(
 
 
     companion object {
-        class Parser: Message.Companion.Parser<SubrosaProto.Post, Post>(SubrosaProto.Post.parser())
+        class Parser: Message.Companion.Parser<SubrosaProto.Post, Post>(SubrosaProto.Post.parser()) {
+            override val type: SubrosaProto.Type.PostType = SubrosaProto.Type.PostType.POST
+        }
+        val parser = Parser()
     }
 }

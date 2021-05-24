@@ -2,6 +2,7 @@ package net.ballmerlabs.subrosa
 
 import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.yield
 import net.ballmerlabs.scatterbrainsdk.ScatterMessage
 import net.ballmerlabs.scatterbrainsdk.ScatterbrainApi
 import net.ballmerlabs.subrosa.database.NewsGroupDao
@@ -15,10 +16,23 @@ class NewsRepository @Inject constructor(
     ) {
 
     suspend fun sendPost(post: Post) {
-        val parent = dao.getGroup(post.parent.uuid)
         val message = ScatterMessage.newBuilder()
             .setApplication(context.getString(R.string.scatterbrainapplication))
-            .setBody(byteArrayOf(0))
+            .setBody(post.getBytes())
+            .setFrom(post.author)
             .build()
+        var par = post.parent
+        val groupMsgs = ArrayList<ScatterMessage>()
+        while (par.hasParent) {
+            yield()
+            par = dao.getGroup(par.parentCol)
+            val groupMsg = ScatterMessage.newBuilder()
+                .setApplication(context.getString(R.string.scatterbrainapplication))
+                .setBody(par.getBytes())
+                .build()
+            groupMsgs.add(groupMsg)
+        }
+        sdkComponent.binderWrapper.sendMessage(groupMsgs)
+        sdkComponent.binderWrapper.sendMessage(message, post.author)
     }
 }

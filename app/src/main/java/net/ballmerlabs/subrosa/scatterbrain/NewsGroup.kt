@@ -48,6 +48,9 @@ class NewsGroup(
     packet: SubrosaProto.NewsGroup
 ): Message<SubrosaProto.NewsGroup>(packet) {
 
+    @Ignore
+    override val type: TypeVal = TypeVal.NEWSGROUP
+
     @PrimaryKey
     var uuid: UUID = uuidConvert(packet.uuid)
 
@@ -97,7 +100,10 @@ class NewsGroup(
     )
 
     companion object {
-        class Parser: Message.Companion.Parser<SubrosaProto.NewsGroup, NewsGroup>(SubrosaProto.NewsGroup.parser())
+        class Parser: Message.Companion.Parser<SubrosaProto.NewsGroup, NewsGroup>(SubrosaProto.NewsGroup.parser()) {
+            override val type: SubrosaProto.Type.PostType = SubrosaProto.Type.PostType.NEWSGROUP
+        }
+        val parser = Parser()
     }
 
 }

@@ -2,6 +2,15 @@ syntax = "proto3";
 option java_package = "net.ballmerlabs.subrosa";
 option java_outer_classname = "SubrosaProto";
 
+message Type {
+    enum PostType {
+        NEWSGROUP = 0;
+        POST = 1;
+        TYPE = 2;
+    }
+    PostType type = 1;
+}
+
 message UUID {
     uint64 lower = 1;
     uint64 upper = 2;
@@ -23,7 +32,7 @@ message NewsGroup {
 
 message Post {
     UUID uuid = 1;
-    UUID author = 2;
+    string author = 2;
     string header = 3;
     string body = 4;
     NewsGroup parent = 5;
