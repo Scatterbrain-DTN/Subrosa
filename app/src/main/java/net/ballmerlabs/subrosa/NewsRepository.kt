@@ -18,7 +18,7 @@ class NewsRepository @Inject constructor(
     suspend fun sendPost(post: Post) {
         val message = ScatterMessage.newBuilder()
             .setApplication(context.getString(R.string.scatterbrainapplication))
-            .setBody(post.getBytes())
+            .setBody(post.bytes)
             .setFrom(post.author)
             .build()
         var par = post.parent
@@ -28,7 +28,7 @@ class NewsRepository @Inject constructor(
             par = dao.getGroup(par.parentCol)
             val groupMsg = ScatterMessage.newBuilder()
                 .setApplication(context.getString(R.string.scatterbrainapplication))
-                .setBody(par.getBytes())
+                .setBody(par.bytes)
                 .build()
             groupMsgs.add(groupMsg)
         }

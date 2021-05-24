@@ -9,6 +9,22 @@ import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
+
+private const val MASK = 0xFFFFFFFFL
+private fun bytes2long(payload: ByteArray): Long {
+    val buffer = ByteBuffer.wrap(payload)
+    buffer.order(ByteOrder.BIG_ENDIAN)
+    return (buffer.int.toLong() and MASK)
+}
+
+private fun longToByte(value: Long): ByteArray {
+    val buffer = ByteBuffer.allocate(4)
+    buffer.order(ByteOrder.BIG_ENDIAN)
+    buffer.putInt(value.toInt())
+    return buffer.array()
+}
 
 abstract class Message<T: MessageLite>(@Ignore val packet: T) {
     @Ignore
@@ -21,15 +37,16 @@ abstract class Message<T: MessageLite>(@Ignore val packet: T) {
         .setType(toProto(type))
         .build()
 
-    @Suppress("BlockingMethodInNonBlockingContext")
-    suspend fun getBytes(): ByteArray = withContext(Dispatchers.IO) {
-        try {
-            typePacket.writeDelimitedTo(os)
-            packet.writeDelimitedTo(os)
-            os.toByteArray()
-        } catch (e: IOException) {
-            byteArrayOf(0) //this should be unreachable
-        }
+    val bytes: ByteArray
+    get() {
+        val typeLen = typePacket.serializedSize.toLong()
+        val packetLen = packet.serializedSize.toLong()
+        val out = ByteBuffer.allocate((Int.SIZE_BYTES*2 + typeLen + packetLen).toInt())
+        out.put(longToByte(typeLen))
+        out.put(typePacket.toByteArray())
+        out.put(longToByte(packetLen))
+        out.put(packet.toByteArray())
+        return out.array()
     }
 
     fun writeToStream(os: OutputStream) {
