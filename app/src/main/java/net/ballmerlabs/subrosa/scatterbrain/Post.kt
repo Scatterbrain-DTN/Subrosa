@@ -19,7 +19,9 @@ class Post(
 ): Message<SubrosaProto.Post>(packet) {
 
     @Ignore
-    override val type: TypeVal = TypeVal.POST
+    override val typePacket: SubrosaProto.Type =  SubrosaProto.Type.newBuilder()
+        .setType(toProto(TypeVal.POST))
+        .build()
 
     @Embedded
     var parent: NewsGroup = NewsGroup(packet.parent)

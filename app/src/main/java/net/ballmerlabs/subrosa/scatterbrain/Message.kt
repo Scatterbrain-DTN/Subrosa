@@ -30,12 +30,7 @@ abstract class Message<T: MessageLite>(@Ignore val packet: T) {
     @Ignore
     val os = ByteArrayOutputStream()
 
-    abstract val type: TypeVal
-
-    @Ignore
-    val typePacket: SubrosaProto.Type = SubrosaProto.Type.newBuilder()
-        .setType(toProto(type))
-        .build()
+    abstract val typePacket: SubrosaProto.Type
 
     val bytes: ByteArray
     get() {
@@ -61,10 +56,10 @@ abstract class Message<T: MessageLite>(@Ignore val packet: T) {
         }
         suspend fun parsePrefixType(inputStream: InputStream) {
             val type = parse(Type.parser, inputStream)
-            when(type.type) {
+            when(type.typeVal) {
                 TypeVal.POST -> parse(Post.parser, inputStream)
                 TypeVal.NEWSGROUP -> parse(NewsGroup.parser, inputStream)
-                else -> throw IllegalStateException("invalid type: ${type.type}")
+                else -> throw IllegalStateException("invalid type: ${type.typeVal}")
             }
         }
 

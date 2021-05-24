@@ -49,7 +49,9 @@ class NewsGroup(
 ): Message<SubrosaProto.NewsGroup>(packet) {
 
     @Ignore
-    override val type: TypeVal = TypeVal.NEWSGROUP
+    override val typePacket: SubrosaProto.Type = SubrosaProto.Type.newBuilder()
+        .setType(toProto(TypeVal.NEWSGROUP))
+        .build()
 
     @PrimaryKey
     var uuid: UUID = uuidConvert(packet.uuid)
