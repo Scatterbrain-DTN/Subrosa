@@ -2,10 +2,14 @@ package net.ballmerlabs.subrosa
 
 import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.yield
 import net.ballmerlabs.scatterbrainsdk.ScatterMessage
 import net.ballmerlabs.scatterbrainsdk.ScatterbrainApi
 import net.ballmerlabs.subrosa.database.NewsGroupDao
+import net.ballmerlabs.subrosa.scatterbrain.Message
 import net.ballmerlabs.subrosa.scatterbrain.Post
 import javax.inject.Inject
 

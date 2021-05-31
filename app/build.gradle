@@ -6,6 +6,7 @@ plugins {
     id 'dagger.hilt.android.plugin'
     id 'com.google.protobuf'
 }
+def protobuf_version = "3.11.1"
 
 android {
     compileSdkVersion 30
@@ -52,26 +53,23 @@ processResources {
 
 protobuf {
     protoc {
-        artifact = 'com.google.protobuf:protoc:3.0.0'
+        artifact = "com.google.protobuf:protoc:$protobuf_version"
     }
     plugins {
         javalite {
-            artifact = 'com.google.protobuf:protoc-gen-javalite:3.0.0'
+            artifact = "com.google.protobuf:protoc-gen-javalite:$protobuf_version"
         }
     }
-// this is a task which wil generate classes for our proto files
     generateProtoTasks {
         all().each { task ->
             task.builtins {
-                remove java
-            }
-            task.plugins {
-                javalite {}
+                java {
+                    option "lite"
+                }
             }
         }
     }
 }
-
 
 dependencies {
 
@@ -88,7 +86,7 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1'
     implementation "androidx.room:room-runtime:2.3.0"
     implementation "com.google.dagger:hilt-android:$hilt_version"
-    implementation 'com.google.protobuf:protobuf-lite:3.0.0'
+    implementation "com.google.protobuf:protobuf-javalite:$protobuf_version"
     kapt "com.google.dagger:hilt-compiler:$hilt_version"
     kapt "androidx.room:room-compiler:2.3.0"
     implementation "androidx.room:room-ktx:2.3.0"
@@ -99,4 +97,8 @@ dependencies {
     implementation project(':ScatterbrainSDK')
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+}
+
+repositories {
+    mavenCentral()
 }

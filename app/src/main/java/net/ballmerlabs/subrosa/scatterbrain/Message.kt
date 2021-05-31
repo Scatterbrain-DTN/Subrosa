@@ -1,6 +1,7 @@
 package net.ballmerlabs.subrosa.scatterbrain
 
 import androidx.room.Ignore
+import com.google.protobuf.CodedInputStream
 import com.google.protobuf.MessageLite
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -11,6 +12,7 @@ import java.io.InputStream
 import java.io.OutputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+import java.util.zip.CRC32
 
 private const val MASK = 0xFFFFFFFFL
 private fun bytes2long(payload: ByteArray): Long {
@@ -54,11 +56,12 @@ abstract class Message<T: MessageLite>(@Ignore val packet: T) {
         ) {
             abstract val type: SubrosaProto.Type.PostType
         }
-        suspend fun parsePrefixType(inputStream: InputStream) {
-            val type = parse(Type.parser, inputStream)
+
+        suspend fun parsePrefixType(bytes: ByteArray) {
+            val type = parse(Type.parser, bytes)
             when(type.typeVal) {
-                TypeVal.POST -> parse(Post.parser, inputStream)
-                TypeVal.NEWSGROUP -> parse(NewsGroup.parser, inputStream)
+                TypeVal.POST -> parse(Post.parser, bytes)
+                TypeVal.NEWSGROUP -> parse(NewsGroup.parser, bytes)
                 else -> throw IllegalStateException("invalid type: ${type.typeVal}")
             }
         }
@@ -67,10 +70,32 @@ abstract class Message<T: MessageLite>(@Ignore val packet: T) {
         @Suppress("BlockingMethodInNonBlockingContext")
         suspend inline fun <reified T: Message<V>, reified V: MessageLite> parse(
             parser: Parser<V,T>,
-            inputStream: InputStream
+            input: ByteArray
         ): T = withContext(Dispatchers.IO) {
-            val message = parser.parser.parseDelimitedFrom(inputStream)
+            val message = parser.parser.parseFrom(input)
             T::class.java.getConstructor(V::class.java).newInstance(message)
         }
+
+        fun <T : MessageLite> parseFromCRC(parser: com.google.protobuf.Parser<T>, inputStream: InputStream): T {
+            val crc = ByteArray(4)
+            val size = ByteArray(4)
+            if (inputStream.read(size) != 4) {
+                throw IOException("end of stream")
+            }
+            val s = ByteBuffer.wrap(size).order(ByteOrder.BIG_ENDIAN).int
+            val co = CodedInputStream.newInstance(inputStream, s + 1)
+            val messageBytes = co.readRawBytes(s)
+            val message = parser.parseFrom(messageBytes)
+            if (inputStream.read(crc) != crc.size) {
+                throw IOException("end of stream")
+            }
+            val crc32 = CRC32()
+            crc32.update(messageBytes)
+            if (crc32.value != bytes2long(crc)) {
+                throw IOException("invalid crc: " + crc32.value + " " + bytes2long(crc))
+            }
+            return message
+        }
+
     }
 }
