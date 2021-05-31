@@ -39,4 +39,15 @@ class NewsRepository @Inject constructor(
         sdkComponent.binderWrapper.sendMessage(groupMsgs)
         sdkComponent.binderWrapper.sendMessage(message, post.author)
     }
+
+    suspend fun observePosts(): Flow<Post> = flow {
+        sdkComponent.binderWrapper.observeMessages(context.getString(R.string.scatterbrainapplication))
+            .map { messages ->
+                for (message in messages) {
+                    val post = Message.parse(Post.parser, message.body)
+                    emit(post)
+                }
+            }
+    }
+
 }
