@@ -5,15 +5,8 @@ import com.google.protobuf.ByteString
 import net.ballmerlabs.subrosa.SubrosaProto
 
 @Entity(
-    tableName = "posts",
-    foreignKeys = [
-        ForeignKey(
-            entity = NewsGroup::class,
-            parentColumns = ["uuid"],
-            childColumns = ["parent"],
-            onDelete = ForeignKey.CASCADE
-        )
-    ])
+    tableName = "posts"
+)
 class Post(
     packet: SubrosaProto.Post
 ): Message<SubrosaProto.Post>(packet) {

@@ -23,6 +23,10 @@ interface NewsGroupDao {
     @Insert
     suspend fun insertGroup(newsGroup: NewsGroup)
 
+
+    @Insert
+    suspend fun insertPost(post: Post)
+
     @Insert
     suspend fun insertGroups(vararg newsGroup: NewsGroup)
 }
