@@ -50,14 +50,18 @@ class NewsRepository @Inject constructor(
         sdkComponent.binderWrapper.observeMessages(context.getString(R.string.scatterbrainapplication))
             .map { messages ->
                 for (message in messages) {
-                    val type = Message.parse(message.body)
-                    when (type.typeVal) {
-                        TypeVal.POST -> {
-                            val post = Message.parse<Post>(message.body, type)
-                            dao.insertPost(post)
-                            emit(post)
+                    if (!message.toDisk) {
+                        val type = Message.parse(message.body!!)
+                        when (type.typeVal) {
+                            TypeVal.POST -> {
+                                val post = Message.parse<Post>(message.body!!, type)
+                                dao.insertPost(post)
+                                emit(post)
+                            }
+                            else -> {
+                                yield()
+                            }
                         }
-                        else -> { yield() }
                     }
                 }
             }
@@ -66,18 +70,20 @@ class NewsRepository @Inject constructor(
     suspend fun fullSync() {
         sdkComponent.binderWrapper.getScatterMessages(context.getString(R.string.scatterbrainapplication))
             .forEach { message ->
-                val type = Message.parse(message.body)
-                when(type.typeVal) {
-                    TypeVal.POST -> {
-                        val post = Message.parse<Post>(message.body, type)
-                        dao.insertPost(post)
-                    }
-                    TypeVal.NEWSGROUP -> {
-                        val newsgroup = Message.parse<NewsGroup>(message.body, type)
-                        dao.insertGroup(newsgroup)
-                    }
-                    else -> {
-                        Log.e(TAG, "invalid message type received")
+                if (!message.toDisk) {
+                    val type = Message.parse(message.body!!)
+                    when (type.typeVal) {
+                        TypeVal.POST -> {
+                            val post = Message.parse<Post>(message.body!!, type)
+                            dao.insertPost(post)
+                        }
+                        TypeVal.NEWSGROUP -> {
+                            val newsgroup = Message.parse<NewsGroup>(message.body!!, type)
+                            dao.insertGroup(newsgroup)
+                        }
+                        else -> {
+                            Log.e(TAG, "invalid message type received")
+                        }
                     }
                 }
             }
