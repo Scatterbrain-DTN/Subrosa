@@ -12,7 +12,7 @@
         tools:layout="@layout/fragment_group_list">
         <argument
             android:name="grouplist"
-            app:argType="string[]"/>
+            app:argType="net.ballmerlabs.subrosa.scatterbrain.NewsGroup[]"/>
         <action
             android:id="@+id/action_GroupListFragment_to_ThreadFragment"
             app:destination="@id/ThreadFragment" />

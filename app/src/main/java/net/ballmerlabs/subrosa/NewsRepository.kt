@@ -46,6 +46,10 @@ class NewsRepository @Inject constructor(
         sdkComponent.binderWrapper.sendMessage(message, post.author)
     }
 
+    suspend fun getTopLevelNewsGroups(): List<NewsGroup> {
+        return dao.getTopLevelNewsGroups()
+    }
+
     suspend fun observePosts(): Flow<Post> = flow {
         sdkComponent.binderWrapper.observeMessages(context.getString(R.string.scatterbrainapplication))
             .map { messages ->

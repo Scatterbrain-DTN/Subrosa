@@ -1,5 +1,8 @@
 package net.ballmerlabs.subrosa.scatterbrain
 
+import android.os.Parcel
+import android.os.ParcelUuid
+import android.os.Parcelable
 import androidx.room.*
 import com.google.protobuf.ByteString
 import net.ballmerlabs.subrosa.SubrosaProto
@@ -8,7 +11,13 @@ import java.util.*
 data class Parent(
     val parentUUID: UUID,
     val parentHash: ByteArray,
-) {
+): Parcelable {
+    constructor(parcel: Parcel) : this(
+        parcel.readParcelable<ParcelUuid>(ParcelUuid::class.java.classLoader)!!.uuid,
+        parcel.createByteArray()!!
+    ) {
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
@@ -25,6 +34,25 @@ data class Parent(
         var result = parentUUID.hashCode()
         result = 31 * result + parentHash.contentHashCode()
         return result
+    }
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeParcelable(ParcelUuid(parentUUID), flags)
+        parcel.writeByteArray(parentHash)
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    companion object CREATOR : Parcelable.Creator<Parent> {
+        override fun createFromParcel(parcel: Parcel): Parent {
+            return Parent(parcel)
+        }
+
+        override fun newArray(size: Int): Array<Parent?> {
+            return arrayOfNulls(size)
+        }
     }
 }
 
@@ -46,7 +74,7 @@ data class Parent(
 )
 class NewsGroup(
     packet: SubrosaProto.NewsGroup
-): Message<SubrosaProto.NewsGroup>(packet) {
+): Message<SubrosaProto.NewsGroup>(packet), Parcelable {
 
     @Ignore
     override val typePacket: SubrosaProto.Type = SubrosaProto.Type.newBuilder()
@@ -76,13 +104,20 @@ class NewsGroup(
 
     var name = packet.name
 
+    constructor(parcel: Parcel): this(
+        name = parcel.readString()!!,
+        uuid = parcel.readParcelable<ParcelUuid>(ParcelUuid::class.java.classLoader)!!.uuid,
+        parentCol = parcel.readParcelable<ParcelUuid>(ParcelUuid::class.java.classLoader)!!.uuid,
+        parentHash = parcel.createByteArray()!!
+    )
+
     constructor(
         uuid: UUID,
         parentCol: UUID,
         name: String,
         parentHash: ByteArray
     ): this(
-        if (parentCol.equals(uuid))
+        if (parentCol == uuid)
             SubrosaProto.NewsGroup.newBuilder()
                 .setToplevel(true)
                 .setName(name)
@@ -101,11 +136,37 @@ class NewsGroup(
                 .build()
     )
 
-    companion object {
-        class Parser: Message.Companion.Parser<SubrosaProto.NewsGroup, NewsGroup>(SubrosaProto.NewsGroup.parser()) {
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    override fun writeToParcel(dest: Parcel, flags: Int) {
+        dest.writeString(packet.name)
+        dest.writeParcelable(ParcelUuid(uuidConvert(packet.uuid)), flags)
+        if (packet.parentOptionCase == SubrosaProto.NewsGroup.ParentOptionCase.PARENT) {
+            dest.writeParcelable(ParcelUuid(uuidConvert(packet.parent.parentuuid)), flags)
+            dest.writeByteArray(packet.parent.parenthash.toByteArray())
+        } else {
+            dest.writeParcelable(ParcelUuid(uuidConvert(packet.uuid)), flags)
+            dest.writeByteArray(ByteArray(0))
+        }
+    }
+
+
+    companion object CREATOR : Parcelable.Creator<NewsGroup> {
+        class Parser: Companion.Parser<SubrosaProto.NewsGroup, NewsGroup>(SubrosaProto.NewsGroup.parser()) {
             override val type: SubrosaProto.Type.PostType = SubrosaProto.Type.PostType.NEWSGROUP
         }
         val parser = Parser()
-    }
 
+        override fun createFromParcel(parcel: Parcel): NewsGroup {
+            return NewsGroup(parcel)
+        }
+
+        override fun newArray(size: Int): Array<NewsGroup?> {
+            return arrayOfNulls(size)
+        }
+
+    }
 }

@@ -6,6 +6,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.HorizontalScrollView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavArgument
 import androidx.navigation.findNavController
 import androidx.navigation.get
@@ -13,6 +14,7 @@ import androidx.navigation.navArgs
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import net.ballmerlabs.scatterbrainsdk.ScatterbrainBroadcastReceiver
 import net.ballmerlabs.subrosa.databinding.ActivityMainBinding
 import net.ballmerlabs.subrosa.listing.GroupListFragmentArgs
@@ -28,6 +30,7 @@ class MainActivity : AppCompatActivity() {
     
     @Inject lateinit var broadcastReceiver: ScatterbrainBroadcastReceiver
 
+    @Inject lateinit var repository: NewsRepository
 
     enum class State {
         IDLE,
@@ -129,16 +132,14 @@ class MainActivity : AppCompatActivity() {
 
         val inflater = navController.navInflater
         val graph = inflater.inflate(R.navigation.nav_graph)
-        val manyFmefs = sequence {
-            for (x in 0..30) {
-                yield("fmef $x")
+        lifecycleScope.launch {
+            val groups = repository.getTopLevelNewsGroups()
+            val arg = NavArgument.Builder().setDefaultValue(groups.toTypedArray()).build()
+            graph[R.id.GroupListFragment].arguments.keys.forEach {
+                graph.addArgument(it, arg)
             }
-        }.toList().toTypedArray()
-        val arg = NavArgument.Builder().setDefaultValue(manyFmefs).build()
-        graph[R.id.GroupListFragment].arguments.keys.forEach {
-            graph.addArgument(it, arg)
+            navController.graph = graph
         }
-        navController.graph = graph
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

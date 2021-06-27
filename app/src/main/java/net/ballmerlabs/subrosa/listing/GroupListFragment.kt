@@ -39,7 +39,7 @@ class GroupListFragment : Fragment() {
                     GroupListFragmentDirections.actionGroupListFragmentToThreadFragment(v.name.text.toString())
                 findNavController().navigate(action)
             }
-            v.name.text = args.grouplist[x]
+            v.name.text = args.grouplist[x].name
             binding.listconstraintlayout.addView(v.root)
             a[x] = v.root.id
         }
