@@ -58,6 +58,10 @@ class NewsRepository @Inject constructor(
                                 dao.insertPost(post)
                                 emit(post)
                             }
+                            TypeVal.NEWSGROUP -> {
+                                val newsGroup = Message.parse<NewsGroup>(message.body!!, type)
+                                dao.insertGroup(newsGroup)
+                            }
                             else -> {
                                 yield()
                             }
