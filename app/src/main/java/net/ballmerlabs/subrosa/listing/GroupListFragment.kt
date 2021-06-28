@@ -30,19 +30,11 @@ class GroupListFragment : Fragment() {
             savedInstanceState: Bundle?
     ): View {
         _binding = FragmentGroupListBinding.inflate(inflater)
-        val a = IntArray(args.grouplist.size)
-        for (x in args.grouplist.indices) {
-            val v = GroupItemBinding.inflate(inflater, binding.listconstraintlayout, false)
-            v.root.id = View.generateViewId()
-            v.root.setOnClickListener {  v
-                val action =
-                    GroupListFragmentDirections.actionGroupListFragmentToThreadFragment(v.name.text.toString())
-                findNavController().navigate(action)
-            }
-            v.name.text = args.grouplist[x].name
-            binding.listconstraintlayout.addView(v.root)
-            a[x] = v.root.id
-        }
+        val create = GroupItem(requireContext())
+        create.id = View.generateViewId()
+        val a = IntArray(args.grouplist.size+1)
+        a[a.size-1] = create.id
+        binding.listconstraintlayout.addView(create)
         binding.listflow.referencedIds = a
         return binding.root
     }

@@ -6,6 +6,8 @@ import android.os.Parcelable
 import androidx.room.*
 import com.google.protobuf.ByteString
 import net.ballmerlabs.subrosa.SubrosaProto
+import net.ballmerlabs.subrosa.util.uuidConvert
+import java.security.MessageDigest
 import java.util.*
 
 data class Parent(
@@ -82,19 +84,22 @@ class NewsGroup(
         .build()
 
     @PrimaryKey
-    var uuid: UUID = uuidConvert(packet.uuid)
+    var uuid: UUID = uuidConvertProto(packet.uuid)
 
     @Ignore
     val hasParent = packet.parentOptionCase == SubrosaProto.NewsGroup.ParentOptionCase.PARENT
 
     var parentHash: ByteArray? = if (hasParent) packet.parent.parenthash.toByteArray() else null
 
+    @Ignore
+    val hash: ByteArray
+
     @ColumnInfo(name = "parent")
-    var parentCol: UUID = if (hasParent) uuidConvert(packet.parent.parentuuid) else uuid
+    var parentCol: UUID = if (hasParent) uuidConvertProto(packet.parent.parentuuid) else uuid
 
     @Ignore
     val parent = if(hasParent)
-        Parent(uuidConvert(packet.parent.parentuuid), packet.parent.parenthash.toByteArray())
+        Parent(uuidConvertProto(packet.parent.parentuuid), packet.parent.parenthash.toByteArray())
     else
         null
 
@@ -103,6 +108,13 @@ class NewsGroup(
 
 
     var name = packet.name
+
+
+    init {
+        hash = MessageDigest.getInstance("SHA-256").digest(
+            uuidConvert(uuid) + (parentHash?: ByteArray(0))
+        )
+    }
 
     constructor(parcel: Parcel): this(
         name = parcel.readString()!!,
@@ -121,18 +133,18 @@ class NewsGroup(
             SubrosaProto.NewsGroup.newBuilder()
                 .setToplevel(true)
                 .setName(name)
-                .setUuid(uuidConvert(uuid))
+                .setUuid(uuidConvertProto(uuid))
                 .build()
         else
             SubrosaProto.NewsGroup.newBuilder()
                 .setParent(
                     SubrosaProto.Parent.newBuilder()
                         .setParenthash(ByteString.copyFrom(parentHash))
-                        .setParentuuid(uuidConvert(parentCol))
+                        .setParentuuid(uuidConvertProto(parentCol))
                         .build()
                 )
                 .setName(name)
-                .setUuid(uuidConvert(uuid))
+                .setUuid(uuidConvertProto(uuid))
                 .build()
     )
 
@@ -143,12 +155,12 @@ class NewsGroup(
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
         dest.writeString(packet.name)
-        dest.writeParcelable(ParcelUuid(uuidConvert(packet.uuid)), flags)
+        dest.writeParcelable(ParcelUuid(uuidConvertProto(packet.uuid)), flags)
         if (packet.parentOptionCase == SubrosaProto.NewsGroup.ParentOptionCase.PARENT) {
-            dest.writeParcelable(ParcelUuid(uuidConvert(packet.parent.parentuuid)), flags)
+            dest.writeParcelable(ParcelUuid(uuidConvertProto(packet.parent.parentuuid)), flags)
             dest.writeByteArray(packet.parent.parenthash.toByteArray())
         } else {
-            dest.writeParcelable(ParcelUuid(uuidConvert(packet.uuid)), flags)
+            dest.writeParcelable(ParcelUuid(uuidConvertProto(packet.uuid)), flags)
             dest.writeByteArray(ByteArray(0))
         }
     }

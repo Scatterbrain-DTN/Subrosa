@@ -8,6 +8,9 @@
     <string name="thread_fragment_label">Thread</string>
     <string name="user_view_fragment_label">User View</string>
 
+    <string name="add_group_text">Add Newsgroup</string>
+    <string name="add_group_hint">Group name</string>
+
 
     <!--create user -->
     <string name="edit_name">Display name</string>
