@@ -7,6 +7,7 @@ import androidx.room.*
 import com.google.protobuf.ByteString
 import net.ballmerlabs.subrosa.SubrosaProto
 import net.ballmerlabs.subrosa.util.uuidConvert
+import net.ballmerlabs.subrosa.util.uuidConvertProto
 import java.security.MessageDigest
 import java.util.*
 

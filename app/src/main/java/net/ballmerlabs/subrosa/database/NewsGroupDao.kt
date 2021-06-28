@@ -19,14 +19,9 @@ interface NewsGroupDao {
     @Transaction
     @Query("SELECT * FROM newsgroup WHERE uuid = (:uuid)")
     suspend fun getGroupWithChildren(uuid: UUID): NewsGroupChildren
-    
-    @Transaction
-    @Query("SELECT * FROM newsgroup WHERE parent = uuid")
-    suspend fun getTopLevelNewsGroups(): List<NewsGroup>
 
     @Insert
     suspend fun insertGroup(newsGroup: NewsGroup)
-
 
     @Insert
     suspend fun insertPost(post: Post)

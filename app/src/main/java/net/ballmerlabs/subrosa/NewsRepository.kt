@@ -9,12 +9,15 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.yield
 import net.ballmerlabs.scatterbrainsdk.ScatterMessage
 import net.ballmerlabs.scatterbrainsdk.ScatterbrainApi
+import net.ballmerlabs.subrosa.database.NewsGroupChildren
 import net.ballmerlabs.subrosa.database.NewsGroupDao
 import net.ballmerlabs.subrosa.scatterbrain.Message
 import net.ballmerlabs.subrosa.scatterbrain.NewsGroup
 import net.ballmerlabs.subrosa.scatterbrain.Post
 import net.ballmerlabs.subrosa.scatterbrain.TypeVal
+import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 class NewsRepository @Inject constructor(
     @ApplicationContext val context: Context,
@@ -46,8 +49,30 @@ class NewsRepository @Inject constructor(
         sdkComponent.binderWrapper.sendMessage(message, post.author)
     }
 
-    suspend fun getTopLevelNewsGroups(): List<NewsGroup> {
-        return dao.getTopLevelNewsGroups()
+    suspend fun insertGroup(group: NewsGroup) {
+        val message = ScatterMessage.newBuilder()
+            .setApplication(context.getString(R.string.scatterbrainapplication))
+            .setBody(group.bytes)
+            .build()
+        dao.insertGroup(group)
+        sdkComponent.binderWrapper.sendMessage(message)
+    }
+
+    suspend fun createGroup(name: String, parent: NewsGroup): NewsGroup {
+        val uuid = UUID.randomUUID()
+        val group = NewsGroup(
+            uuid = uuid,
+            parentCol = parent.uuid,
+            name = name,
+            parentHash = parent.hash
+        )
+        insertGroup(group)
+        return group
+    }
+
+    suspend fun getChildren(group: UUID): List<NewsGroup> {
+        val dbchild: NewsGroupChildren? = dao.getGroupWithChildren(group)
+        return dbchild?.children?: ArrayList()
     }
 
     suspend fun observePosts(): Flow<Post> = flow {

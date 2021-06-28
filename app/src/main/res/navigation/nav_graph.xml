@@ -13,12 +13,18 @@
         <argument
             android:name="grouplist"
             app:argType="net.ballmerlabs.subrosa.scatterbrain.NewsGroup[]"/>
+        <argument
+            android:name="immutable"
+            app:argType="boolean"/>
         <action
             android:id="@+id/action_GroupListFragment_to_ThreadFragment"
             app:destination="@id/ThreadFragment" />
         <action
             android:id="@+id/action_GroupListFragment_to_UserCreationDialog"
             app:destination="@id/UserCreationDialog" />
+        <action
+            android:id="@+id/action_GroupListFragment_to_Self"
+            app:destination="@id/GroupListFragment" />
     </fragment>
 
 

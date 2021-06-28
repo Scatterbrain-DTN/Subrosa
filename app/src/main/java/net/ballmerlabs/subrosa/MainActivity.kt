@@ -18,7 +18,10 @@ import kotlinx.coroutines.launch
 import net.ballmerlabs.scatterbrainsdk.ScatterbrainBroadcastReceiver
 import net.ballmerlabs.subrosa.databinding.ActivityMainBinding
 import net.ballmerlabs.subrosa.listing.GroupListFragmentArgs
+import net.ballmerlabs.subrosa.scatterbrain.NewsGroup
 import net.ballmerlabs.subrosa.user.UserViewFragmentArgs
+import net.ballmerlabs.subrosa.util.uuidSha256
+import java.security.MessageDigest
 import javax.inject.Inject
 import kotlin.math.abs
 
@@ -133,11 +136,19 @@ class MainActivity : AppCompatActivity() {
         val inflater = navController.navInflater
         val graph = inflater.inflate(R.navigation.nav_graph)
         lifecycleScope.launch {
-            val groups = repository.getTopLevelNewsGroups()
+            val groups = resources.getStringArray(R.array.default_newsgroups)
+                .map { s ->
+                    val uuid = uuidSha256(s.encodeToByteArray())
+                    NewsGroup(
+                        uuid = uuid,
+                        name = s,
+                        parentCol = uuid,
+                        parentHash = ByteArray(0)
+                ) }
             val arg = NavArgument.Builder().setDefaultValue(groups.toTypedArray()).build()
-            graph[R.id.GroupListFragment].arguments.keys.forEach {
-                graph.addArgument(it, arg)
-            }
+            val immutable = NavArgument.Builder().setDefaultValue(true).build()
+            graph[R.id.GroupListFragment].addArgument("grouplist", arg)
+            graph[R.id.GroupListFragment].addArgument("immutable", immutable)
             navController.graph = graph
         }
     }

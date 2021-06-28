@@ -11,7 +11,15 @@
     <string name="add_group_text">Add Newsgroup</string>
     <string name="add_group_hint">Group name</string>
 
-
+    <string-array name="default_newsgroups">
+        <item>comp</item>
+        <item>news</item>
+        <item>sci</item>
+        <item>rec</item>
+        <item>soc</item>
+        <item>talk</item>
+        <item>alt</item>
+    </string-array>
     <!--create user -->
     <string name="edit_name">Display name</string>
     <string name="edit_bio">Bio</string>
