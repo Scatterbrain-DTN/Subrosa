@@ -40,33 +40,35 @@ class GroupListFragment @Inject constructor() : Fragment() {
             savedInstanceState: Bundle?
     ): View {
         _binding = FragmentGroupListBinding.inflate(inflater)
-        for (item in args.grouplist) {
-            val n = GroupItem(requireContext())
-            n.id = View.generateViewId()
-            n.set(item)
-            n.setOnClickListener { v ->
-                val i = v as GroupItem
-                if (i.isCreated) {
-                    lifecycleScope.launch {
-                        val children = repository.getChildren(i.uuid!!)
-                        val action = GroupListFragmentDirections.actionGroupListFragmentToSelf(
-                            children.toTypedArray(),
-                            false
-                        )
-                        v.findNavController().navigate(action)
+        lifecycleScope.launch {
+            for (item in args.grouplist) {
+                val n = GroupItem(requireContext())
+                n.id = View.generateViewId()
+                n.set(item)
+                n.setOnClickListener { v ->
+                    val i = v as GroupItem
+                    if (i.isCreated) {
+                        lifecycleScope.launch {
+                            val children = repository.getChildren(i.uuid!!)
+                            val action = GroupListFragmentDirections.actionGroupListFragmentToSelf(
+                                children.toTypedArray(),
+                                false
+                            )
+                            v.findNavController().navigate(action)
+                        }
                     }
                 }
+                binding.listconstraintlayout.addView(n)
+                groupList.add(n)
             }
-            binding.listconstraintlayout.addView(n)
-            groupList.add(n)
+            if (!args.immutable) {
+                val create = GroupItem(requireContext())
+                create.id = View.generateViewId()
+                binding.listconstraintlayout.addView(create)
+                groupList.add(create)
+            }
+            binding.listflow.referencedIds = groupList.map { v -> v.id }.toIntArray()
         }
-        if (!args.immutable) {
-            val create = GroupItem(requireContext())
-            create.id = View.generateViewId()
-            binding.listconstraintlayout.addView(create)
-            groupList.add(create)
-        }
-        binding.listflow.referencedIds = groupList.map { v -> v.id }.toIntArray()
         return binding.root
     }
 
