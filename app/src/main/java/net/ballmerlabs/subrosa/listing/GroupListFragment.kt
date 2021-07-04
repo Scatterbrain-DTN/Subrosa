@@ -49,7 +49,7 @@ class GroupListFragment @Inject constructor() : Fragment() {
             if (i.isCreated) {
                 Log.e("debug", "entering group with parent ${i.newsGroup!!.name}")
                 lifecycleScope.launch {
-                    val children = repository.getChildren(i.newsGroup!!.uuid)
+                    val children = withContext(Dispatchers.IO) { repository.getChildren(i.newsGroup!!.uuid) }
                     Log.e("debug", "found ${children.size} children")
                     val action = GroupListFragmentDirections.actionGroupListFragmentToSelf(
                         children.toTypedArray(),
