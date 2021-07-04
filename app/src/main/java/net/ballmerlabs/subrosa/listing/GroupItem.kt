@@ -23,8 +23,11 @@ class GroupItem : ConstraintLayout  {
     var isCreated = false
         private set
 
-    var uuid: UUID? = null
+    var newsGroup: NewsGroup? = null
         private set
+
+    val uuid: UUID?
+        get() = newsGroup?.uuid
 
     constructor(context: Context, attributeSet: AttributeSet): super(context, attributeSet)
 
@@ -42,9 +45,12 @@ class GroupItem : ConstraintLayout  {
         binding.nameEdit.editText!!.imeOptions = EditorInfo.IME_ACTION_DONE
         binding.nameEdit.editText!!.setOnEditorActionListener { v, actionId, event ->
             when(actionId) {
-                EditorInfo.IME_ACTION_DONE -> nameListener(
-                    binding.nameEdit.editText!!.text.toString()
-                )
+                EditorInfo.IME_ACTION_DONE -> {
+                    nameListener(
+                        binding.nameEdit.editText!!.text.toString()
+                    )
+                    Log.e("debug", "setting text")
+                }
                 else -> Log.v("debug", "unknown action")
             }
             true
@@ -60,10 +66,11 @@ class GroupItem : ConstraintLayout  {
     }
 
     fun set(current: NewsGroup) {
+        invalidate()
         binding.name.text = current.name
-        toggleVisibility()
-        uuid = current.uuid
+        newsGroup = current
         isCreated = true
+        toggleVisibility()
     }
 
     fun setOnNameListener(listener: (name: String) -> Unit) {

@@ -16,6 +16,9 @@
         <argument
             android:name="immutable"
             app:argType="boolean"/>
+        <argument
+            android:name="parent"
+            app:argType="net.ballmerlabs.subrosa.scatterbrain.NewsGroup"/>
         <action
             android:id="@+id/action_GroupListFragment_to_ThreadFragment"
             app:destination="@id/ThreadFragment" />

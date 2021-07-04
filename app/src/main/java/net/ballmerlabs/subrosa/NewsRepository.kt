@@ -38,7 +38,7 @@ class NewsRepository @Inject constructor(
         val groupMsgs = ArrayList<ScatterMessage>()
         while (par.hasParent) {
             yield()
-            par = dao.getGroup(par.parentCol)
+            par = dao.getGroup(par.parentCol!!)
             val groupMsg = ScatterMessage.newBuilder()
                 .setApplication(context.getString(R.string.scatterbrainapplication))
                 .setBody(par.bytes)
@@ -55,16 +55,32 @@ class NewsRepository @Inject constructor(
             .setBody(group.bytes)
             .build()
         dao.insertGroup(group)
-        sdkComponent.binderWrapper.sendMessage(message)
+        if (sdkComponent.binderWrapper.isConnected()) {
+            sdkComponent.binderWrapper.sendMessage(message)
+        }
+    }
+
+
+    suspend fun insertGroup(group: List<NewsGroup>) {
+        dao.insertGroups(group)
+        val messages = group.map { g ->
+            ScatterMessage.newBuilder()
+                .setApplication(context.getString(R.string.scatterbrainapplication))
+                .setBody(g.bytes)
+                .build()
+        }
+        if (sdkComponent.binderWrapper.isConnected()) {
+            sdkComponent.binderWrapper.sendMessage(messages)
+        }
     }
 
     suspend fun createGroup(name: String, parent: NewsGroup): NewsGroup {
         val uuid = UUID.randomUUID()
         val group = NewsGroup(
             uuid = uuid,
-            parentCol = parent.uuid,
+            parentCol = if (parent.empty) null else parent.uuid,
             name = name,
-            parentHash = parent.hash
+            parentHash = if (parent.empty) null else parent.hash
         )
         insertGroup(group)
         return group

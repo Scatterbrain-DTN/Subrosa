@@ -8,6 +8,8 @@ import com.google.protobuf.ByteString
 import net.ballmerlabs.subrosa.SubrosaProto
 import net.ballmerlabs.subrosa.util.uuidConvert
 import net.ballmerlabs.subrosa.util.uuidConvertProto
+import java.lang.IllegalArgumentException
+import java.lang.IllegalStateException
 import java.security.MessageDigest
 import java.util.*
 
@@ -76,7 +78,8 @@ data class Parent(
     ]
 )
 class NewsGroup(
-    packet: SubrosaProto.NewsGroup
+    packet: SubrosaProto.NewsGroup,
+    @Ignore val empty: Boolean = false
 ): Message<SubrosaProto.NewsGroup>(packet), Parcelable {
 
     @Ignore
@@ -84,19 +87,26 @@ class NewsGroup(
         .setType(toProto(TypeVal.NEWSGROUP))
         .build()
 
-    @PrimaryKey
-    var uuid: UUID = uuidConvertProto(packet.uuid)
 
-    @Ignore
-    val hasParent = packet.parentOptionCase == SubrosaProto.NewsGroup.ParentOptionCase.PARENT
+    @PrimaryKey
+    var uuid: UUID = UUID(0, 0)
+    get() = checkEmpty(field)
+    set(value) { field = value }
+
+    val hasParent: Boolean
+    get() = packet.parentOptionCase == SubrosaProto.NewsGroup.ParentOptionCase.PARENT
 
     var parentHash: ByteArray? = if (hasParent) packet.parent.parenthash.toByteArray() else null
 
-    @Ignore
     val hash: ByteArray
+    get() = checkEmpty(MessageDigest.getInstance("SHA-256").digest(
+        uuidConvert(uuid) + (parentHash?: ByteArray(0)))
+    )
 
     @ColumnInfo(name = "parent")
-    var parentCol: UUID = if (hasParent) uuidConvertProto(packet.parent.parentuuid) else uuid
+    var parentCol: UUID? = null
+    get() = checkEmpty(if (hasParent) uuidConvertProto(packet.parent.parentuuid) else null)
+    set(value) { field = value }
 
     @Ignore
     val parent = if(hasParent)
@@ -104,39 +114,37 @@ class NewsGroup(
     else
         null
 
-    @Ignore
-    val isTopLevel = packet.parentOptionCase == SubrosaProto.NewsGroup.ParentOptionCase.TOPLEVEL
 
+    private fun <T> checkEmpty(value: T): T {
+        if (empty) {
+            throw IllegalStateException("empty newsgroup")
+        }
+        return value
+    }
 
     var name = packet.name
 
-
-    init {
-        hash = MessageDigest.getInstance("SHA-256").digest(
-            uuidConvert(uuid) + (parentHash?: ByteArray(0))
-        )
-    }
 
     constructor(parcel: Parcel): this(
         name = parcel.readString()!!,
         uuid = parcel.readParcelable<ParcelUuid>(ParcelUuid::class.java.classLoader)!!.uuid,
         parentCol = parcel.readParcelable<ParcelUuid>(ParcelUuid::class.java.classLoader)!!.uuid,
-        parentHash = parcel.createByteArray()!!
+        parentHash = parcel.createByteArray()!!,
     )
 
     constructor(
         uuid: UUID,
-        parentCol: UUID,
+        parentCol: UUID?,
         name: String,
-        parentHash: ByteArray
+        parentHash: ByteArray?
     ): this(
-        if (parentCol == uuid)
+        if (parentCol == null && parentHash == null)
             SubrosaProto.NewsGroup.newBuilder()
                 .setToplevel(true)
                 .setName(name)
                 .setUuid(uuidConvertProto(uuid))
                 .build()
-        else
+        else if (parentCol != null && parentHash != null)
             SubrosaProto.NewsGroup.newBuilder()
                 .setParent(
                     SubrosaProto.Parent.newBuilder()
@@ -147,6 +155,9 @@ class NewsGroup(
                 .setName(name)
                 .setUuid(uuidConvertProto(uuid))
                 .build()
+        else
+            throw IllegalArgumentException("parent hash nullablity must be the same"),
+        empty = false
     )
 
 
@@ -179,6 +190,14 @@ class NewsGroup(
 
         override fun newArray(size: Int): Array<NewsGroup?> {
             return arrayOfNulls(size)
+        }
+
+        fun empty(): NewsGroup {
+            return NewsGroup(
+                SubrosaProto.NewsGroup.newBuilder()
+                    .build(),
+                empty = true
+            )
         }
 
     }

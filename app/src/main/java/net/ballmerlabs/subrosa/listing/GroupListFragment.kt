@@ -34,40 +34,69 @@ class GroupListFragment @Inject constructor() : Fragment() {
     @Inject lateinit var repository: NewsRepository
 
     private lateinit var viewModel: GroupListViewModel
-    
+
+    private fun getGroupItem(group: NewsGroup): GroupItem {
+        val n = GroupItem(requireContext())
+        n.id = View.generateViewId()
+        n.set(group)
+        n.setOnClickListener { v ->
+            val i = v as GroupItem
+            if (i.isCreated) {
+                lifecycleScope.launch {
+                    val children = repository.getChildren(i.uuid!!)
+                    val action = GroupListFragmentDirections.actionGroupListFragmentToSelf(
+                        children.toTypedArray(),
+                        false,
+                        i.newsGroup!!
+                    )
+                    v.findNavController().navigate(action)
+                }
+            }
+        }
+        return n
+    }
+
+    private fun refreshFlow() {
+        binding.listconstraintlayout.invalidate()
+        binding.listflow.invalidate()
+        binding.listflow.referencedIds = groupList.map { v -> v.id }.toIntArray()
+    }
+
+    private fun appendNewsGroup(group: NewsGroup) {
+        val item = getGroupItem(group)
+        binding.listconstraintlayout.addView(item)
+        groupList.add(item)
+        refreshFlow()
+    }
+
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View {
         _binding = FragmentGroupListBinding.inflate(inflater)
         lifecycleScope.launch {
-            for (item in args.grouplist) {
-                val n = GroupItem(requireContext())
-                n.id = View.generateViewId()
-                n.set(item)
-                n.setOnClickListener { v ->
-                    val i = v as GroupItem
-                    if (i.isCreated) {
-                        lifecycleScope.launch {
-                            val children = repository.getChildren(i.uuid!!)
-                            val action = GroupListFragmentDirections.actionGroupListFragmentToSelf(
-                                children.toTypedArray(),
-                                false
-                            )
-                            v.findNavController().navigate(action)
-                        }
-                    }
-                }
-                binding.listconstraintlayout.addView(n)
-                groupList.add(n)
+            for (newsGroup in args.grouplist) {
+                val item = getGroupItem(newsGroup)
+                binding.listconstraintlayout.addView(item)
+                groupList.add(item)
             }
             if (!args.immutable) {
                 val create = GroupItem(requireContext())
                 create.id = View.generateViewId()
+                create.setOnNameListener { name ->
+                    lifecycleScope.launch {
+                        val g = repository.createGroup(name, args.parent)
+                        create.set(g)
+                        val newCreate = GroupItem(requireContext())
+                        binding.listconstraintlayout.addView(newCreate)
+                        groupList.add(newCreate)
+                        refreshFlow()
+                    }
+                }
                 binding.listconstraintlayout.addView(create)
                 groupList.add(create)
             }
-            binding.listflow.referencedIds = groupList.map { v -> v.id }.toIntArray()
+            refreshFlow()
         }
         return binding.root
     }

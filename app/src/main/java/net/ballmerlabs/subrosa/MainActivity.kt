@@ -1,6 +1,7 @@
 package net.ballmerlabs.subrosa
 
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -14,9 +15,12 @@ import androidx.navigation.navArgs
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import net.ballmerlabs.scatterbrainsdk.ScatterbrainBroadcastReceiver
 import net.ballmerlabs.subrosa.databinding.ActivityMainBinding
+import net.ballmerlabs.subrosa.listing.GroupItem
 import net.ballmerlabs.subrosa.listing.GroupListFragmentArgs
 import net.ballmerlabs.subrosa.scatterbrain.NewsGroup
 import net.ballmerlabs.subrosa.user.UserViewFragmentArgs
@@ -142,13 +146,18 @@ class MainActivity : AppCompatActivity() {
                     NewsGroup(
                         uuid = uuid,
                         name = s,
-                        parentCol = uuid,
-                        parentHash = ByteArray(0)
+                        parentCol = null,
+                        parentHash = null
                 ) }
+
+            withContext(Dispatchers.IO) { repository.insertGroup(groups)}
+            Log.e("debug", "groups inserted")
             val arg = NavArgument.Builder().setDefaultValue(groups.toTypedArray()).build()
+            val top = NavArgument.Builder().setDefaultValue(NewsGroup.empty()).build()
             val immutable = NavArgument.Builder().setDefaultValue(true).build()
             graph[R.id.GroupListFragment].addArgument("grouplist", arg)
             graph[R.id.GroupListFragment].addArgument("immutable", immutable)
+            graph[R.id.GroupListFragment].addArgument("parent", top)
             navController.graph = graph
         }
     }

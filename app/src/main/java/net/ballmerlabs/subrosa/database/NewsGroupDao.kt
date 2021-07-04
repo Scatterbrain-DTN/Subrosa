@@ -1,9 +1,6 @@
 package net.ballmerlabs.subrosa.database
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.Query
-import androidx.room.Transaction
+import androidx.room.*
 import net.ballmerlabs.subrosa.scatterbrain.NewsGroup
 import net.ballmerlabs.subrosa.scatterbrain.Post
 import java.util.*
@@ -20,12 +17,15 @@ interface NewsGroupDao {
     @Query("SELECT * FROM newsgroup WHERE uuid = (:uuid)")
     suspend fun getGroupWithChildren(uuid: UUID): NewsGroupChildren
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertGroup(newsGroup: NewsGroup)
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertPost(post: Post)
 
-    @Insert
-    suspend fun insertGroups(vararg newsGroup: NewsGroup)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertGroups(newsGroup: NewsGroup)
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertGroups(newsGroup: List<NewsGroup>)
 }
