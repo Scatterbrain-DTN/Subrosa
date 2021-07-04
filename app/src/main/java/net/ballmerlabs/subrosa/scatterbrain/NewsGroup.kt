@@ -89,9 +89,8 @@ class NewsGroup(
 
 
     @PrimaryKey
-    var uuid: UUID = UUID(0, 0)
+    var uuid: UUID = uuidConvertProto(packet.uuid)
     get() = checkEmpty(field)
-    set(value) { field = value }
 
     val hasParent: Boolean
     get() = packet.parentOptionCase == SubrosaProto.NewsGroup.ParentOptionCase.PARENT
@@ -104,9 +103,8 @@ class NewsGroup(
     )
 
     @ColumnInfo(name = "parent")
-    var parentCol: UUID? = null
-    get() = checkEmpty(if (hasParent) uuidConvertProto(packet.parent.parentuuid) else null)
-    set(value) { field = value }
+    var parentCol: UUID? = if (hasParent) uuidConvertProto(packet.parent.parentuuid) else null
+    get() = checkEmpty(field)
 
     @Ignore
     val parent = if(hasParent)

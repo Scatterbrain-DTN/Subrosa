@@ -1,6 +1,7 @@
 package net.ballmerlabs.subrosa.listing
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -42,8 +43,10 @@ class GroupListFragment @Inject constructor() : Fragment() {
         n.setOnClickListener { v ->
             val i = v as GroupItem
             if (i.isCreated) {
+                Log.e("debug", "entering group with parent ${i.newsGroup!!.name}")
                 lifecycleScope.launch {
-                    val children = repository.getChildren(i.uuid!!)
+                    val children = repository.getChildren(i.newsGroup!!.uuid)
+                    Log.e("debug", "found ${children.size} children")
                     val action = GroupListFragmentDirections.actionGroupListFragmentToSelf(
                         children.toTypedArray(),
                         false,
@@ -85,6 +88,7 @@ class GroupListFragment @Inject constructor() : Fragment() {
                 create.id = View.generateViewId()
                 create.setOnNameListener { name ->
                     lifecycleScope.launch {
+                        Log.e("debug", "creating group with parent ${args.parent.name}")
                         val g = repository.createGroup(name, args.parent)
                         create.set(g)
                         val newCreate = GroupItem(requireContext())

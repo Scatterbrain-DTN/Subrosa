@@ -76,6 +76,7 @@ class NewsRepository @Inject constructor(
 
     suspend fun createGroup(name: String, parent: NewsGroup): NewsGroup {
         val uuid = UUID.randomUUID()
+        Log.e("debug", "parent emptu: ${parent.empty}")
         val group = NewsGroup(
             uuid = uuid,
             parentCol = if (parent.empty) null else parent.uuid,
@@ -87,7 +88,7 @@ class NewsRepository @Inject constructor(
     }
 
     suspend fun getChildren(group: UUID): List<NewsGroup> {
-        val dbchild: NewsGroupChildren? = dao.getGroupWithChildren(group)
+        val dbchild: NewsGroupChildren?= dao.getGroupWithChildren(group)
         return dbchild?.children?: ArrayList()
     }
 
