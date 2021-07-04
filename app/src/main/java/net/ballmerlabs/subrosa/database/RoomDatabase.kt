@@ -21,7 +21,15 @@ class UuidTypeConverter {
     }
 }
 
-@Database(entities = [NewsGroup::class, Post::class], version = 1, exportSchema = true)
+@Database(
+    entities = [
+        NewsGroup::class,
+        Post::class,
+        User::class
+               ],
+    version = 1,
+    exportSchema = true
+)
 @TypeConverters(UuidTypeConverter::class)
 abstract class RoomDatabase : RoomDatabase() {
     abstract fun newsGroupDao(): NewsGroupDao

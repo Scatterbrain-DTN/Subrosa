@@ -13,6 +13,12 @@ interface NewsGroupDao {
     @Query("SELECT * FROM newsgroup WHERE uuid = (:uuid)")
     suspend fun getGroup(uuid: UUID): NewsGroup
 
+    @Query("SELECT * FROM user WHERE identity = :identity")
+    suspend fun getUsersByIdentity(identity: UUID): User
+
+    @Query("SELECT * FROM user")
+    suspend fun getAllUsers(): List<User>
+
     @Transaction
     @Query("SELECT * FROM newsgroup WHERE uuid = (:uuid)")
     suspend fun getGroupWithChildren(uuid: UUID): NewsGroupChildren
@@ -28,4 +34,10 @@ interface NewsGroupDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertGroups(newsGroup: List<NewsGroup>)
+
+    @Insert
+    suspend fun insertUsers(vararg user: User)
+
+    @Insert
+    suspend fun insertUsers(user: List<User>)
 }
