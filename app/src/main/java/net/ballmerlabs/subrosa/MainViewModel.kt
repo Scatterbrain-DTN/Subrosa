@@ -9,4 +9,5 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(): ViewModel() {
     val path = MutableLiveData<List<NewsGroup>>(ArrayList())
+    val collapsed = MutableLiveData(false)
 }

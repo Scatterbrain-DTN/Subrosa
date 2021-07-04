@@ -1,5 +1,6 @@
 package net.ballmerlabs.subrosa.listing
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import net.ballmerlabs.subrosa.NewsRepository

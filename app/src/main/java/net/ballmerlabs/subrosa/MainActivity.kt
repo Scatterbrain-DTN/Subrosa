@@ -20,6 +20,7 @@ import net.ballmerlabs.scatterbrainsdk.ScatterbrainBroadcastReceiver
 import net.ballmerlabs.subrosa.databinding.ActivityMainBinding
 import net.ballmerlabs.subrosa.listing.GroupItem
 import net.ballmerlabs.subrosa.listing.GroupListFragmentArgs
+import net.ballmerlabs.subrosa.listing.GroupListViewModel
 import net.ballmerlabs.subrosa.scatterbrain.NewsGroup
 import net.ballmerlabs.subrosa.user.UserViewFragmentArgs
 import net.ballmerlabs.subrosa.util.uuidSha256
@@ -38,6 +39,7 @@ class MainActivity : AppCompatActivity() {
     @Inject lateinit var repository: NewsRepository
 
     private val mainViewModel by viewModels<MainViewModel>()
+    private val groupListViewModel by viewModels<GroupListViewModel>()
 
     enum class State {
         IDLE,
@@ -49,7 +51,7 @@ class MainActivity : AppCompatActivity() {
     private var barState = State.IDLE
     
     private fun onExpanded() {
-
+        mainViewModel.collapsed.value = false
     }
 
     private fun onCollapsed() {
@@ -58,6 +60,7 @@ class MainActivity : AppCompatActivity() {
             binding.collapsingToolbar.title = ""
             titleSet = false
         }
+        mainViewModel.collapsed.value = true
     }
 
     private fun onExpanding() {

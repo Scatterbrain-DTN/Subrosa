@@ -6,7 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.contains
+import androidx.core.view.marginTop
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
@@ -17,6 +20,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import net.ballmerlabs.subrosa.MainViewModel
 import net.ballmerlabs.subrosa.NewsRepository
 import net.ballmerlabs.subrosa.databinding.FragmentGroupListBinding
 import net.ballmerlabs.subrosa.databinding.GroupItemBinding
@@ -38,7 +42,8 @@ class GroupListFragment @Inject constructor() : Fragment() {
 
     @Inject lateinit var repository: NewsRepository
 
-    private lateinit var viewModel: GroupListViewModel
+    private val viewModel by viewModels<GroupListViewModel>()
+    private val activityViewModel by activityViewModels<MainViewModel>()
 
     private fun getGroupItem(group: NewsGroup): GroupItem {
         val n = GroupItem(requireContext())
@@ -90,6 +95,12 @@ class GroupListFragment @Inject constructor() : Fragment() {
     ): View {
         _binding = FragmentGroupListBinding.inflate(inflater)
         groupList.clear()
+        activityViewModel.collapsed.observe(viewLifecycleOwner) { v ->
+            if (v)
+                binding.listconstraintlayout.visibility = View.GONE
+            else
+                binding.listconstraintlayout.visibility = View.VISIBLE
+        }
         lifecycleScope.launch(Dispatchers.Main) {
             withContext(Dispatchers.Default) {
                 for (newsGroup in args.grouplist) {
@@ -122,10 +133,5 @@ class GroupListFragment @Inject constructor() : Fragment() {
             refreshFlow()
         }
         return binding.root
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(GroupListViewModel::class.java)
     }
 }
