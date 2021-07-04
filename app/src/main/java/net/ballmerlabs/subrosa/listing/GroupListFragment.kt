@@ -31,6 +31,7 @@ class GroupListFragment @Inject constructor() : Fragment() {
     private var _binding: FragmentGroupListBinding? = null
     private val binding get() = _binding!!
     private val groupList = ArrayList<GroupItem>()
+    private lateinit var nameListener: (name: String) -> Unit
 
     @Inject lateinit var repository: NewsRepository
 
@@ -86,17 +87,19 @@ class GroupListFragment @Inject constructor() : Fragment() {
             if (!args.immutable) {
                 val create = GroupItem(requireContext())
                 create.id = View.generateViewId()
-                create.setOnNameListener { name ->
+                nameListener = { name ->
                     lifecycleScope.launch {
                         Log.e("debug", "creating group with parent ${args.parent.name}")
                         val g = repository.createGroup(name, args.parent)
                         create.set(g)
                         val newCreate = GroupItem(requireContext())
+                        newCreate.setOnNameListener(nameListener)
                         binding.listconstraintlayout.addView(newCreate)
                         groupList.add(newCreate)
                         refreshFlow()
                     }
                 }
+                create.setOnNameListener(nameListener)
                 binding.listconstraintlayout.addView(create)
                 groupList.add(create)
             }
