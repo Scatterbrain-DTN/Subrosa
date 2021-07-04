@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.contains
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -12,8 +13,10 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import net.ballmerlabs.subrosa.NewsRepository
 import net.ballmerlabs.subrosa.databinding.FragmentGroupListBinding
 import net.ballmerlabs.subrosa.databinding.GroupItemBinding
@@ -73,17 +76,30 @@ class GroupListFragment @Inject constructor() : Fragment() {
         refreshFlow()
     }
 
+    private fun addGroupItem(item: GroupItem) {
+        if (item.parent != null) {
+            (item.parent as ViewGroup).removeView(item)
+        }
+        binding.listconstraintlayout.addView(item)
+    }
+
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View {
         _binding = FragmentGroupListBinding.inflate(inflater)
-        lifecycleScope.launch {
-            for (newsGroup in args.grouplist) {
-                val item = getGroupItem(newsGroup)
-                binding.listconstraintlayout.addView(item)
-                groupList.add(item)
+        if (savedInstanceState != null) {
+            return binding.root
+        }
+        groupList.clear()
+        lifecycleScope.launch(Dispatchers.Main) {
+            withContext(Dispatchers.Default) {
+                for (newsGroup in args.grouplist) {
+                    val item = getGroupItem(newsGroup)
+                    groupList.add(item)
+                }
             }
+            groupList.forEach { item -> addGroupItem(item) }
             if (!args.immutable) {
                 val create = GroupItem(requireContext())
                 create.id = View.generateViewId()
@@ -94,14 +110,16 @@ class GroupListFragment @Inject constructor() : Fragment() {
                         create.set(g)
                         val newCreate = GroupItem(requireContext())
                         newCreate.setOnNameListener(nameListener)
-                        binding.listconstraintlayout.addView(newCreate)
+                        addGroupItem(newCreate)
                         groupList.add(newCreate)
                         refreshFlow()
                     }
                 }
                 create.setOnNameListener(nameListener)
-                binding.listconstraintlayout.addView(create)
-                groupList.add(create)
+                withContext(Dispatchers.Main) {
+                    addGroupItem(create)
+                    groupList.add(create)
+                }
             }
             refreshFlow()
         }

@@ -139,7 +139,7 @@ class MainActivity : AppCompatActivity() {
 
         val inflater = navController.navInflater
         val graph = inflater.inflate(R.navigation.nav_graph)
-        lifecycleScope.launch {
+        lifecycleScope.launch(Dispatchers.Default) {
             val groups = resources.getStringArray(R.array.default_newsgroups)
                 .map { s ->
                     val uuid = uuidSha256(s.encodeToByteArray())
@@ -158,7 +158,7 @@ class MainActivity : AppCompatActivity() {
             graph[R.id.GroupListFragment].addArgument("grouplist", arg)
             graph[R.id.GroupListFragment].addArgument("immutable", immutable)
             graph[R.id.GroupListFragment].addArgument("parent", top)
-            navController.graph = graph
+            withContext(Dispatchers.Main) { navController.graph = graph }
         }
     }
 
