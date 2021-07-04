@@ -6,12 +6,10 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.HorizontalScrollView
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavArgument
-import androidx.navigation.findNavController
-import androidx.navigation.get
-import androidx.navigation.navArgs
+import androidx.navigation.*
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -38,6 +36,8 @@ class MainActivity : AppCompatActivity() {
     @Inject lateinit var broadcastReceiver: ScatterbrainBroadcastReceiver
 
     @Inject lateinit var repository: NewsRepository
+
+    private val mainViewModel by viewModels<MainViewModel>()
 
     enum class State {
         IDLE,
@@ -93,6 +93,14 @@ class MainActivity : AppCompatActivity() {
                     .setAction("Action", null).show()
         }
 
+        mainViewModel.path.observe(this) { v ->
+            val p = v.map { group ->
+                Log.v("debug", "setting path")
+                if(group.empty) "root" else group.name
+            }.toTypedArray()
+            Log.e("debug", "received livedata ${p.size}")
+            binding.flowlayout.setPaths(p)
+        }
         binding.appbarlayout.setExpanded(false)
         binding.appbarlayout.addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener { 
                 appBarLayout, verticalOffset ->
@@ -120,18 +128,23 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
-        binding.flowlayout.setPaths(arrayOf("fmef1", "fmef2", "fmef3", "fmefverylong4"))
         binding.pathscroll.addOnLayoutChangeListener { _: View, _: Int, _: Int, _: Int, _: Int, _: Int, _: Int, _: Int, _: Int ->
             binding.pathscroll.fullScroll(HorizontalScrollView.FOCUS_RIGHT)
         }
 
         val navController = findNavController(R.id.nav_host_fragment)
 
-        navController.addOnDestinationChangedListener { _, destination, arguments ->
+        navController.addOnDestinationChangedListener { nav, destination, arguments ->
             when(destination.id) {
                 R.id.UserViewFragment -> {
                     val args = UserViewFragmentArgs.fromBundle(arguments!!)
                     binding.pathscroll.visibility = View.GONE
+                }
+                R.id.GroupListFragment -> {
+                    val args = GroupListFragmentArgs.fromBundle(arguments!!)
+                    Log.e("debug", "groupListFragment navigation: ${args.path.size}")
+                    mainViewModel.path.value = args.path.toList()
+
                 }
                 else -> binding.pathscroll.visibility = View.VISIBLE
             }
@@ -154,10 +167,12 @@ class MainActivity : AppCompatActivity() {
             Log.e("debug", "groups inserted")
             val arg = NavArgument.Builder().setDefaultValue(groups.toTypedArray()).build()
             val top = NavArgument.Builder().setDefaultValue(NewsGroup.empty()).build()
+            val path = NavArgument.Builder().setDefaultValue(arrayOf(NewsGroup.empty())).build()
             val immutable = NavArgument.Builder().setDefaultValue(true).build()
             graph[R.id.GroupListFragment].addArgument("grouplist", arg)
             graph[R.id.GroupListFragment].addArgument("immutable", immutable)
             graph[R.id.GroupListFragment].addArgument("parent", top)
+            graph[R.id.GroupListFragment].addArgument("path", path)
             withContext(Dispatchers.Main) { navController.graph = graph }
         }
     }

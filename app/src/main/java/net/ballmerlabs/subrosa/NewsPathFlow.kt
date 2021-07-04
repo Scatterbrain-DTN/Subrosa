@@ -53,11 +53,14 @@ class NewsPathFlow(context: Context, private val attributeSet: AttributeSet) : M
         }
     }  
 
+
     fun setPaths(names: Array<String>) {
+        elements.clear()
+        removeAllViews()
         var prev = id
         for (i in names.indices) {
             val path = createElement(names[i])
-            setParams(path, if (i > 1) prev else null)
+            setParams(path, if (i > 0) prev else null)
             elements.add(path)
             prev = path.id
         }
