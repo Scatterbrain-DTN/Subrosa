@@ -88,9 +88,6 @@ class GroupListFragment @Inject constructor() : Fragment() {
             savedInstanceState: Bundle?
     ): View {
         _binding = FragmentGroupListBinding.inflate(inflater)
-        if (savedInstanceState != null) {
-            return binding.root
-        }
         groupList.clear()
         lifecycleScope.launch(Dispatchers.Main) {
             withContext(Dispatchers.Default) {
