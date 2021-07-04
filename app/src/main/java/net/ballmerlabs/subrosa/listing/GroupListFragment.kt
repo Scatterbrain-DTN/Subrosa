@@ -20,11 +20,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import net.ballmerlabs.scatterbrainsdk.Identity
 import net.ballmerlabs.subrosa.MainViewModel
 import net.ballmerlabs.subrosa.NewsRepository
 import net.ballmerlabs.subrosa.databinding.FragmentGroupListBinding
 import net.ballmerlabs.subrosa.databinding.GroupItemBinding
 import net.ballmerlabs.subrosa.scatterbrain.NewsGroup
+import net.ballmerlabs.subrosa.thread.Post
 import net.ballmerlabs.subrosa.thread.ThreadFragmentArgs
 import javax.inject.Inject
 
@@ -38,12 +40,29 @@ class GroupListFragment @Inject constructor() : Fragment() {
     private var _binding: FragmentGroupListBinding? = null
     private val binding get() = _binding!!
     private val groupList = ArrayList<GroupItem>()
+    private val postList = ArrayList<Int>()
     private lateinit var nameListener: (name: String) -> Unit
 
     @Inject lateinit var repository: NewsRepository
 
     private val viewModel by viewModels<GroupListViewModel>()
     private val activityViewModel by activityViewModels<MainViewModel>()
+
+
+    private fun addPost(body: String, sender: Identity) {
+        addPost(body, sender.givenname, sender.fingerprint)
+    }
+
+    private fun addPost(body: String, name: String, fingerprint: String) {
+        val p = Post(requireContext())
+        p.body = body
+        p.fingerprint = fingerprint
+        p.name = name
+        p.id = View.generateViewId()
+        postList.add(p.id)
+        binding.threadLayout.addView(p)
+        binding.postFlow.referencedIds = postList.toIntArray()
+    }
 
     private fun getGroupItem(group: NewsGroup): GroupItem {
         val n = GroupItem(requireContext())
@@ -133,5 +152,10 @@ class GroupListFragment @Inject constructor() : Fragment() {
             refreshFlow()
         }
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        addPost("testbody", "testname", "testfingerprint")
     }
 }
