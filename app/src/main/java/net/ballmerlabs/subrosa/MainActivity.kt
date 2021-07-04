@@ -56,7 +56,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun onCollapsed() {
         if (titleSet) {
-            binding.flowlayout.addPath(binding.collapsingToolbar.title.toString())
+            val list = mainViewModel.strPath.toTypedArray()
+            binding.flowlayout.setPaths(list)
             binding.collapsingToolbar.title = ""
             titleSet = false
         }
@@ -65,13 +66,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun onExpanding() {
         if (!titleSet) {
-            val s = binding.flowlayout.removePath()
-            if (s != null) {
-                binding.collapsingToolbar.title = s
-                titleSet = true
-            } else {
-                binding.collapsingToolbar.title = "Empty"
-            }
+            val list = mainViewModel.strPath.toMutableList()
+            val front = list.removeLast()
+            binding.flowlayout.setPaths(list.toTypedArray())
+            binding.collapsingToolbar.title = front
+            titleSet = true
         }
     }
 
