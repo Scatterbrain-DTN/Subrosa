@@ -135,7 +135,6 @@ class GroupListFragment @Inject constructor() : Fragment() {
             groupList.forEach { item -> addGroupItem(item) }
             if (!args.immutable) {
                 val create = getGroupItem(null)
-                create.id = View.generateViewId()
                 nameListener = { name ->
                     lifecycleScope.launch {
                         Log.e("debug", "creating group with parent ${args.parent.name}")

@@ -42,6 +42,12 @@ class GroupItem : ConstraintLayout  {
 
         inflate(context, R.layout.group_item, this)
         binding = GroupItemBinding.bind(this)
+
+        binding.createButton.setOnClickListener {
+            nameListener(
+                binding.nameEdit.editText!!.text.toString()
+            )
+        }
         binding.nameEdit.editText!!.imeOptions = EditorInfo.IME_ACTION_DONE
         binding.nameEdit.editText!!.setOnEditorActionListener { v, actionId, event ->
             when(actionId) {
