@@ -29,4 +29,8 @@ class User(
         val file = File(context.filesDir, imagePath)
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, file.outputStream())
     }
+
+    override fun toString(): String {
+        return name
+    }
 }

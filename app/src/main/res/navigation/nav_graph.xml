@@ -23,31 +23,14 @@
             android:name="path"
             app:argType="net.ballmerlabs.subrosa.scatterbrain.NewsGroup[]"/>
         <action
-            android:id="@+id/action_GroupListFragment_to_ThreadFragment"
-            app:destination="@id/ThreadFragment" />
-        <action
             android:id="@+id/action_GroupListFragment_to_UserCreationDialog"
             app:destination="@id/UserCreationDialog" />
         <action
             android:id="@+id/action_GroupListFragment_to_Self"
             app:destination="@id/GroupListFragment" />
-    </fragment>
-
-
-    <fragment
-        android:id="@+id/ThreadFragment"
-        android:name="net.ballmerlabs.subrosa.thread.ThreadFragment"
-        android:label="@string/thread_fragment_label"
-        tools:layout="@layout/thread_fragment">
-        <argument
-            android:name="group"
-            app:argType="string"/>
         <action
-            android:id="@+id/action_ThreadFragment_to_UserViewFragment"
-            app:destination="@id/UserViewFragment" />
-        <action
-            android:id="@+id/action_ThreadFragment_to_UserCreationDialog"
-            app:destination="@id/UserCreationDialog" />
+            android:id="@+id/action_GroupListFragment_to_postCreationDialog"
+            app:destination="@id/postCreationDialog" />
     </fragment>
 
     <fragment
@@ -69,5 +52,18 @@
         android:label="@string/label_user_creation_dialog"
         tools:layout="@layout/fragment_user_creation_dialog">
 
+    </dialog>
+    <dialog
+        android:id="@+id/postCreationDialog"
+        android:name="net.ballmerlabs.subrosa.thread.PostCreationDialog"
+        android:label="fragment_post_creation_dialog"
+        tools:layout="@layout/fragment_post_creation_dialog" >
+        <action
+            android:id="@+id/action_postCreationDialog_to_GroupListFragment"
+            app:destination="@id/GroupListFragment" />
+
+        <argument
+            android:name="current"
+            app:argType="net.ballmerlabs.subrosa.scatterbrain.NewsGroup[]"/>
     </dialog>
 </navigation>

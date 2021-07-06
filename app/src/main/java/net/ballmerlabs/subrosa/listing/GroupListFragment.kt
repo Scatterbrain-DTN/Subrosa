@@ -5,31 +5,22 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.contains
-import androidx.core.view.marginTop
-import androidx.core.view.setMargins
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.ballmerlabs.scatterbrainsdk.Identity
 import net.ballmerlabs.subrosa.MainViewModel
 import net.ballmerlabs.subrosa.NewsRepository
 import net.ballmerlabs.subrosa.databinding.FragmentGroupListBinding
-import net.ballmerlabs.subrosa.databinding.GroupItemBinding
 import net.ballmerlabs.subrosa.scatterbrain.NewsGroup
 import net.ballmerlabs.subrosa.thread.Post
-import net.ballmerlabs.subrosa.thread.ThreadFragmentArgs
-import net.ballmerlabs.subrosa.util.toDp
 import javax.inject.Inject
 
 /**

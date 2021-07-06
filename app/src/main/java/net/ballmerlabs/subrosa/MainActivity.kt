@@ -90,11 +90,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
 
-        binding.fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
-        }
-
         mainViewModel.path.observe(this) { v ->
             val p = v.map { group ->
                 Log.v("debug", "setting path")
@@ -149,6 +144,13 @@ class MainActivity : AppCompatActivity() {
 
                 }
                 else -> binding.pathscroll.visibility = View.VISIBLE
+            }
+        }
+
+
+        binding.fab.setOnClickListener { view ->
+            if (navController.currentDestination!!.id == R.id.GroupListFragment) {
+                navController.navigate(R.id.action_GroupListFragment_to_postCreationDialog)
             }
         }
 
