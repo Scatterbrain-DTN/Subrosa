@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.contains
 import androidx.core.view.marginTop
+import androidx.core.view.setMargins
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -28,6 +29,7 @@ import net.ballmerlabs.subrosa.databinding.GroupItemBinding
 import net.ballmerlabs.subrosa.scatterbrain.NewsGroup
 import net.ballmerlabs.subrosa.thread.Post
 import net.ballmerlabs.subrosa.thread.ThreadFragmentArgs
+import net.ballmerlabs.subrosa.util.toDp
 import javax.inject.Inject
 
 /**
@@ -59,6 +61,7 @@ class GroupListFragment @Inject constructor() : Fragment() {
         p.fingerprint = fingerprint
         p.name = name
         p.id = View.generateViewId()
+        p.maxCardElevation = 128.toFloat()
         postList.add(p.id)
         binding.threadLayout.addView(p)
         binding.postFlow.referencedIds = postList.toIntArray()

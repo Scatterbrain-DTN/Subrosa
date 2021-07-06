@@ -2,13 +2,12 @@ package net.ballmerlabs.subrosa.thread
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.LayoutInflater
 import androidx.cardview.widget.CardView
-import androidx.core.view.marginStart
+import com.google.android.material.card.MaterialCardView
 import net.ballmerlabs.subrosa.R
 import net.ballmerlabs.subrosa.databinding.ThreadCardBinding
 
-class Post : CardView {
+class Post : MaterialCardView {
     private val binding: ThreadCardBinding
     
     var body
@@ -28,7 +27,7 @@ class Post : CardView {
         binding.fingerprint.text = value
     }
     get() = binding.fingerprint.text
-    
+
     constructor(context: Context, attributeSet: AttributeSet): super(context, attributeSet)
     
     constructor(context: Context): super(context)
