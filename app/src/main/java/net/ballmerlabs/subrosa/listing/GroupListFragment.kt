@@ -67,10 +67,12 @@ class GroupListFragment @Inject constructor() : Fragment() {
         binding.postFlow.referencedIds = postList.toIntArray()
     }
 
-    private fun getGroupItem(group: NewsGroup): GroupItem {
+    private fun getGroupItem(group: NewsGroup?): GroupItem {
         val n = GroupItem(requireContext())
         n.id = View.generateViewId()
-        n.set(group)
+        if (group != null) {
+            n.set(group)
+        }
         n.setOnClickListener { v ->
             val i = v as GroupItem
             if (i.isCreated) {
@@ -132,14 +134,14 @@ class GroupListFragment @Inject constructor() : Fragment() {
             }
             groupList.forEach { item -> addGroupItem(item) }
             if (!args.immutable) {
-                val create = GroupItem(requireContext())
+                val create = getGroupItem(null)
                 create.id = View.generateViewId()
                 nameListener = { name ->
                     lifecycleScope.launch {
                         Log.e("debug", "creating group with parent ${args.parent.name}")
                         val g = repository.createGroup(name, args.parent)
                         create.set(g)
-                        val newCreate = GroupItem(requireContext())
+                        val newCreate = getGroupItem(null)
                         newCreate.setOnNameListener(nameListener)
                         addGroupItem(newCreate)
                         groupList.add(newCreate)
