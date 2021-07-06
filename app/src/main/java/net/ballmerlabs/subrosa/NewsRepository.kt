@@ -1,6 +1,7 @@
 package net.ballmerlabs.subrosa
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.util.Log
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
@@ -11,10 +12,12 @@ import net.ballmerlabs.scatterbrainsdk.ScatterMessage
 import net.ballmerlabs.scatterbrainsdk.ScatterbrainApi
 import net.ballmerlabs.subrosa.database.NewsGroupChildren
 import net.ballmerlabs.subrosa.database.NewsGroupDao
+import net.ballmerlabs.subrosa.database.User
 import net.ballmerlabs.subrosa.scatterbrain.Message
 import net.ballmerlabs.subrosa.scatterbrain.NewsGroup
 import net.ballmerlabs.subrosa.scatterbrain.Post
 import net.ballmerlabs.subrosa.scatterbrain.TypeVal
+import net.ballmerlabs.subrosa.util.uuidConvertProto
 import java.util.*
 import javax.inject.Inject
 import kotlin.collections.ArrayList
@@ -47,6 +50,36 @@ class NewsRepository @Inject constructor(
         }
         sdkComponent.binderWrapper.sendMessage(groupMsgs)
         sdkComponent.binderWrapper.sendMessage(message, post.author)
+    }
+
+    suspend fun createUser(name: String, bio: String, image: Bitmap) : User {
+        val id = sdkComponent.binderWrapper.generateIdentity(name)
+        val user = User(
+            identity = id.fingerprint,
+            name = name,
+            bio = bio,
+        )
+        user.writeImage(image, context)
+        dao.insertUsers(user)
+        return user
+    }
+
+    suspend fun insertUser(user: User, image: Bitmap) {
+        user.writeImage(image, context)
+        dao.insertUsers(user)
+    }
+
+    suspend fun readUsers(): List<User> {
+        val users = dao.getAllUsers()
+        return users.onEach { u->
+            u.getImageFromPath(context)
+        }
+    }
+
+    suspend fun readUsers(uuid: UUID): User {
+        val user =  dao.getUsersByIdentity(uuid)
+        user.getImageFromPath(context)
+        return user
     }
 
     suspend fun insertGroup(group: NewsGroup) {

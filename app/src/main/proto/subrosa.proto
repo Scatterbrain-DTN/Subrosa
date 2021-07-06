@@ -32,7 +32,7 @@ message NewsGroup {
 
 message Post {
     UUID uuid = 1;
-    string author = 2;
+    UUID author = 2;
     string header = 3;
     string body = 4;
     NewsGroup parent = 5;

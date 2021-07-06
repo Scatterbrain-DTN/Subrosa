@@ -50,7 +50,7 @@ class GroupListFragment @Inject constructor() : Fragment() {
 
 
     private fun addPost(body: String, sender: Identity) {
-        addPost(body, sender.givenname, sender.fingerprint)
+        addPost(body, sender.givenname, sender.fingerprint.toString())
     }
 
     private fun addPost(body: String, name: String, fingerprint: String) {
