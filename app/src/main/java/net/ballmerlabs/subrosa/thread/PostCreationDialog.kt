@@ -1,6 +1,7 @@
 package net.ballmerlabs.subrosa.thread
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -48,8 +49,10 @@ class PostCreationDialog @Inject constructor(): DialogFragment() {
         binding = FragmentPostCreationDialogBinding.inflate(inflater)
         binding.toolbar.setNavigationOnClickListener { dismiss() }
         arrayAdapter = ArrayAdapter<User>(requireContext(), android.R.layout.simple_dropdown_item_1line)
+        binding.userAutocomplete.setAdapter(arrayAdapter)
         lifecycleScope.launch(Dispatchers.IO) {
             val users = repository.readUsers()
+            Log.v("debug", "read ${users.size} users")
             withContext(Dispatchers.Main) {
                 arrayAdapter.addAll(users)
                 arrayAdapter.notifyDataSetChanged()
