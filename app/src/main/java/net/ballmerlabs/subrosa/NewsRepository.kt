@@ -7,9 +7,13 @@ import androidx.core.graphics.drawable.toBitmap
 import com.lelloman.identicon.drawable.GithubIdenticonDrawable
 import com.lelloman.identicon.drawable.IdenticonDrawable
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withTimeout
 import kotlinx.coroutines.yield
 import net.ballmerlabs.scatterbrainsdk.ScatterMessage
 import net.ballmerlabs.scatterbrainsdk.ScatterbrainApi
@@ -21,9 +25,11 @@ import net.ballmerlabs.subrosa.scatterbrain.NewsGroup
 import net.ballmerlabs.subrosa.scatterbrain.Post
 import net.ballmerlabs.subrosa.scatterbrain.TypeVal
 import net.ballmerlabs.subrosa.util.uuidConvertProto
+import java.lang.IllegalStateException
 import java.util.*
 import javax.inject.Inject
 import kotlin.collections.ArrayList
+import kotlin.collections.HashSet
 
 class NewsRepository @Inject constructor(
     @ApplicationContext val context: Context,
@@ -31,10 +37,55 @@ class NewsRepository @Inject constructor(
     val sdkComponent: ScatterbrainApi
     ) {
 
+    private val connectedCallback: MutableSet<(connected: Boolean) -> Unit> = HashSet()
+    private var isConnected = false
+
     init {
         sdkComponent.broadcastReceiver.register()
     }
+
+    suspend fun tryBind() = withTimeout(1000) {
+        sdkComponent.binderWrapper.getScatterMessages("")
+    }
+
+    suspend fun isConnected(): Boolean {
+        val c = sdkComponent.binderWrapper.isConnected()
+        updateConnected(c)
+        return c
+    }
+
+    private fun updateConnected(connected: Boolean) {
+        if (isConnected != connected ) {
+            connectedCallback.forEach { v ->
+                v(connected)
+            }
+            isConnected = connected
+        }
+    }
+
+    private suspend fun updateConnected() {
+        val c = sdkComponent.binderWrapper.isConnected()
+        updateConnected(c)
+    }
+
+    @ExperimentalCoroutinesApi
+    suspend fun observeConnections() = callbackFlow {
+        val callback: (connected: Boolean) -> Unit = { b ->
+            offer(b)
+        }
+        connectedCallback.add(callback)
+
+        awaitClose { connectedCallback.remove(callback) }
+    }
+
+    suspend fun requireConnected() {
+        if (!isConnected()) {
+            throw IllegalStateException("routingService not connected")
+        }
+    }
+
     suspend fun sendPost(post: Post) {
+        updateConnected()
         val message = ScatterMessage.newBuilder()
             .setApplication(context.getString(R.string.scatterbrainapplication))
             .setBody(post.bytes)
@@ -51,11 +102,14 @@ class NewsRepository @Inject constructor(
                 .build()
             groupMsgs.add(groupMsg)
         }
-        sdkComponent.binderWrapper.sendMessage(groupMsgs)
-        sdkComponent.binderWrapper.sendMessage(message, post.author)
+        if (isConnected()) {
+            sdkComponent.binderWrapper.sendMessage(groupMsgs)
+            sdkComponent.binderWrapper.sendMessage(message, post.author)
+        }
     }
 
     suspend fun createUser(name: String, bio: String, imageBitmap: Bitmap? = null) : User {
+        requireConnected()
         val hashcode = (name + bio).hashCode()
         val image = imageBitmap?: GithubIdenticonDrawable(64, 64, hashcode).toBitmap()
         val id = sdkComponent.binderWrapper.generateIdentity(name)
@@ -70,11 +124,13 @@ class NewsRepository @Inject constructor(
     }
 
     suspend fun insertUser(user: User, image: Bitmap) {
+        updateConnected()
         user.writeImage(image, context)
         dao.insertUsers(user)
     }
 
     suspend fun readUsers(): List<User> {
+        updateConnected()
         val users = dao.getAllUsers()
         return users.onEach { u->
             u.getImageFromPath(context)
@@ -82,24 +138,27 @@ class NewsRepository @Inject constructor(
     }
 
     suspend fun readUsers(uuid: UUID): User {
+        updateConnected()
         val user =  dao.getUsersByIdentity(uuid)
         user.getImageFromPath(context)
         return user
     }
 
     suspend fun insertGroup(group: NewsGroup) {
+        updateConnected()
         val message = ScatterMessage.newBuilder()
             .setApplication(context.getString(R.string.scatterbrainapplication))
             .setBody(group.bytes)
             .build()
         dao.insertGroup(group)
-        if (sdkComponent.binderWrapper.isConnected()) {
+        if (isConnected()) {
             sdkComponent.binderWrapper.sendMessage(message)
         }
     }
 
 
     suspend fun insertGroup(group: List<NewsGroup>) {
+        updateConnected()
         dao.insertGroups(group)
         val messages = group.map { g ->
             ScatterMessage.newBuilder()
@@ -107,12 +166,13 @@ class NewsRepository @Inject constructor(
                 .setBody(g.bytes)
                 .build()
         }
-        if (sdkComponent.binderWrapper.isConnected()) {
+        if (isConnected()) {
             sdkComponent.binderWrapper.sendMessage(messages)
         }
     }
 
     suspend fun createGroup(name: String, parent: NewsGroup): NewsGroup {
+        updateConnected()
         val uuid = UUID.randomUUID()
         Log.e("debug", "parent emptu: ${parent.empty}")
         val group = NewsGroup(
@@ -126,11 +186,13 @@ class NewsRepository @Inject constructor(
     }
 
     suspend fun getChildren(group: UUID): List<NewsGroup> {
+        updateConnected()
         val dbchild: NewsGroupChildren?= dao.getGroupWithChildren(group)
         return dbchild?.children?: ArrayList()
     }
 
     suspend fun observePosts(): Flow<Post> = flow {
+        requireConnected()
         sdkComponent.binderWrapper.observeMessages(context.getString(R.string.scatterbrainapplication))
             .map { messages ->
                 for (message in messages) {
@@ -156,6 +218,7 @@ class NewsRepository @Inject constructor(
     }
 
     suspend fun fullSync() {
+        requireConnected()
         sdkComponent.binderWrapper.getScatterMessages(context.getString(R.string.scatterbrainapplication))
             .forEach { message ->
                 if (!message.toDisk) {

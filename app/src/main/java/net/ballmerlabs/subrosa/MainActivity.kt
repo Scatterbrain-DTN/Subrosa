@@ -11,8 +11,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.*
 import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.ballmerlabs.scatterbrainsdk.ScatterbrainBroadcastReceiver
@@ -37,6 +40,8 @@ class MainActivity : AppCompatActivity() {
 
     private val mainViewModel by viewModels<MainViewModel>()
     private val groupListViewModel by viewModels<GroupListViewModel>()
+
+    private lateinit var notConnectedSnackbar: Snackbar
 
     enum class State {
         IDLE,
@@ -79,13 +84,25 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         broadcastReceiver.register()
+        lifecycleScope.launch(Dispatchers.IO) {
+            if (!repository.isConnected()) {
+                notConnectedSnackbar.show()
+            }
+        }
     }
     
+    @ExperimentalCoroutinesApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
+
+        notConnectedSnackbar = Snackbar.make(
+            binding.appbarlayout,
+            "Error: Scatterbrain router not connected, messages will be cached",
+            Snackbar.LENGTH_INDEFINITE
+        )
 
         mainViewModel.path.observe(this) { v ->
             val p = v.map { group ->
@@ -180,6 +197,16 @@ class MainActivity : AppCompatActivity() {
             graph[R.id.GroupListFragment].addArgument("parent", top)
             graph[R.id.GroupListFragment].addArgument("path", path)
             withContext(Dispatchers.Main) { navController.graph = graph }
+        }
+
+        lifecycleScope.launch {
+            repository.observeConnections().collect { c ->
+                if (c) {
+                    notConnectedSnackbar.dismiss()
+                } else {
+                    notConnectedSnackbar.show()
+                }
+            }
         }
     }
 
