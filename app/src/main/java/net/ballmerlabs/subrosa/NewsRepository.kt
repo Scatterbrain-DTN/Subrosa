@@ -3,6 +3,9 @@ package net.ballmerlabs.subrosa
 import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
+import androidx.core.graphics.drawable.toBitmap
+import com.lelloman.identicon.drawable.GithubIdenticonDrawable
+import com.lelloman.identicon.drawable.IdenticonDrawable
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -52,7 +55,9 @@ class NewsRepository @Inject constructor(
         sdkComponent.binderWrapper.sendMessage(message, post.author)
     }
 
-    suspend fun createUser(name: String, bio: String, image: Bitmap) : User {
+    suspend fun createUser(name: String, bio: String, imageBitmap: Bitmap? = null) : User {
+        val hashcode = (name + bio).hashCode()
+        val image = imageBitmap?: GithubIdenticonDrawable(64, 64, hashcode).toBitmap()
         val id = sdkComponent.binderWrapper.generateIdentity(name)
         val user = User(
             identity = id.fingerprint,
