@@ -78,6 +78,7 @@ class UserCreationFragment @Inject constructor(): Fragment() {
                     v.findNavController().popBackStack()
                 } catch (exc: Exception) {
                     exc.printStackTrace()
+
                     Toast.makeText(
                         requireContext(),
                         "scatterbrain router not connected, unable to create user",
