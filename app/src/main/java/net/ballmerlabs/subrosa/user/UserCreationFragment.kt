@@ -63,14 +63,27 @@ class UserCreationFragment @Inject constructor(): Fragment() {
 
         binding.confirmButton.setOnClickListener { v ->
             lifecycleScope.launch {
-                val user =repository.createUser(
-                    binding.nameedit.editText!!.text.toString(),
-                    binding.bioEdit.editText!!.text.toString(),
-                    imageBitmap = binding.profilepic.drawable.toBitmap()
-                )
-                Toast.makeText(requireContext(), "created user ${user.name}", Toast.LENGTH_SHORT)
-                    .show()
-                v.findNavController().popBackStack()
+                try {
+                    val user = repository.createUser(
+                        binding.nameedit.editText!!.text.toString(),
+                        binding.bioEdit.editText!!.text.toString(),
+                        imageBitmap = binding.profilepic.drawable.toBitmap()
+                    )
+                    Toast.makeText(
+                        requireContext(),
+                        "created user ${user.name}",
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
+                    v.findNavController().popBackStack()
+                } catch (exc: Exception) {
+                    Toast.makeText(
+                        requireContext(),
+                        "scatterbrain router not connected, unable to create user",
+                        Toast.LENGTH_LONG
+                    )
+                        .show()
+                }
             }
         }
         return binding.root

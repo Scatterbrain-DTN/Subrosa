@@ -11,7 +11,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.*
 import com.google.android.material.appbar.AppBarLayout
-import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -40,8 +39,6 @@ class MainActivity : AppCompatActivity() {
 
     private val mainViewModel by viewModels<MainViewModel>()
     private val groupListViewModel by viewModels<GroupListViewModel>()
-
-    private lateinit var notConnectedSnackbar: Snackbar
 
     enum class State {
         IDLE,
@@ -86,11 +83,13 @@ class MainActivity : AppCompatActivity() {
         broadcastReceiver.register()
         lifecycleScope.launch(Dispatchers.IO) {
             if (!repository.isConnected()) {
-                notConnectedSnackbar.show()
+                withContext(Dispatchers.Main) { binding.contentMain.connectionLostBanner.show() }
+            } else {
+                withContext(Dispatchers.Main) { binding.contentMain.connectionLostBanner.dismiss() }
             }
         }
     }
-    
+
     @ExperimentalCoroutinesApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -98,11 +97,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
 
-        notConnectedSnackbar = Snackbar.make(
-            binding.appbarlayout,
-            "Error: Scatterbrain router not connected, messages will be cached",
-            Snackbar.LENGTH_INDEFINITE
-        )
 
         mainViewModel.path.observe(this) { v ->
             val p = v.map { group ->
@@ -113,7 +107,7 @@ class MainActivity : AppCompatActivity() {
             binding.flowlayout.setPaths(p)
         }
         binding.appbarlayout.setExpanded(false)
-        binding.appbarlayout.addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener { 
+        binding.appbarlayout.addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener {
                 appBarLayout, verticalOffset ->
             when (abs(verticalOffset)) {
                 appBarLayout.totalScrollRange -> {
@@ -199,12 +193,12 @@ class MainActivity : AppCompatActivity() {
             withContext(Dispatchers.Main) { navController.graph = graph }
         }
 
-        lifecycleScope.launch {
+        lifecycleScope.launch(Dispatchers.Main) {
             repository.observeConnections().collect { c ->
                 if (c) {
-                    notConnectedSnackbar.dismiss()
+                    binding.contentMain.connectionLostBanner.dismiss()
                 } else {
-                    notConnectedSnackbar.show()
+                    binding.contentMain.connectionLostBanner.show()
                 }
             }
         }

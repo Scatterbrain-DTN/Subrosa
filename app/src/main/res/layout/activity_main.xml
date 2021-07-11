@@ -49,6 +49,7 @@
                 app:hash="923757579" />
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
+
     </com.google.android.material.appbar.AppBarLayout>
 
     <include
