@@ -11,20 +11,17 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.*
 import com.google.android.material.appbar.AppBarLayout
-import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.ballmerlabs.scatterbrainsdk.ScatterbrainBroadcastReceiver
 import net.ballmerlabs.subrosa.databinding.ActivityMainBinding
-import net.ballmerlabs.subrosa.listing.GroupItem
 import net.ballmerlabs.subrosa.listing.GroupListFragmentArgs
 import net.ballmerlabs.subrosa.listing.GroupListViewModel
 import net.ballmerlabs.subrosa.scatterbrain.NewsGroup
 import net.ballmerlabs.subrosa.user.UserViewFragmentArgs
 import net.ballmerlabs.subrosa.util.uuidSha256
-import java.security.MessageDigest
 import javax.inject.Inject
 import kotlin.math.abs
 
@@ -141,9 +138,14 @@ class MainActivity : AppCompatActivity() {
                     val args = GroupListFragmentArgs.fromBundle(arguments!!)
                     Log.e("debug", "groupListFragment navigation: ${args.path.size}")
                     mainViewModel.path.value = args.path.toList()
+                    binding.pathscroll.visibility = View.VISIBLE
+                    binding.fab.show()
 
                 }
-                else -> binding.pathscroll.visibility = View.VISIBLE
+                else -> {
+                    binding.pathscroll.visibility = View.GONE
+                    binding.fab.hide()
+                }
             }
         }
 
@@ -194,7 +196,7 @@ class MainActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.action_create_user -> {
                 findNavController(R.id.nav_host_fragment)
-                    .navigate(R.id.UserCreationDialog)
+                    .navigate(R.id.UserCreationFragment)
                 true
             }
             else -> super.onOptionsItemSelected(item)

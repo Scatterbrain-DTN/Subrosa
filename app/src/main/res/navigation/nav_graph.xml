@@ -24,7 +24,7 @@
             app:argType="net.ballmerlabs.subrosa.scatterbrain.NewsGroup[]"/>
         <action
             android:id="@+id/action_GroupListFragment_to_UserCreationDialog"
-            app:destination="@id/UserCreationDialog" />
+            app:destination="@id/UserCreationFragment" />
         <action
             android:id="@+id/action_GroupListFragment_to_Self"
             app:destination="@id/GroupListFragment" />
@@ -43,16 +43,15 @@
             app:argType="string"/>
         <action
             android:id="@+id/action_UserViewFragment_to_UserCreationDialog"
-            app:destination="@id/UserCreationDialog" />
+            app:destination="@id/UserCreationFragment" />
     </fragment>
 
-    <dialog
-        android:id="@+id/UserCreationDialog"
-        android:name="net.ballmerlabs.subrosa.user.UserCreationDialog"
+    <fragment
+        android:id="@+id/UserCreationFragment"
+        android:name="net.ballmerlabs.subrosa.user.UserCreationFragment"
         android:label="@string/label_user_creation_dialog"
         tools:layout="@layout/fragment_user_creation_dialog">
-
-    </dialog>
+    </fragment>
     <dialog
         android:id="@+id/postCreationDialog"
         android:name="net.ballmerlabs.subrosa.thread.PostCreationDialog"
