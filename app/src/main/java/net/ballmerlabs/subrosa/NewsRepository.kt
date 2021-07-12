@@ -7,34 +7,31 @@ import androidx.core.graphics.drawable.toBitmap
 import com.lelloman.identicon.drawable.GithubIdenticonDrawable
 import com.lelloman.identicon.drawable.IdenticonDrawable
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.withTimeout
-import kotlinx.coroutines.yield
 import net.ballmerlabs.scatterbrainsdk.ScatterMessage
 import net.ballmerlabs.scatterbrainsdk.ScatterbrainApi
 import net.ballmerlabs.subrosa.database.NewsGroupChildren
 import net.ballmerlabs.subrosa.database.NewsGroupDao
 import net.ballmerlabs.subrosa.database.User
-import net.ballmerlabs.subrosa.scatterbrain.Message
-import net.ballmerlabs.subrosa.scatterbrain.NewsGroup
-import net.ballmerlabs.subrosa.scatterbrain.Post
-import net.ballmerlabs.subrosa.scatterbrain.TypeVal
+import net.ballmerlabs.subrosa.scatterbrain.*
 import net.ballmerlabs.subrosa.util.uuidConvertProto
 import java.lang.IllegalStateException
 import java.util.*
 import javax.inject.Inject
+import javax.inject.Named
 import kotlin.collections.ArrayList
 import kotlin.collections.HashSet
 
 class NewsRepository @Inject constructor(
     @ApplicationContext val context: Context,
     val dao: NewsGroupDao,
-    val sdkComponent: ScatterbrainApi
+    val sdkComponent: ScatterbrainApi,
+    @Named(ScatterbrainModule.API_COROUTINE_SCOPE) val coroutineScope: CoroutineScope
     ) {
 
     private val connectedCallback: MutableSet<(connected: Boolean) -> Unit> = HashSet()
@@ -108,7 +105,9 @@ class NewsRepository @Inject constructor(
         }
     }
 
-    suspend fun createUser(name: String, bio: String, imageBitmap: Bitmap? = null) : User {
+    suspend fun createUser(name: String, bio: String, imageBitmap: Bitmap? = null) : User = withContext(
+        Dispatchers.IO
+    ) {
         requireConnected()
         val hashcode = (name + bio).hashCode()
         val image = imageBitmap?: GithubIdenticonDrawable(64, 64, hashcode).toBitmap()
@@ -120,7 +119,7 @@ class NewsRepository @Inject constructor(
         )
         user.writeImage(image, context)
         dao.insertUsers(user)
-        return user
+        user
     }
 
     suspend fun insertUser(user: User, image: Bitmap) {

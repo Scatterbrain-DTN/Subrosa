@@ -62,31 +62,36 @@ class UserCreationFragment @Inject constructor(): Fragment() {
         binding.profilepic.setOnClickListener { req.launch(arrayOf("image/*")) }
 
         binding.confirmButton.setOnClickListener { v ->
-            lifecycleScope.launch {
+            repository.coroutineScope.launch {
                 try {
                     val user = repository.createUser(
                         binding.nameedit.editText!!.text.toString(),
                         binding.bioEdit.editText!!.text.toString(),
                         imageBitmap = binding.profilepic.drawable.toBitmap()
                     )
-                    Toast.makeText(
-                        requireContext(),
-                        "created user ${user.name}",
-                        Toast.LENGTH_SHORT
-                    )
-                        .show()
-                    v.findNavController().popBackStack()
+
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            requireContext(),
+                            "created user ${user.name}",
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                    }
                 } catch (exc: Exception) {
                     exc.printStackTrace()
 
-                    Toast.makeText(
-                        requireContext(),
-                        "scatterbrain router not connected, unable to create user",
-                        Toast.LENGTH_LONG
-                    )
-                        .show()
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            requireContext(),
+                            "scatterbrain router not connected, unable to create user",
+                            Toast.LENGTH_LONG
+                        )
+                            .show()
+                    }
                 }
             }
+            v.findNavController().popBackStack()
         }
         return binding.root
     }
