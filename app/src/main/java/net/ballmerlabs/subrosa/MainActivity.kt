@@ -97,6 +97,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
 
+        binding.bottomNavigation.background = null
 
         mainViewModel.path.observe(this) { v ->
             val p = v.map { group ->
