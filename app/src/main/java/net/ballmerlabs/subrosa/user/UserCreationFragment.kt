@@ -20,6 +20,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.ballmerlabs.subrosa.NewsRepository
+import net.ballmerlabs.subrosa.R
 import net.ballmerlabs.subrosa.databinding.FragmentUserCreationDialogBinding
 import javax.inject.Inject
 
@@ -29,9 +30,8 @@ import javax.inject.Inject
  * create an instance of this fragment.
  */
 @AndroidEntryPoint
-class UserCreationFragment @Inject constructor(): Fragment() {
-    private var _binding: FragmentUserCreationDialogBinding? = null
-    private val binding get() = _binding!!
+class UserCreationFragment @Inject constructor(): DialogFragment() {
+    private lateinit var binding: FragmentUserCreationDialogBinding
     private val req = registerForActivityResult(ActivityResultContracts.OpenDocument()) { res ->
         lifecycleScope.launch(Dispatchers.IO) {
             val source = ImageDecoder.createSource(requireContext().contentResolver, res)
@@ -50,50 +50,64 @@ class UserCreationFragment @Inject constructor(): Fragment() {
         dialog?.window?.setLayout(percentWidth.toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
     }
 
+    fun commit() {
+        repository.coroutineScope.launch {
+            try {
+                val user = repository.createUser(
+                    binding.nameedit.editText!!.text.toString(),
+                    binding.bioEdit.editText!!.text.toString(),
+                    imageBitmap = binding.profilepic.drawable.toBitmap()
+                )
+
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        requireContext(),
+                        "created user ${user.name}",
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
+                }
+            } catch (exc: Exception) {
+                exc.printStackTrace()
+
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        requireContext(),
+                        "scatterbrain router not connected, unable to create user",
+                        Toast.LENGTH_LONG
+                    )
+                        .show()
+                }
+            }
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentUserCreationDialogBinding.inflate(inflater)
-        binding.dismissbutton.setOnClickListener { v ->
-            v.findNavController().popBackStack()
-        }
-
+        binding = FragmentUserCreationDialogBinding.inflate(inflater)
+        binding.toolbar.setNavigationOnClickListener { dismiss() }
         binding.profilepic.setOnClickListener { req.launch(arrayOf("image/*")) }
-
         binding.confirmButton.setOnClickListener { v ->
-            repository.coroutineScope.launch {
-                try {
-                    val user = repository.createUser(
-                        binding.nameedit.editText!!.text.toString(),
-                        binding.bioEdit.editText!!.text.toString(),
-                        imageBitmap = binding.profilepic.drawable.toBitmap()
-                    )
-
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(
-                            requireContext(),
-                            "created user ${user.name}",
-                            Toast.LENGTH_SHORT
-                        )
-                            .show()
-                    }
-                } catch (exc: Exception) {
-                    exc.printStackTrace()
-
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(
-                            requireContext(),
-                            "scatterbrain router not connected, unable to create user",
-                            Toast.LENGTH_LONG
-                        )
-                            .show()
-                    }
-                }
-            }
+            commit()
             v.findNavController().popBackStack()
         }
         return binding.root
+    }
+
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setStyle(STYLE_NORMAL, R.style.AppTheme_FullScreenDialog)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        dialog?.window?.setLayout(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT
+        )
     }
 
     companion object {

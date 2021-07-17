@@ -5,7 +5,9 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import android.widget.HorizontalScrollView
+import android.widget.ScrollView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -22,6 +24,7 @@ import net.ballmerlabs.subrosa.databinding.ActivityMainBinding
 import net.ballmerlabs.subrosa.listing.GroupListFragmentArgs
 import net.ballmerlabs.subrosa.listing.GroupListViewModel
 import net.ballmerlabs.subrosa.scatterbrain.NewsGroup
+import net.ballmerlabs.subrosa.user.UserCreationFragment
 import net.ballmerlabs.subrosa.user.UserViewFragmentArgs
 import net.ballmerlabs.subrosa.util.uuidSha256
 import javax.inject.Inject
@@ -90,6 +93,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun defaultFab() {
+        binding.fab.setOnClickListener { view ->
+            if (view.findNavController().currentDestination!!.id == R.id.GroupListFragment) {
+                view.findNavController().navigate(R.id.action_GroupListFragment_to_postCreationDialog)
+            }
+        }
+    }
+
     @ExperimentalCoroutinesApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -141,10 +152,12 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment)
 
         navController.addOnDestinationChangedListener { nav, destination, arguments ->
+            Log.v("debug", "navigating to ${destination.id}")
             when(destination.id) {
                 R.id.UserViewFragment -> {
                     val args = UserViewFragmentArgs.fromBundle(arguments!!)
                     binding.pathscroll.visibility = View.GONE
+                    defaultFab()
                 }
                 R.id.GroupListFragment -> {
                     val args = GroupListFragmentArgs.fromBundle(arguments!!)
@@ -152,19 +165,19 @@ class MainActivity : AppCompatActivity() {
                     mainViewModel.path.value = args.path.toList()
                     binding.pathscroll.visibility = View.VISIBLE
                     binding.fab.show()
+                    defaultFab()
 
+                }
+                R.id.UserCreationFragment -> {
+                    binding.pathscroll.visibility = View.GONE
+                    binding.contentMain.scrollView.scrollTo(0, binding.contentMain.scrollView.bottom)
+                    binding.fab.hide()
                 }
                 else -> {
                     binding.pathscroll.visibility = View.GONE
                     binding.fab.hide()
+                    defaultFab()
                 }
-            }
-        }
-
-
-        binding.fab.setOnClickListener { view ->
-            if (navController.currentDestination!!.id == R.id.GroupListFragment) {
-                navController.navigate(R.id.action_GroupListFragment_to_postCreationDialog)
             }
         }
 

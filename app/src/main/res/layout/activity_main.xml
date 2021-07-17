@@ -59,7 +59,7 @@
     <com.google.android.material.bottomappbar.BottomAppBar
         android:id="@+id/bottomBar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/bottom_nav_height"
         android:layout_gravity="bottom"
         app:fabCradleMargin="15dp"
         app:fabCradleRoundedCornerRadius="10dp"
