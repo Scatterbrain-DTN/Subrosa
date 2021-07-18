@@ -40,6 +40,10 @@ class UserListRecyclerViewAdapter(
         get() = binding.name.text
         set(value) { binding.name.text = value }
 
+        init {
+            binding.userIdenticon.hash = binding.uuid.hashCode()
+        }
+
         override fun toString(): String {
             return super.toString() + " '" + binding.uuid.text + "'"
         }
