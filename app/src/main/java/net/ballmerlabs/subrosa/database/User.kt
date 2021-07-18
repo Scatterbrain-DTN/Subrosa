@@ -15,7 +15,8 @@ class User(
     @PrimaryKey val identity: UUID,
     val name: String,
     val bio: String,
-    val imagePath: String = "$identity.png"
+    val imagePath: String = "$identity.png",
+    val owned: Boolean = false
 ){
     suspend fun getImageFromPath(context: Context) : Bitmap = withContext(Dispatchers.IO) {
         val file = File(context.filesDir, imagePath)

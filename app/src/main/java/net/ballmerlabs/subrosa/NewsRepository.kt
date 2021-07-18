@@ -114,6 +114,7 @@ class NewsRepository @Inject constructor(
             identity = id.fingerprint,
             name = name,
             bio = bio,
+            owned = true
         )
         user.writeImage(image, context)
         dao.insertUsers(user)
