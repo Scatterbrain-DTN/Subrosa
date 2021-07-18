@@ -121,6 +121,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setExpand(expand: Boolean) {
         binding.contentMain.scrollView.isNestedScrollingEnabled = expand
+        binding.pathscroll.visibility = if (expand) View.VISIBLE else View.GONE
         val layoutParams = binding.appbarlayout.layoutParams as CoordinatorLayout.LayoutParams
         if (layoutParams.behavior == null) {
             layoutParams.behavior = AppBarLayout.Behavior()
@@ -190,29 +191,14 @@ class MainActivity : AppCompatActivity() {
         navController.addOnDestinationChangedListener { nav, destination, arguments ->
             Log.v("debug", "navigating to ${destination.id}")
             when(destination.id) {
-                R.id.UserViewFragment -> {
-                    val args = UserViewFragmentArgs.fromBundle(arguments!!)
-                    binding.pathscroll.visibility = View.GONE
-                    setFab()
-                    setExpand(false)
-                }
                 R.id.GroupListFragment -> {
                     val args = GroupListFragmentArgs.fromBundle(arguments!!)
-                    Log.e("debug", "groupListFragment navigation: ${args.path.size}")
                     mainViewModel.path.value = args.path.toList()
-                    binding.pathscroll.visibility = View.VISIBLE
                     setFab(action = R.id.action_GroupListFragment_to_postCreationDialog)
                     setExpand(true)
 
                 }
-                R.id.UserCreationFragment -> {
-                    binding.pathscroll.visibility = View.GONE
-                    binding.contentMain.scrollView.scrollTo(0, binding.contentMain.scrollView.bottom)
-                    setFab()
-                    setExpand(false)
-                }
                 else -> {
-                    binding.pathscroll.visibility = View.GONE
                     setFab()
                     setExpand(false)
                 }
