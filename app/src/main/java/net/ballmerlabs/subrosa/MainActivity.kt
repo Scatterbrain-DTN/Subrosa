@@ -5,9 +5,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import android.widget.HorizontalScrollView
-import android.widget.ScrollView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -27,8 +25,6 @@ import net.ballmerlabs.subrosa.databinding.ActivityMainBinding
 import net.ballmerlabs.subrosa.listing.GroupListFragmentArgs
 import net.ballmerlabs.subrosa.listing.GroupListViewModel
 import net.ballmerlabs.subrosa.scatterbrain.NewsGroup
-import net.ballmerlabs.subrosa.user.UserCreationFragment
-import net.ballmerlabs.subrosa.user.UserViewFragmentArgs
 import net.ballmerlabs.subrosa.util.uuidSha256
 import javax.inject.Inject
 import kotlin.math.abs
@@ -120,7 +116,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun setExpand(expand: Boolean) {
+    private fun setAppBar(expand: Boolean = false, text: String? = null) {
         binding.contentMain.scrollView.isNestedScrollingEnabled = expand
         binding.pathscroll.visibility = if (expand) View.VISIBLE else View.GONE
         val layoutParams = binding.appbarlayout.layoutParams as CoordinatorLayout.LayoutParams
@@ -134,6 +130,10 @@ class MainActivity : AppCompatActivity() {
             }
 
         })
+        binding.collapsingToolbar.setCollapsedTitleTextAppearance(
+            if (text == null) R.style.Transparent else R.style.TextAppearance_AppCompat_Large
+        )
+        binding.collapsingToolbar.title = text?: ""
     }
 
     @ExperimentalCoroutinesApi
@@ -189,7 +189,7 @@ class MainActivity : AppCompatActivity() {
 
         NavigationUI.setupWithNavController(binding.bottomNavigation, navController)
 
-        navController.addOnDestinationChangedListener { nav, destination, arguments ->
+        navController.addOnDestinationChangedListener { _, destination, arguments ->
             Log.v("debug", "navigating to ${destination.id}")
             when(destination.id) {
                 R.id.GroupListFragment -> {
@@ -199,7 +199,7 @@ class MainActivity : AppCompatActivity() {
                         action = R.id.action_GroupListFragment_to_postCreationDialog,
                         icon = R.drawable.ic_baseline_email_24
                     )
-                    setExpand(true)
+                    setAppBar(expand = true)
 
                 }
                 R.id.userListFragment -> {
@@ -207,11 +207,11 @@ class MainActivity : AppCompatActivity() {
                         action = R.id.action_userListFragment_to_UserCreationFragment,
                         icon = R.drawable.ic_baseline_person_add_alt_1_24
                     )
-                    setExpand(false)
+                    setAppBar(false, text = "Users")
                 }
                 else -> {
                     setFab()
-                    setExpand(false)
+                    setAppBar(false)
                 }
             }
         }
