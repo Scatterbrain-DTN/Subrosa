@@ -10,6 +10,7 @@ import android.widget.HorizontalScrollView
 import android.widget.ScrollView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.get
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.*
@@ -114,6 +115,17 @@ class MainActivity : AppCompatActivity() {
 
     private fun setExpand(expand: Boolean) {
         binding.contentMain.scrollView.isNestedScrollingEnabled = expand
+        val layoutParams = binding.appbarlayout.layoutParams as CoordinatorLayout.LayoutParams
+        if (layoutParams.behavior == null) {
+            layoutParams.behavior = AppBarLayout.Behavior()
+        }
+        val behavior = layoutParams.behavior as AppBarLayout.Behavior
+        behavior.setDragCallback(object : AppBarLayout.Behavior.DragCallback() {
+            override fun canDrag(appBarLayout: AppBarLayout): Boolean {
+                return expand
+            }
+
+        })
         binding.contentMain.scrollView.layoutParams.apply {
             height = if (expand)
                 ViewGroup.LayoutParams.WRAP_CONTENT
