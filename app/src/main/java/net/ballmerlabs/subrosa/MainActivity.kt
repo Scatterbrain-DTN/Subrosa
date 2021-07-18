@@ -98,7 +98,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun setFab(action: Int? = null) {
+    private fun setFab(action: Int? = null, icon: Int? = null) {
+        binding.fab.setImageResource(icon ?: 0)
         if (action != null) {
             binding.fab.setOnClickListener {
                 navController.navigate(action)
@@ -194,9 +195,19 @@ class MainActivity : AppCompatActivity() {
                 R.id.GroupListFragment -> {
                     val args = GroupListFragmentArgs.fromBundle(arguments!!)
                     mainViewModel.path.value = args.path.toList()
-                    setFab(action = R.id.action_GroupListFragment_to_postCreationDialog)
+                    setFab(
+                        action = R.id.action_GroupListFragment_to_postCreationDialog,
+                        icon = R.drawable.ic_baseline_email_24
+                    )
                     setExpand(true)
 
+                }
+                R.id.userListFragment -> {
+                    setFab(
+                        action = R.id.action_userListFragment_to_UserCreationFragment,
+                        icon = R.drawable.ic_baseline_person_add_alt_1_24
+                    )
+                    setExpand(false)
                 }
                 else -> {
                     setFab()

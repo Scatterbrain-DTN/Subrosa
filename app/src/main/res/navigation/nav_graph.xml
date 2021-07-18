@@ -73,5 +73,8 @@
         <action
             android:id="@+id/action_userListFragment_to_UserViewFragment"
             app:destination="@id/UserViewFragment" />
+        <action
+            android:id="@+id/action_userListFragment_to_UserCreationFragment"
+            app:destination="@id/UserCreationFragment" />
     </fragment>
 </navigation>
