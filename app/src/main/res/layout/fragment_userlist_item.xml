@@ -30,6 +30,6 @@
         android:layout_height="wrap_content"
         android:text="default uuid"
         android:textAppearance="?attr/textAppearanceListItem"
-        app:layout_constraintStart_toEndOf="@id/user_identicon"
+        app:layout_constraintStart_toStartOf="@id/name"
         app:layout_constraintTop_toBottomOf="@id/name"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
