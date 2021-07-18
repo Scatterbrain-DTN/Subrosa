@@ -52,6 +52,19 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
+    <com.sergivonavi.materialbanner.Banner
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/connection_lost_banner"
+        android:visibility="gone"
+        app:buttonLeftText="@string/dismiss"
+        app:buttonRightText="@string/launch_scatterbrain"
+        app:messageText="@string/not_connected"
+        android:elevation="30dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:icon="@drawable/ic_baseline_signal_wifi_statusbar_connected_no_internet_4_24"/>
+
+
     <include
         android:id="@+id/content_main"
         layout="@layout/content_main" />

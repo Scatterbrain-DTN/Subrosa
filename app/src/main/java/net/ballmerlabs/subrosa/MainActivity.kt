@@ -89,9 +89,9 @@ class MainActivity : AppCompatActivity() {
         broadcastReceiver.register()
         lifecycleScope.launch(Dispatchers.IO) {
             if (!repository.isConnected()) {
-                withContext(Dispatchers.Main) { binding.contentMain.connectionLostBanner.show() }
+                withContext(Dispatchers.Main) { binding.connectionLostBanner.show() }
             } else {
-                withContext(Dispatchers.Main) { binding.contentMain.connectionLostBanner.dismiss() }
+                withContext(Dispatchers.Main) { binding.connectionLostBanner.dismiss() }
             }
         }
     }
@@ -126,12 +126,6 @@ class MainActivity : AppCompatActivity() {
             }
 
         })
-        binding.contentMain.scrollView.layoutParams.apply {
-            height = if (expand)
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            else
-                ViewGroup.LayoutParams.MATCH_PARENT
-        }
     }
 
     @ExperimentalCoroutinesApi
@@ -151,6 +145,7 @@ class MainActivity : AppCompatActivity() {
             Log.e("debug", "received livedata ${p.size}")
             binding.flowlayout.setPaths(p)
         }
+        binding.connectionLostBanner.setLeftButtonListener { b -> b.dismiss() }
         binding.appbarlayout.setExpanded(false)
         binding.appbarlayout.addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener {
                 appBarLayout, verticalOffset ->
@@ -249,9 +244,9 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch(Dispatchers.Main) {
             repository.observeConnections().collect { c ->
                 if (c) {
-                    binding.contentMain.connectionLostBanner.dismiss()
+                    binding.connectionLostBanner.dismiss()
                 } else {
-                    binding.contentMain.connectionLostBanner.show()
+                    binding.connectionLostBanner.show()
                 }
             }
         }
