@@ -15,6 +15,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -91,9 +92,9 @@ class UserCreationFragment @Inject constructor(): DialogFragment() {
         binding = FragmentUserCreationDialogBinding.inflate(inflater)
         binding.toolbar.setNavigationOnClickListener { dismiss() }
         binding.profilepic.setOnClickListener { req.launch(arrayOf("image/*")) }
-        binding.confirmButton.setOnClickListener { v ->
+        binding.confirmButton.setOnClickListener {
             commit()
-            v.findNavController().popBackStack()
+            findNavController().popBackStack()
         }
         return binding.root
     }
