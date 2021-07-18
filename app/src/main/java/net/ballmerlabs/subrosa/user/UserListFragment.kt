@@ -14,7 +14,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.ballmerlabs.subrosa.NewsRepository
 import net.ballmerlabs.subrosa.databinding.FragmentUserlistListBinding
-import net.ballmerlabs.subrosa.user.dummy.DummyContent
 import javax.inject.Inject
 
 /**

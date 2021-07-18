@@ -1,19 +1,15 @@
 package net.ballmerlabs.subrosa.user
 
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
 import net.ballmerlabs.subrosa.R
 import net.ballmerlabs.subrosa.database.User
 import net.ballmerlabs.subrosa.databinding.FragmentUserlistItemBinding
 
-import net.ballmerlabs.subrosa.user.dummy.DummyContent.DummyItem
-
 /**
  * [RecyclerView.Adapter] that can display a [DummyItem].
- * TODO: Replace the implementation with code for your data type.
  */
 class MyuserRecyclerViewAdapter(
     private val values: List<User>

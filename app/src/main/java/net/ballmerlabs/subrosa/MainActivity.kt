@@ -11,7 +11,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.get
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.*
+import androidx.navigation.NavArgument
+import androidx.navigation.NavController
+import androidx.navigation.findNavController
+import androidx.navigation.get
 import androidx.navigation.ui.NavigationUI
 import com.google.android.material.appbar.AppBarLayout
 import dagger.hilt.android.AndroidEntryPoint
