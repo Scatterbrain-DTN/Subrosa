@@ -39,7 +39,7 @@ class UserListFragment @Inject constructor() : Fragment() {
             }
             lifecycleScope.launch(Dispatchers.IO) {
                 val users = repository.readUsers()
-                withContext(Dispatchers.Main) { adapter = MyuserRecyclerViewAdapter(users) }
+                withContext(Dispatchers.Main) { adapter = UserListRecyclerViewAdapter(users) }
             }
         }
         return binding.root

@@ -11,9 +11,9 @@ import net.ballmerlabs.subrosa.databinding.FragmentUserlistItemBinding
 /**
  * [RecyclerView.Adapter] that can display a [DummyItem].
  */
-class MyuserRecyclerViewAdapter(
+class UserListRecyclerViewAdapter(
     private val values: List<User>
-) : RecyclerView.Adapter<MyuserRecyclerViewAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<UserListRecyclerViewAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -38,7 +38,7 @@ class MyuserRecyclerViewAdapter(
 
         var name
         get() = binding.name.text
-        set(value) { binding.uuid.text = value }
+        set(value) { binding.name.text = value }
 
         override fun toString(): String {
             return super.toString() + " '" + binding.uuid.text + "'"
