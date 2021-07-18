@@ -10,6 +10,7 @@ import android.widget.HorizontalScrollView
 import android.widget.ScrollView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.get
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.*
 import androidx.navigation.ui.NavigationUI
@@ -102,6 +103,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+
+    private fun setupBottomNavigation() {
+        binding.bottomNavigation.background = null
+        binding.bottomNavigation.menu[2].apply {
+            isEnabled = false
+            isVisible = false
+        }
+    }
+
     @ExperimentalCoroutinesApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -109,7 +119,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
 
-        binding.bottomNavigation.background = null
+        setupBottomNavigation()
 
         mainViewModel.path.observe(this) { v ->
             val p = v.map { group ->
