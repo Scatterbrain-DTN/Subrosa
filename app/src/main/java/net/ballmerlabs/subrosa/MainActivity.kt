@@ -43,6 +43,8 @@ class MainActivity : AppCompatActivity() {
 
     @Inject lateinit var repository: NewsRepository
 
+    private lateinit var navController: NavController
+
     private val mainViewModel by viewModels<MainViewModel>()
     private val groupListViewModel by viewModels<GroupListViewModel>()
 
@@ -96,11 +98,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun defaultFab() {
-        binding.fab.setOnClickListener { view ->
-            if (view.findNavController().currentDestination!!.id == R.id.GroupListFragment) {
-                view.findNavController().navigate(R.id.action_GroupListFragment_to_postCreationDialog)
+    private fun setFab(action: Int? = null) {
+        if (action != null) {
+            binding.fab.setOnClickListener {
+                navController.navigate(action)
             }
+            binding.fab.show()
+        } else {
+            binding.fab.hide()
+            binding.fab.setOnClickListener {  }
         }
     }
 
@@ -177,7 +183,7 @@ class MainActivity : AppCompatActivity() {
             binding.pathscroll.fullScroll(HorizontalScrollView.FOCUS_RIGHT)
         }
 
-        val navController = findNavController(R.id.nav_host_fragment)
+        navController  = findNavController(R.id.nav_host_fragment)
 
         NavigationUI.setupWithNavController(binding.bottomNavigation, navController)
 
@@ -187,7 +193,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.UserViewFragment -> {
                     val args = UserViewFragmentArgs.fromBundle(arguments!!)
                     binding.pathscroll.visibility = View.GONE
-                    defaultFab()
+                    setFab()
                     setExpand(false)
                 }
                 R.id.GroupListFragment -> {
@@ -195,21 +201,19 @@ class MainActivity : AppCompatActivity() {
                     Log.e("debug", "groupListFragment navigation: ${args.path.size}")
                     mainViewModel.path.value = args.path.toList()
                     binding.pathscroll.visibility = View.VISIBLE
-                    binding.fab.show()
-                    defaultFab()
+                    setFab(action = R.id.action_GroupListFragment_to_postCreationDialog)
                     setExpand(true)
 
                 }
                 R.id.UserCreationFragment -> {
                     binding.pathscroll.visibility = View.GONE
                     binding.contentMain.scrollView.scrollTo(0, binding.contentMain.scrollView.bottom)
-                    binding.fab.hide()
+                    setFab()
                     setExpand(false)
                 }
                 else -> {
                     binding.pathscroll.visibility = View.GONE
-                    binding.fab.hide()
-                    defaultFab()
+                    setFab()
                     setExpand(false)
                 }
             }
