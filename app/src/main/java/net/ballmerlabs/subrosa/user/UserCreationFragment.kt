@@ -33,10 +33,12 @@ import javax.inject.Inject
 class UserCreationFragment @Inject constructor(): DialogFragment() {
     private lateinit var binding: FragmentUserCreationDialogBinding
     private val req = registerForActivityResult(ActivityResultContracts.OpenDocument()) { res ->
-        lifecycleScope.launch(Dispatchers.IO) {
-            val source = ImageDecoder.createSource(requireContext().contentResolver, res)
-            val bitmap = ImageDecoder.decodeBitmap(source)
-            withContext(Dispatchers.Main) { binding.profilepic.setImageBitmap(bitmap) }
+        if (res != null) {
+            lifecycleScope.launch(Dispatchers.IO) {
+                val source = ImageDecoder.createSource(requireContext().contentResolver, res)
+                val bitmap = ImageDecoder.decodeBitmap(source)
+                withContext(Dispatchers.Main) { binding.profilepic.setImageBitmap(bitmap) }
+            }
         }
     }
 
