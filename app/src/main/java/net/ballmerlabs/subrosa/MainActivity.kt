@@ -112,6 +112,16 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun setExpand(expand: Boolean) {
+        binding.contentMain.scrollView.isNestedScrollingEnabled = expand
+        binding.contentMain.scrollView.layoutParams.apply {
+            height = if (expand)
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            else
+                ViewGroup.LayoutParams.MATCH_PARENT
+        }
+    }
+
     @ExperimentalCoroutinesApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -171,6 +181,7 @@ class MainActivity : AppCompatActivity() {
                     val args = UserViewFragmentArgs.fromBundle(arguments!!)
                     binding.pathscroll.visibility = View.GONE
                     defaultFab()
+                    setExpand(false)
                 }
                 R.id.GroupListFragment -> {
                     val args = GroupListFragmentArgs.fromBundle(arguments!!)
@@ -179,17 +190,20 @@ class MainActivity : AppCompatActivity() {
                     binding.pathscroll.visibility = View.VISIBLE
                     binding.fab.show()
                     defaultFab()
+                    setExpand(true)
 
                 }
                 R.id.UserCreationFragment -> {
                     binding.pathscroll.visibility = View.GONE
                     binding.contentMain.scrollView.scrollTo(0, binding.contentMain.scrollView.bottom)
                     binding.fab.hide()
+                    setExpand(false)
                 }
                 else -> {
                     binding.pathscroll.visibility = View.GONE
                     binding.fab.hide()
                     defaultFab()
+                    setExpand(false)
                 }
             }
         }
