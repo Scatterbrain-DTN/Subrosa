@@ -38,7 +38,7 @@ class UserListFragment @Inject constructor() : Fragment() {
                 else -> GridLayoutManager(context, columnCount)
             }
             lifecycleScope.launch(Dispatchers.IO) {
-                val users = repository.readUsers()
+                val users = repository.readAllUsers()
                 withContext(Dispatchers.Main) { adapter = UserListRecyclerViewAdapter(users) }
             }
         }

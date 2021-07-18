@@ -127,9 +127,14 @@ class NewsRepository @Inject constructor(
         dao.insertUsers(user)
     }
 
-    suspend fun readUsers(): List<User> {
+    suspend fun readAllUsers(): List<User> {
         updateConnected()
         return dao.getAllUsers()
+    }
+
+    suspend fun readUsers(owned: Boolean): List<User> {
+        updateConnected()
+        return dao.getAllOwnedUsers(owned)
     }
 
     suspend fun readUsers(uuid: UUID): User {

@@ -19,6 +19,9 @@ interface NewsGroupDao {
     @Query("SELECT * FROM user")
     suspend fun getAllUsers(): List<User>
 
+    @Query("SELECT * FROM user WHERE owned = :owned")
+    suspend fun getAllOwnedUsers(owned: Boolean): List<User>
+
     @Transaction
     @Query("SELECT * FROM newsgroup WHERE uuid = (:uuid)")
     suspend fun getGroupWithChildren(uuid: UUID): NewsGroupChildren

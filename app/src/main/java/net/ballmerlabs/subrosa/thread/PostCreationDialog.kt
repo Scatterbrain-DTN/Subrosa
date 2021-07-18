@@ -51,7 +51,7 @@ class PostCreationDialog @Inject constructor(): DialogFragment() {
         arrayAdapter = ArrayAdapter<User>(requireContext(), android.R.layout.simple_dropdown_item_1line)
         binding.userAutocomplete.setAdapter(arrayAdapter)
         lifecycleScope.launch(Dispatchers.IO) {
-            val users = repository.readUsers()
+            val users = repository.readUsers(true)
             Log.v("debug", "read ${users.size} users")
             withContext(Dispatchers.Main) {
                 arrayAdapter.addAll(users)
