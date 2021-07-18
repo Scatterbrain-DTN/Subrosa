@@ -65,4 +65,13 @@
             android:name="current"
             app:argType="net.ballmerlabs.subrosa.scatterbrain.NewsGroup[]"/>
     </dialog>
+    <fragment
+        android:id="@+id/userListFragment"
+        android:name="net.ballmerlabs.subrosa.user.UserListFragment"
+        android:label="fragment_userlist_list"
+        tools:layout="@layout/fragment_userlist_list" >
+        <action
+            android:id="@+id/action_userListFragment_to_UserViewFragment"
+            app:destination="@id/UserViewFragment" />
+    </fragment>
 </navigation>

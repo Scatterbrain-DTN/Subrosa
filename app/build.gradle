@@ -96,6 +96,7 @@ dependencies {
     implementation "com.sergivonavi:materialbanner:1.2.0"
     implementation "com.google.dagger:hilt-android:$hilt_version"
     implementation "com.google.protobuf:protobuf-javalite:$protobuf_version"
+    implementation 'androidx.recyclerview:recyclerview:1.2.1'
     kapt "com.google.dagger:hilt-compiler:$hilt_version"
     kapt "androidx.room:room-compiler:2.4.0-alpha02"
     implementation "androidx.room:room-ktx:2.4.0-alpha02"

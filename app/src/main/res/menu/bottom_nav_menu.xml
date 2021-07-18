@@ -2,8 +2,14 @@
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:title="Posts" />
-    <item android:title="Users" />
+    <item
+        android:title="Posts"
+        android:id="@+id/GroupListFragment"
+        />
+    <item
+        android:title="Users"
+        android:id="@+id/userListFragment"
+        />
     <item
         android:id="@+id/app_bar_search"
         android:icon="@drawable/ic_search_black_24dp"
