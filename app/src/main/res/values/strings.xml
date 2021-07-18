@@ -5,6 +5,7 @@
     <string name="not_connected">Not connected to Scatterbrain router. Some functionality will be unavailable</string>
     <string name="launch_scatterbrain">Launch Scatterbrain</string>
     <string name="dismiss">Dismiss</string>
+    <string name="post">Post</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
     <!-- TODO: Remove or change this placeholder text -->

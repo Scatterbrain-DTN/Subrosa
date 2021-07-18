@@ -7,7 +7,7 @@ import com.google.android.material.card.MaterialCardView
 import net.ballmerlabs.subrosa.R
 import net.ballmerlabs.subrosa.databinding.ThreadCardBinding
 
-class Post : MaterialCardView {
+class PostView : MaterialCardView {
     private val binding: ThreadCardBinding
     
     var body

@@ -20,7 +20,7 @@ import net.ballmerlabs.subrosa.MainViewModel
 import net.ballmerlabs.subrosa.NewsRepository
 import net.ballmerlabs.subrosa.databinding.FragmentGroupListBinding
 import net.ballmerlabs.subrosa.scatterbrain.NewsGroup
-import net.ballmerlabs.subrosa.thread.Post
+import net.ballmerlabs.subrosa.thread.PostView
 import javax.inject.Inject
 
 /**
@@ -47,7 +47,7 @@ class GroupListFragment @Inject constructor() : Fragment() {
     }
 
     private fun addPost(body: String, name: String, fingerprint: String) {
-        val p = Post(requireContext())
+        val p = PostView(requireContext())
         p.body = body
         p.fingerprint = fingerprint
         p.name = name

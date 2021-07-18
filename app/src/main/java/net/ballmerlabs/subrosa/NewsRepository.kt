@@ -18,7 +18,7 @@ import net.ballmerlabs.subrosa.database.NewsGroupChildren
 import net.ballmerlabs.subrosa.database.NewsGroupDao
 import net.ballmerlabs.subrosa.database.User
 import net.ballmerlabs.subrosa.scatterbrain.*
-import java.lang.IllegalStateException
+import net.ballmerlabs.subrosa.util.uuidConvert
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
@@ -79,8 +79,28 @@ class NewsRepository @Inject constructor(
         }
     }
 
-    suspend fun sendPost(post: Post) {
-        updateConnected()
+    private fun postToArray(parent: NewsGroup, user: UUID, header: String, body: String): ByteArray {
+        return parent.hash + uuidConvert(user) + header.encodeToByteArray() + body.encodeToByteArray()
+    }
+
+    suspend fun sendPost(parent: NewsGroup, user: UUID, header: String, body: String) {
+        requireConnected()
+
+        val identity = sdkComponent.binderWrapper.getIdentity(user)
+            ?: throw IllegalStateException("user does not exist")
+
+        val post = Post(
+            parent,
+            user,
+            header,
+            body,
+            sdkComponent.binderWrapper.sign(identity, postToArray(
+                parent,
+                user,
+                header,
+                body
+            ))
+        )
         val message = ScatterMessage.newBuilder()
             .setApplication(context.getString(R.string.scatterbrainapplication))
             .setBody(post.bytes)

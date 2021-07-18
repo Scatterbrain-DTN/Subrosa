@@ -7,8 +7,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -17,6 +20,7 @@ import net.ballmerlabs.subrosa.NewsRepository
 import net.ballmerlabs.subrosa.R
 import net.ballmerlabs.subrosa.database.User
 import net.ballmerlabs.subrosa.databinding.FragmentPostCreationDialogBinding
+import net.ballmerlabs.subrosa.scatterbrain.Post
 import javax.inject.Inject
 
 // TODO: Rename parameter arguments, choose names that match
@@ -33,6 +37,8 @@ private const val ARG_PARAM2 = "param2"
 class PostCreationDialog @Inject constructor(): DialogFragment() {
     private lateinit var binding: FragmentPostCreationDialogBinding
     private lateinit var arrayAdapter: ArrayAdapter<User>
+
+    val args: PostCreationDialogArgs by navArgs()
 
     @Inject lateinit var repository: NewsRepository
 
@@ -57,6 +63,27 @@ class PostCreationDialog @Inject constructor(): DialogFragment() {
                 arrayAdapter.addAll(users)
                 arrayAdapter.notifyDataSetChanged()
             }
+        }
+        binding.postButton.setOnClickListener {
+            repository.coroutineScope.launch {
+                try {
+                    val user = arrayAdapter.getItem(binding.userAutocomplete.listSelection)
+                    repository.sendPost(
+                            args.current,
+                            user!!.identity,
+                            "fmef default header",
+                            binding.postBodyEdittext.text.toString(),
+
+                            )
+                    Toast.makeText(context, "sent post!", Toast.LENGTH_LONG)
+                        .show()
+                } catch (exc: Exception) {
+                    exc.printStackTrace()
+                    Toast.makeText(context, "failed to send post: ${exc.message}", Toast.LENGTH_LONG)
+                        .show()
+                }
+            }
+            findNavController().popBackStack()
         }
         return binding.root
     }
