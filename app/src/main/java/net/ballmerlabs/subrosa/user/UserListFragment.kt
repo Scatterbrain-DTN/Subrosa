@@ -9,7 +9,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import net.ballmerlabs.subrosa.NewsRepository
 import net.ballmerlabs.subrosa.databinding.FragmentUserlistListBinding
 import net.ballmerlabs.subrosa.user.dummy.DummyContent
@@ -36,9 +38,9 @@ class UserListFragment @Inject constructor() : Fragment() {
                 columnCount <= 1 -> LinearLayoutManager(context)
                 else -> GridLayoutManager(context, columnCount)
             }
-            lifecycleScope.launch {
+            lifecycleScope.launch(Dispatchers.IO) {
                 val users = repository.readUsers()
-                adapter = MyuserRecyclerViewAdapter(users)
+                withContext(Dispatchers.Main) { adapter = MyuserRecyclerViewAdapter(users) }
             }
         }
         return binding.root

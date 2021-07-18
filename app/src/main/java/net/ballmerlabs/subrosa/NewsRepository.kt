@@ -5,7 +5,6 @@ import android.graphics.Bitmap
 import android.util.Log
 import androidx.core.graphics.drawable.toBitmap
 import com.lelloman.identicon.drawable.GithubIdenticonDrawable
-import com.lelloman.identicon.drawable.IdenticonDrawable
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.awaitClose
@@ -19,7 +18,6 @@ import net.ballmerlabs.subrosa.database.NewsGroupChildren
 import net.ballmerlabs.subrosa.database.NewsGroupDao
 import net.ballmerlabs.subrosa.database.User
 import net.ballmerlabs.subrosa.scatterbrain.*
-import net.ballmerlabs.subrosa.util.uuidConvertProto
 import java.lang.IllegalStateException
 import java.util.*
 import javax.inject.Inject
@@ -130,17 +128,12 @@ class NewsRepository @Inject constructor(
 
     suspend fun readUsers(): List<User> {
         updateConnected()
-        val users = dao.getAllUsers()
-        return users.onEach { u->
-            u.getImageFromPath(context)
-        }
+        return dao.getAllUsers()
     }
 
     suspend fun readUsers(uuid: UUID): User {
         updateConnected()
-        val user =  dao.getUsersByIdentity(uuid)
-        user.getImageFromPath(context)
-        return user
+        return dao.getUsersByIdentity(uuid)
     }
 
     suspend fun insertGroup(group: NewsGroup) {
