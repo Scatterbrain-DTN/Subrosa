@@ -11,10 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.get
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavArgument
-import androidx.navigation.NavController
-import androidx.navigation.findNavController
-import androidx.navigation.get
+import androidx.navigation.*
 import androidx.navigation.ui.NavigationUI
 import com.google.android.material.appbar.AppBarLayout
 import dagger.hilt.android.AndroidEntryPoint
@@ -26,8 +23,11 @@ import kotlinx.coroutines.withContext
 import net.ballmerlabs.scatterbrainsdk.ScatterbrainBroadcastReceiver
 import net.ballmerlabs.subrosa.databinding.ActivityMainBinding
 import net.ballmerlabs.subrosa.listing.GroupListFragmentArgs
+import net.ballmerlabs.subrosa.listing.GroupListFragmentDirections
 import net.ballmerlabs.subrosa.listing.GroupListViewModel
 import net.ballmerlabs.subrosa.scatterbrain.NewsGroup
+import net.ballmerlabs.subrosa.thread.PostCreationDialogDirections
+import net.ballmerlabs.subrosa.user.UserListFragmentDirections
 import net.ballmerlabs.subrosa.util.uuidSha256
 import javax.inject.Inject
 import kotlin.math.abs
@@ -43,6 +43,8 @@ class MainActivity : AppCompatActivity() {
     @Inject lateinit var repository: NewsRepository
 
     private lateinit var navController: NavController
+
+    private var currentNewsGroup = NewsGroup.empty()
 
     private val mainViewModel by viewModels<MainViewModel>()
     private val groupListViewModel by viewModels<GroupListViewModel>()
@@ -97,7 +99,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun setFab(action: Int? = null, icon: Int? = null) {
+    private fun setFab(action: NavDirections? = null, icon: Int? = null) {
         binding.fab.setImageResource(icon ?: 0)
         if (action != null) {
             binding.fab.setOnClickListener {
@@ -197,9 +199,10 @@ class MainActivity : AppCompatActivity() {
             when(destination.id) {
                 R.id.GroupListFragment -> {
                     val args = GroupListFragmentArgs.fromBundle(arguments!!)
+                    currentNewsGroup = args.parent
                     mainViewModel.path.value = args.path.toList()
                     setFab(
-                        action = R.id.action_GroupListFragment_to_postCreationDialog,
+                        action = GroupListFragmentDirections.actionGroupListFragmentToPostCreationDialog(currentNewsGroup),
                         icon = R.drawable.ic_baseline_email_24
                     )
                     setAppBar(expand = true)
@@ -207,7 +210,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.userListFragment -> {
                     setFab(
-                        action = R.id.action_userListFragment_to_UserCreationFragment,
+                        action = UserListFragmentDirections.actionUserListFragmentToUserCreationFragment(),
                         icon = R.drawable.ic_baseline_person_add_alt_1_24
                     )
                     setAppBar(false, text = "Users")

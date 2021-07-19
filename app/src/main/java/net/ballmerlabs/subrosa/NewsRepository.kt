@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
 import androidx.core.graphics.drawable.toBitmap
+import androidx.lifecycle.LiveData
 import com.lelloman.identicon.drawable.GithubIdenticonDrawable
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.*
@@ -150,6 +151,31 @@ class NewsRepository @Inject constructor(
     suspend fun readAllUsers(): List<User> {
         updateConnected()
         return dao.getAllUsers()
+    }
+
+
+    fun observeUsers(owned: Boolean? = null): LiveData<List<User>> {
+        return if(owned == null) {
+            dao.observeAllUsers()
+        } else {
+            dao.observeAllOwnedUsers(owned)
+        }
+    }
+
+    fun observePosts(group: NewsGroup): LiveData<List<Post>> {
+        return dao.observePostsForGroup(group.uuid)
+    }
+
+    fun observePosts(group: UUID): LiveData<List<Post>> {
+        return dao.observePostsForGroup(group)
+    }
+
+    suspend fun getPosts(group: UUID): List<Post> {
+        return dao.getPostsForGroup(group)
+    }
+
+    suspend fun getPosts(newsGroup: NewsGroup): List<Post> {
+        return dao.getPostsForGroup(newsGroup.uuid)
     }
 
     suspend fun readUsers(owned: Boolean): List<User> {

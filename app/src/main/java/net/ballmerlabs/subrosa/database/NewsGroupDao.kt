@@ -1,5 +1,6 @@
 package net.ballmerlabs.subrosa.database
 
+import androidx.lifecycle.LiveData
 import androidx.room.*
 import net.ballmerlabs.subrosa.scatterbrain.NewsGroup
 import net.ballmerlabs.subrosa.scatterbrain.Post
@@ -10,6 +11,9 @@ interface NewsGroupDao {
     @Query("SELECT * FROM posts WHERE parent = (:parent)")
     suspend fun getPostsForGroup(parent: UUID): List<Post>
 
+    @Query("SELECT * FROM posts WHERE parent = (:parent)")
+    fun observePostsForGroup(parent: UUID): LiveData<List<Post>>
+
     @Query("SELECT * FROM newsgroup WHERE uuid = (:uuid)")
     suspend fun getGroup(uuid: UUID): NewsGroup
 
@@ -19,8 +23,14 @@ interface NewsGroupDao {
     @Query("SELECT * FROM user")
     suspend fun getAllUsers(): List<User>
 
+    @Query("SELECT * FROM user")
+    fun observeAllUsers(): LiveData<List<User>>
+
     @Query("SELECT * FROM user WHERE owned = :owned")
     suspend fun getAllOwnedUsers(owned: Boolean): List<User>
+
+    @Query("SELECT * FROM user WHERE owned = :owned")
+    fun observeAllOwnedUsers(owned: Boolean): LiveData<List<User>>
 
     @Transaction
     @Query("SELECT * FROM newsgroup WHERE uuid = (:uuid)")

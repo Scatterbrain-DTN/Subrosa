@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
@@ -37,6 +38,7 @@ private const val ARG_PARAM2 = "param2"
 class PostCreationDialog @Inject constructor(): DialogFragment() {
     private lateinit var binding: FragmentPostCreationDialogBinding
     private lateinit var arrayAdapter: ArrayAdapter<User>
+    private var selectedUser: User? = null
 
     val args: PostCreationDialogArgs by navArgs()
 
@@ -64,26 +66,52 @@ class PostCreationDialog @Inject constructor(): DialogFragment() {
                 arrayAdapter.notifyDataSetChanged()
             }
         }
+        binding.userAutocomplete.onItemClickListener = object:
+        AdapterView.OnItemClickListener {
+            override fun onItemClick(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                selectedUser = arrayAdapter.getItem(position)
+            }
+
+        }
+
         binding.postButton.setOnClickListener {
-            repository.coroutineScope.launch {
-                try {
-                    val user = arrayAdapter.getItem(binding.userAutocomplete.listSelection)
-                    repository.sendPost(
+            if (selectedUser == null) {
+                Toast.makeText(context, "user not selected", Toast.LENGTH_LONG)
+                    .show()
+            } else {
+                val user = selectedUser
+                repository.coroutineScope.launch {
+                    try {
+                        repository.sendPost(
                             args.current,
                             user!!.identity,
                             "fmef default header",
                             binding.postBodyEdittext.text.toString(),
 
                             )
-                    Toast.makeText(context, "sent post!", Toast.LENGTH_LONG)
-                        .show()
-                } catch (exc: Exception) {
-                    exc.printStackTrace()
-                    Toast.makeText(context, "failed to send post: ${exc.message}", Toast.LENGTH_LONG)
-                        .show()
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(context, "sent post!", Toast.LENGTH_LONG)
+                                .show()
+                        }
+                    } catch (exc: Exception) {
+                        exc.printStackTrace()
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(
+                                context,
+                                "failed to send post: ${exc.message}",
+                                Toast.LENGTH_LONG
+                            )
+                                .show()
+                        }
+                    }
                 }
+                findNavController().popBackStack()
             }
-            findNavController().popBackStack()
         }
         return binding.root
     }
