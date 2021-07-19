@@ -11,18 +11,16 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import net.ballmerlabs.scatterbrainsdk.Identity
 import net.ballmerlabs.subrosa.MainViewModel
 import net.ballmerlabs.subrosa.NewsRepository
-import net.ballmerlabs.subrosa.database.User
 import net.ballmerlabs.subrosa.databinding.FragmentGroupListBinding
 import net.ballmerlabs.subrosa.scatterbrain.NewsGroup
-import net.ballmerlabs.subrosa.scatterbrain.Post
-import net.ballmerlabs.subrosa.thread.PostView
+import net.ballmerlabs.subrosa.thread.PostListRecylerViewAdapter
 import javax.inject.Inject
 
 /**
@@ -32,10 +30,10 @@ import javax.inject.Inject
 class GroupListFragment @Inject constructor() : Fragment() {
 
     private val args: GroupListFragmentArgs by navArgs()
-    private var _binding: FragmentGroupListBinding? = null
-    private val binding get() = _binding!!
+    private lateinit var binding: FragmentGroupListBinding
     private val groupList = ArrayList<GroupItem>()
     private val postList = ArrayList<Int>()
+    private val postAdapter = PostListRecylerViewAdapter()
     private lateinit var nameListener: (name: String) -> Unit
 
     @Inject lateinit var repository: NewsRepository
@@ -43,28 +41,6 @@ class GroupListFragment @Inject constructor() : Fragment() {
     private val viewModel by viewModels<GroupListViewModel>()
     private val activityViewModel by activityViewModels<MainViewModel>()
 
-
-    private fun addPost(post: Post, author: User) {
-        addPost(post.body, author.name, author.identity.toString(), post.header)
-    }
-
-    private fun clearPosts() {
-        binding.postFlow.referencedIds = intArrayOf()
-        binding.threadLayout.removeAllViews()
-    }
-
-    private fun addPost(body: String, name: String, fingerprint: String, header: String) {
-        val p = PostView(requireContext())
-        p.body = body
-        p.fingerprint = fingerprint
-        p.name = name
-        p.header = header
-        p.id = View.generateViewId()
-        p.maxCardElevation = 128.toFloat()
-        postList.add(p.id)
-        binding.threadLayout.addView(p)
-        binding.postFlow.referencedIds = postList.toIntArray()
-    }
 
     private fun getGroupItem(group: NewsGroup?): GroupItem {
         val n = GroupItem(requireContext())
@@ -85,7 +61,7 @@ class GroupListFragment @Inject constructor() : Fragment() {
                         i.newsGroup!!,
                         args.path + arrayOf(i.newsGroup!!)
                     )
-                    v.findNavController().navigate(action)
+                    binding.root.findNavController().navigate(action)
                 }
             }
         }
@@ -116,7 +92,7 @@ class GroupListFragment @Inject constructor() : Fragment() {
             inflater: LayoutInflater, container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentGroupListBinding.inflate(inflater)
+        binding = FragmentGroupListBinding.inflate(inflater)
         groupList.clear()
         activityViewModel.collapsed.observe(viewLifecycleOwner) { v ->
             if (v)
@@ -154,17 +130,19 @@ class GroupListFragment @Inject constructor() : Fragment() {
             }
             refreshFlow()
         }
+
+        with(binding.threadRecyclerview) {
+            layoutManager = LinearLayoutManager(context)
+            adapter = postAdapter
+        }
+
         if (!args.immutable) {
             Log.v("debug", "starting post observation")
             repository.observePosts(args.parent.uuid).observe(viewLifecycleOwner) { posts ->
                 Log.e("debug", "livedata received posts ${posts.size}")
-                lifecycleScope.launch(Dispatchers.Default) {
-                    withContext(Dispatchers.Main) { clearPosts() }
-                    posts.forEach { p ->
-                        val user = repository.getUser(p.author)
-                        withContext(Dispatchers.Main) { addPost(p, user) }
-                    }
-                }
+                postAdapter.values.clear()
+                postAdapter.values.addAll(posts)
+                postAdapter.notifyDataSetChanged()
             }
         }
 
