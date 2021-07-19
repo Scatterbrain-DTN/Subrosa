@@ -24,9 +24,7 @@ import net.ballmerlabs.scatterbrainsdk.ScatterbrainBroadcastReceiver
 import net.ballmerlabs.subrosa.databinding.ActivityMainBinding
 import net.ballmerlabs.subrosa.listing.GroupListFragmentArgs
 import net.ballmerlabs.subrosa.listing.GroupListFragmentDirections
-import net.ballmerlabs.subrosa.listing.GroupListViewModel
 import net.ballmerlabs.subrosa.scatterbrain.NewsGroup
-import net.ballmerlabs.subrosa.thread.PostCreationDialogDirections
 import net.ballmerlabs.subrosa.user.UserListFragmentDirections
 import net.ballmerlabs.subrosa.util.uuidSha256
 import javax.inject.Inject
@@ -44,10 +42,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var navController: NavController
 
-    private var currentNewsGroup = NewsGroup.empty()
-
     private val mainViewModel by viewModels<MainViewModel>()
-    private val groupListViewModel by viewModels<GroupListViewModel>()
 
     enum class State {
         IDLE,
@@ -199,10 +194,10 @@ class MainActivity : AppCompatActivity() {
             when(destination.id) {
                 R.id.GroupListFragment -> {
                     val args = GroupListFragmentArgs.fromBundle(arguments!!)
-                    currentNewsGroup = args.parent
+                    Log.v("debug", "on newsgroup ${args.parent}")
                     mainViewModel.path.value = args.path.toList()
                     setFab(
-                        action = GroupListFragmentDirections.actionGroupListFragmentToPostCreationDialog(currentNewsGroup),
+                        action = GroupListFragmentDirections.actionGroupListFragmentToPostCreationDialog(args.parent),
                         icon = R.drawable.ic_baseline_email_24
                     )
                     setAppBar(expand = true)

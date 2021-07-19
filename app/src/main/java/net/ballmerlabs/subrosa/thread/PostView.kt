@@ -28,6 +28,13 @@ class PostView : MaterialCardView {
     }
     get() = binding.fingerprint.text
 
+
+    var header
+    set(value) {
+        binding.header.text = value
+    }
+    get() = binding.header.text
+
     constructor(context: Context, attributeSet: AttributeSet): super(context, attributeSet)
     
     constructor(context: Context): super(context)

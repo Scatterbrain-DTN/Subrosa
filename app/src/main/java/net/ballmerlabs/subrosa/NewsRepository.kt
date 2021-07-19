@@ -90,6 +90,7 @@ class NewsRepository @Inject constructor(
         val identity = sdkComponent.binderWrapper.getIdentity(user)
             ?: throw IllegalStateException("user does not exist")
 
+        Log.v("debug", "send post got identity ${identity.fingerprint}")
         val post = Post(
             parent,
             user,
@@ -102,6 +103,8 @@ class NewsRepository @Inject constructor(
                 body
             ))
         )
+
+        Log.v("debug", "send post signed post")
         val message = ScatterMessage.newBuilder()
             .setApplication(context.getString(R.string.scatterbrainapplication))
             .setBody(post.bytes)
@@ -118,6 +121,9 @@ class NewsRepository @Inject constructor(
                 .build()
             groupMsgs.add(groupMsg)
         }
+        Log.v("debug", "send post sent newsgroups")
+        dao.insertPost(post)
+        Log.v("debug", "send post inserted post")
         if (isConnected()) {
             sdkComponent.binderWrapper.sendMessage(groupMsgs)
             sdkComponent.binderWrapper.sendMessage(message, post.author)
@@ -151,6 +157,11 @@ class NewsRepository @Inject constructor(
     suspend fun readAllUsers(): List<User> {
         updateConnected()
         return dao.getAllUsers()
+    }
+
+
+    suspend fun getUser(uuid: UUID): User {
+        return dao.getUsersByIdentity(uuid)
     }
 
 

@@ -18,8 +18,10 @@ import kotlinx.coroutines.withContext
 import net.ballmerlabs.scatterbrainsdk.Identity
 import net.ballmerlabs.subrosa.MainViewModel
 import net.ballmerlabs.subrosa.NewsRepository
+import net.ballmerlabs.subrosa.database.User
 import net.ballmerlabs.subrosa.databinding.FragmentGroupListBinding
 import net.ballmerlabs.subrosa.scatterbrain.NewsGroup
+import net.ballmerlabs.subrosa.scatterbrain.Post
 import net.ballmerlabs.subrosa.thread.PostView
 import javax.inject.Inject
 
@@ -42,15 +44,21 @@ class GroupListFragment @Inject constructor() : Fragment() {
     private val activityViewModel by activityViewModels<MainViewModel>()
 
 
-    private fun addPost(body: String, sender: Identity) {
-        addPost(body, sender.givenname, sender.fingerprint.toString())
+    private fun addPost(post: Post, author: User) {
+        addPost(post.body, author.name, author.identity.toString(), post.header)
     }
 
-    private fun addPost(body: String, name: String, fingerprint: String) {
+    private fun clearPosts() {
+        binding.postFlow.referencedIds = intArrayOf()
+        binding.threadLayout.removeAllViews()
+    }
+
+    private fun addPost(body: String, name: String, fingerprint: String, header: String) {
         val p = PostView(requireContext())
         p.body = body
         p.fingerprint = fingerprint
         p.name = name
+        p.header = header
         p.id = View.generateViewId()
         p.maxCardElevation = 128.toFloat()
         postList.add(p.id)
@@ -146,11 +154,21 @@ class GroupListFragment @Inject constructor() : Fragment() {
             }
             refreshFlow()
         }
+        if (!args.immutable) {
+            Log.v("debug", "starting post observation")
+            repository.observePosts(args.parent.uuid).observe(viewLifecycleOwner) { posts ->
+                Log.e("debug", "livedata received posts ${posts.size}")
+                lifecycleScope.launch(Dispatchers.Default) {
+                    withContext(Dispatchers.Main) { clearPosts() }
+                    posts.forEach { p ->
+                        val user = repository.getUser(p.author)
+                        withContext(Dispatchers.Main) { addPost(p, user) }
+                    }
+                }
+            }
+        }
+
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        addPost("testbody", "testname", "testfingerprint")
-    }
 }
