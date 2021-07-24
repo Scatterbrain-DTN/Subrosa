@@ -2,18 +2,21 @@ package net.ballmerlabs.subrosa
 
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.HorizontalScrollView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.get
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.*
 import androidx.navigation.ui.NavigationUI
 import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -42,6 +45,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var navController: NavController
 
+    private var fabExpanded = false
+
     private val mainViewModel by viewModels<MainViewModel>()
 
     enum class State {
@@ -49,6 +54,11 @@ class MainActivity : AppCompatActivity() {
         COLLAPSED,
         EXPANDED,
         EXPANDING
+    }
+
+    enum class FabType {
+        UPPER,
+        LOWER
     }
 
     private var barState = State.IDLE
@@ -65,6 +75,25 @@ class MainActivity : AppCompatActivity() {
             titleSet = false
         }
         mainViewModel.collapsed.value = true
+    }
+
+
+    private fun expandFab() {
+        if (!fabExpanded) {
+            binding.fabAlt.animate().translationY(-resources.getDimension(R.dimen.fab_expand_lower))
+            binding.fabAlt2.animate().translationY(-resources.getDimension(R.dimen.fab_expand_upper))
+            binding.fab.setOnClickListener { contractFab() }
+            fabExpanded = true
+        }
+    }
+
+    private fun contractFab() {
+        if (fabExpanded) {
+            binding.fabAlt.animate().translationY(0.toFloat())
+            binding.fabAlt2.animate().translationY(0.toFloat())
+            binding.fab.setOnClickListener { expandFab() }
+            fabExpanded = false
+        }
     }
 
     private fun onExpanding() {
@@ -95,6 +124,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setFab(action: NavDirections? = null, icon: Int? = null) {
+        contractFab()
         binding.fab.setImageResource(icon ?: 0)
         if (action != null) {
             binding.fab.setOnClickListener {
@@ -105,6 +135,21 @@ class MainActivity : AppCompatActivity() {
             binding.fab.hide()
             binding.fab.setOnClickListener {  }
         }
+    }
+
+
+    private fun setFabExpand(
+        mainIcon: Int = R.drawable.ic_baseline_add_24,
+        lowerIcon: Int? = null,
+        upperIcon: Int? = null,
+        action: (type: FabType, fab: FloatingActionButton) -> Unit
+        ) {
+        binding.fabAlt.setOnClickListener { action(FabType.LOWER ,binding.fabAlt) }
+        binding.fabAlt2.setOnClickListener { action(FabType.UPPER, binding.fabAlt2) }
+        binding.fab.setImageResource(mainIcon)
+        binding.fabAlt.setImageResource(lowerIcon ?: 0)
+        binding.fabAlt2.setImageResource(upperIcon ?: 0)
+        binding.fab.setOnClickListener { expandFab() }
     }
 
 
@@ -196,10 +241,20 @@ class MainActivity : AppCompatActivity() {
                     val args = GroupListFragmentArgs.fromBundle(arguments!!)
                     Log.v("debug", "on newsgroup ${args.parent}")
                     mainViewModel.path.value = args.path.toList()
-                    setFab(
-                        action = GroupListFragmentDirections.actionGroupListFragmentToPostCreationDialog(args.parent),
-                        icon = R.drawable.ic_baseline_email_24
-                    )
+                    setFabExpand(
+                        lowerIcon = R.drawable.ic_baseline_create_new_folder_24,
+                        upperIcon = R.drawable.ic_baseline_email_24
+                    ) { type, _ ->
+                        when(type) {
+                            FabType.UPPER -> {
+                                val action = GroupListFragmentDirections.actionGroupListFragmentToPostCreationDialog(args.parent)
+                                navController.navigate(action)
+                            }
+                            FabType.LOWER -> {
+                                binding.appbarlayout.setExpanded(true)
+                            }
+                        }
+                    }
                     setAppBar(expand = true)
 
                 }
