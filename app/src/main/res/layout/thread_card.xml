@@ -30,21 +30,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="default sender name"
-            app:layout_constraintBottom_toTopOf="@id/fingerprint"
+
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
-
-
-        <TextView
-            android:id="@+id/fingerprint"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="default_fingerprint"
-            app:layout_constraintBottom_toTopOf="@id/divider"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/sender_name" />
-
 
         <View
             android:id="@+id/divider"
@@ -62,8 +50,18 @@
             android:elevation="8dp"
             android:minHeight="128dp"
             android:paddingHorizontal="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/fingerprint"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"/>
+
+
+
+        <TextView
+            android:id="@+id/fingerprint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="default_fingerprint"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>
