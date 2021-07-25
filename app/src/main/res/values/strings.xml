@@ -6,6 +6,8 @@
     <string name="launch_scatterbrain">Launch Scatterbrain</string>
     <string name="dismiss">Dismiss</string>
     <string name="post">Post</string>
+    <string name="hint_group_name">Group name</string>
+
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
     <!-- TODO: Remove or change this placeholder text -->

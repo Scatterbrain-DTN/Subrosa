@@ -31,6 +31,9 @@
         <action
             android:id="@+id/action_GroupListFragment_to_postCreationDialog"
             app:destination="@id/postCreationDialog" />
+        <action
+            android:id="@+id/action_GroupListFragment_to_groupCreateDialog"
+            app:destination="@id/groupCreateDialog" />
     </fragment>
 
     <fragment
@@ -77,4 +80,14 @@
             android:id="@+id/action_userListFragment_to_UserCreationFragment"
             app:destination="@id/UserCreationFragment" />
     </fragment>
+    <dialog
+        android:id="@+id/groupCreateDialog"
+        android:name="net.ballmerlabs.subrosa.listing.GroupCreateDialog"
+        android:label="fragment_group_create_dialog"
+        tools:layout="@layout/fragment_group_create_dialog">
+
+        <argument
+            android:name="parent"
+            app:argType="net.ballmerlabs.subrosa.scatterbrain.NewsGroup"/>
+    </dialog>
 </navigation>

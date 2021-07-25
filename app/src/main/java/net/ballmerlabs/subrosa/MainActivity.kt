@@ -265,6 +265,8 @@ class MainActivity : AppCompatActivity() {
                             }
                             FabType.LOWER -> {
                                 binding.appbarlayout.setExpanded(true)
+                                val action = GroupListFragmentDirections.actionGroupListFragmentToGroupCreateDialog(args.parent)
+                                navController.navigate(action)
                             }
                         }
                     }
