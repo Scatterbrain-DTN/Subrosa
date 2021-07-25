@@ -7,29 +7,16 @@
     android:layout_width="match_parent"
     tools:context=".listing.GroupListFragment">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/group_recyclerview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        app:layoutManager="LinearLayoutManager"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/thread_recyclerview"
-        android:id="@+id/listconstraintlayout">
-        <androidx.constraintlayout.helper.widget.Flow
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/listflow"
-            app:flow_verticalStyle="spread"
-            app:flow_horizontalBias="0"
-            app:flow_horizontalGap="10dp"
-            app:flow_horizontalStyle="packed"
-            app:flow_verticalBias="0"
-            app:flow_wrapMode="chain"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        tools:listitem="@layout/thread_card" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/thread_recyclerview"
@@ -38,7 +25,7 @@
         android:layout_marginLeft="4dp"
         android:layout_marginRight="4dp"
         app:layoutManager="LinearLayoutManager"
-        app:layout_constraintTop_toBottomOf="@id/listconstraintlayout"
+        app:layout_constraintTop_toBottomOf="@id/group_recyclerview"
         app:layout_constraintBottom_toBottomOf="parent"
         tools:listitem="@layout/thread_card" />
 

@@ -31,7 +31,6 @@ class GroupListFragment @Inject constructor() : Fragment() {
 
     private val args: GroupListFragmentArgs by navArgs()
     private lateinit var binding: FragmentGroupListBinding
-    private val groupList = ArrayList<GroupItem>()
     private val postAdapter = PostListRecylerViewAdapter()
 
     @Inject lateinit var repository: NewsRepository
@@ -39,49 +38,22 @@ class GroupListFragment @Inject constructor() : Fragment() {
     private val viewModel by viewModels<GroupListViewModel>()
     private val activityViewModel by activityViewModels<MainViewModel>()
 
+    private val groupListAdapter = GroupListRecyclerViewAdapter { group -> onGroupListItemClick(group)}
 
-    private fun getGroupItem(group: NewsGroup): GroupItem {
-        val n = GroupItem(requireContext())
-        n.id = View.generateViewId()
-        n.newsGroup = group
-        n.setOnClickListener { v ->
-            val i = v as GroupItem
 
-            Log.e("debug", "entering group with parent ${i.newsGroup.name} ${args.path.size}")
-            lifecycleScope.launch {
-                val children = withContext(Dispatchers.IO) { repository.getChildren(i.newsGroup.uuid) }
-                Log.e("debug", "found ${children.size} children")
-                val action = GroupListFragmentDirections.actionGroupListFragmentToSelf(
-                    children.toTypedArray(),
-                    false,
-                    i.newsGroup,
-                    args.path + arrayOf(i.newsGroup)
-                )
-                binding.root.findNavController().navigate(action)
-            }
-
+    private fun onGroupListItemClick(group: NewsGroup) {
+        Log.e("debug", "entering group with parent ${group.name} ${args.path.size}")
+        lifecycleScope.launch {
+            val children = withContext(Dispatchers.IO) { repository.getChildren(group.uuid) }
+            Log.e("debug", "found ${children.size} children")
+            val action = GroupListFragmentDirections.actionGroupListFragmentToSelf(
+                children.toTypedArray(),
+                false,
+                group,
+                args.path + arrayOf(group)
+            )
+            binding.root.findNavController().navigate(action)
         }
-        return n
-    }
-
-    private fun refreshFlow() {
-        binding.listconstraintlayout.invalidate()
-        binding.listflow.invalidate()
-        binding.listflow.referencedIds = groupList.map { v -> v.id }.toIntArray()
-    }
-
-    private fun appendNewsGroup(group: NewsGroup) {
-        val item = getGroupItem(group)
-        binding.listconstraintlayout.addView(item)
-        groupList.add(item)
-        refreshFlow()
-    }
-
-    private fun addGroupItem(item: GroupItem) {
-        if (item.parent != null) {
-            (item.parent as ViewGroup).removeView(item)
-        }
-        binding.listconstraintlayout.addView(item)
     }
 
     override fun onCreateView(
@@ -89,22 +61,17 @@ class GroupListFragment @Inject constructor() : Fragment() {
             savedInstanceState: Bundle?
     ): View {
         binding = FragmentGroupListBinding.inflate(inflater)
-        groupList.clear()
+        groupListAdapter.values.clear()
+        binding.groupRecyclerview.adapter = groupListAdapter
         activityViewModel.collapsed.observe(viewLifecycleOwner) { v ->
             if (v)
-                binding.listconstraintlayout.visibility = View.GONE
+                binding.groupRecyclerview.visibility = View.GONE
             else
-                binding.listconstraintlayout.visibility = View.VISIBLE
+                binding.groupRecyclerview.visibility = View.VISIBLE
         }
         lifecycleScope.launch(Dispatchers.Main) {
-            withContext(Dispatchers.Default) {
-                for (newsGroup in args.grouplist) {
-                    val item = getGroupItem(newsGroup)
-                    groupList.add(item)
-                }
-            }
-            groupList.forEach { item -> addGroupItem(item) }
-            refreshFlow()
+            groupListAdapter.values.addAll(args.grouplist)
+            groupListAdapter.notifyDataSetChanged()
         }
 
         with(binding.threadRecyclerview) {
