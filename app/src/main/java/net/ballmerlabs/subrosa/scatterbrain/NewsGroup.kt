@@ -21,6 +21,7 @@ data class Parent(
         parcel.readParcelable<ParcelUuid>(ParcelUuid::class.java.classLoader)!!.uuid,
         parcel.createByteArray()!!
     ) {
+
     }
 
     override fun equals(other: Any?): Boolean {

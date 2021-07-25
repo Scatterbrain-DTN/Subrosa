@@ -32,9 +32,7 @@ class GroupListFragment @Inject constructor() : Fragment() {
     private val args: GroupListFragmentArgs by navArgs()
     private lateinit var binding: FragmentGroupListBinding
     private val groupList = ArrayList<GroupItem>()
-    private val postList = ArrayList<Int>()
     private val postAdapter = PostListRecylerViewAdapter()
-    private lateinit var nameListener: (name: String) -> Unit
 
     @Inject lateinit var repository: NewsRepository
 
@@ -42,28 +40,26 @@ class GroupListFragment @Inject constructor() : Fragment() {
     private val activityViewModel by activityViewModels<MainViewModel>()
 
 
-    private fun getGroupItem(group: NewsGroup?): GroupItem {
+    private fun getGroupItem(group: NewsGroup): GroupItem {
         val n = GroupItem(requireContext())
         n.id = View.generateViewId()
-        if (group != null) {
-            n.set(group)
-        }
+        n.newsGroup = group
         n.setOnClickListener { v ->
             val i = v as GroupItem
-            if (i.isCreated) {
-                Log.e("debug", "entering group with parent ${i.newsGroup!!.name} ${args.path.size}")
-                lifecycleScope.launch {
-                    val children = withContext(Dispatchers.IO) { repository.getChildren(i.newsGroup!!.uuid) }
-                    Log.e("debug", "found ${children.size} children")
-                    val action = GroupListFragmentDirections.actionGroupListFragmentToSelf(
-                        children.toTypedArray(),
-                        false,
-                        i.newsGroup!!,
-                        args.path + arrayOf(i.newsGroup!!)
-                    )
-                    binding.root.findNavController().navigate(action)
-                }
+
+            Log.e("debug", "entering group with parent ${i.newsGroup.name} ${args.path.size}")
+            lifecycleScope.launch {
+                val children = withContext(Dispatchers.IO) { repository.getChildren(i.newsGroup.uuid) }
+                Log.e("debug", "found ${children.size} children")
+                val action = GroupListFragmentDirections.actionGroupListFragmentToSelf(
+                    children.toTypedArray(),
+                    false,
+                    i.newsGroup,
+                    args.path + arrayOf(i.newsGroup)
+                )
+                binding.root.findNavController().navigate(action)
             }
+
         }
         return n
     }
@@ -108,26 +104,6 @@ class GroupListFragment @Inject constructor() : Fragment() {
                 }
             }
             groupList.forEach { item -> addGroupItem(item) }
-            if (!args.immutable) {
-                val create = getGroupItem(null)
-                nameListener = { name ->
-                    lifecycleScope.launch {
-                        Log.e("debug", "creating group with parent ${args.parent.name}")
-                        val g = repository.createGroup(name, args.parent)
-                        create.set(g)
-                        val newCreate = getGroupItem(null)
-                        newCreate.setOnNameListener(nameListener)
-                        addGroupItem(newCreate)
-                        groupList.add(newCreate)
-                        refreshFlow()
-                    }
-                }
-                create.setOnNameListener(nameListener)
-                withContext(Dispatchers.Main) {
-                    addGroupItem(create)
-                    groupList.add(create)
-                }
-            }
             refreshFlow()
         }
 

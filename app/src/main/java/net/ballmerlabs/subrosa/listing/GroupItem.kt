@@ -18,16 +18,14 @@ class GroupItem : ConstraintLayout  {
 
     private val binding: GroupItemBinding
 
-    private var nameListener: (name: String) -> Unit = {}
+    var newsGroup: NewsGroup = NewsGroup.empty()
+        set(value) {
+            binding.name.text = value.name
+            field = value
+        }
 
-    var isCreated = false
-        private set
-
-    var newsGroup: NewsGroup? = null
-        private set
-
-    val uuid: UUID?
-        get() = newsGroup?.uuid
+    val uuid: UUID
+        get() = newsGroup.uuid
 
     constructor(context: Context, attributeSet: AttributeSet): super(context, attributeSet)
 
@@ -42,44 +40,6 @@ class GroupItem : ConstraintLayout  {
 
         inflate(context, R.layout.group_item, this)
         binding = GroupItemBinding.bind(this)
-
-        binding.createButton.setOnClickListener {
-            nameListener(
-                binding.nameEdit.editText!!.text.toString()
-            )
-        }
-        binding.nameEdit.editText!!.imeOptions = EditorInfo.IME_ACTION_DONE
-        binding.nameEdit.editText!!.setOnEditorActionListener { v, actionId, event ->
-            when(actionId) {
-                EditorInfo.IME_ACTION_DONE -> {
-                    nameListener(
-                        binding.nameEdit.editText!!.text.toString()
-                    )
-                    Log.e("debug", "setting text")
-                }
-                else -> Log.v("debug", "unknown action")
-            }
-            true
-        }
-    }
-
-    private fun toggleVisibility() {
-        binding.nameEdit.visibility = View.GONE
-        binding.name.visibility = View.VISIBLE
-        binding.unreadNum.visibility = View.VISIBLE
-        binding.itemIdenticon.visibility = View.VISIBLE
-        binding.createButton.visibility = View.GONE
-    }
-
-    fun set(current: NewsGroup) {
-        invalidate()
-        binding.name.text = current.name
-        newsGroup = current
-        isCreated = true
-        toggleVisibility()
-    }
-
-    fun setOnNameListener(listener: (name: String) -> Unit) {
-        this.nameListener = listener
+        binding.name.text = newsGroup.name
     }
 }
