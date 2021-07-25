@@ -8,10 +8,10 @@ import java.util.*
 
 @Dao
 interface NewsGroupDao {
-    @Query("SELECT * FROM posts WHERE parent = (:parent)")
+    @Query("SELECT * FROM posts WHERE uuid = (:parent)")
     suspend fun getPostsForGroup(parent: UUID): List<Post>
 
-    @Query("SELECT * FROM posts WHERE parent = (:parent)")
+    @Query("SELECT * FROM posts WHERE uuid = (:parent)")
     fun observePostsForGroup(parent: UUID): LiveData<List<Post>>
 
     @Query("SELECT * FROM newsgroup WHERE uuid = (:uuid)")

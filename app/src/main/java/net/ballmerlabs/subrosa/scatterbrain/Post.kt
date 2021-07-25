@@ -22,9 +22,6 @@ class Post(
     @Embedded
     var parent: NewsGroup = NewsGroup(packet.parent)
 
-    @Ignore
-    val parentObj = packet.parent
-
     var author = uuidConvertProto(packet.author)
 
     var header = packet.header

@@ -138,7 +138,7 @@ class GroupListFragment @Inject constructor() : Fragment() {
 
         if (!args.immutable) {
             Log.v("debug", "starting post observation")
-            repository.observePosts(args.parent.uuid).observe(viewLifecycleOwner) { posts ->
+            repository.observePosts(args.parent).observe(viewLifecycleOwner) { posts ->
                 Log.e("debug", "livedata received posts ${posts.size}")
                 postAdapter.values.clear()
                 postAdapter.values.addAll(posts)
