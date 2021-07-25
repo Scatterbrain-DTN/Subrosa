@@ -131,7 +131,11 @@ class MainActivity : AppCompatActivity() {
                 navController.navigate(action)
             }
             binding.fab.show()
+            binding.fabAlt.show()
+            binding.fabAlt2.show()
         } else {
+            binding.fabAlt.hide()
+            binding.fabAlt2.hide()
             binding.fab.hide()
             binding.fab.setOnClickListener {  }
         }
@@ -144,12 +148,21 @@ class MainActivity : AppCompatActivity() {
         upperIcon: Int? = null,
         action: (type: FabType, fab: FloatingActionButton) -> Unit
         ) {
-        binding.fabAlt.setOnClickListener { action(FabType.LOWER ,binding.fabAlt) }
-        binding.fabAlt2.setOnClickListener { action(FabType.UPPER, binding.fabAlt2) }
+        binding.fabAlt.setOnClickListener {
+            contractFab()
+            action(FabType.LOWER ,binding.fabAlt)
+        }
+        binding.fabAlt2.setOnClickListener {
+            contractFab()
+            action(FabType.UPPER, binding.fabAlt2)
+        }
         binding.fab.setImageResource(mainIcon)
         binding.fabAlt.setImageResource(lowerIcon ?: 0)
         binding.fabAlt2.setImageResource(upperIcon ?: 0)
         binding.fab.setOnClickListener { expandFab() }
+        binding.fab.show()
+        binding.fabAlt.show()
+        binding.fabAlt2.show()
     }
 
 
@@ -235,7 +248,7 @@ class MainActivity : AppCompatActivity() {
         NavigationUI.setupWithNavController(binding.bottomNavigation, navController)
 
         navController.addOnDestinationChangedListener { _, destination, arguments ->
-            Log.v("debug", "navigating to ${destination.id}")
+            Log.v("debug", "navigating to $destination")
             when(destination.id) {
                 R.id.GroupListFragment -> {
                     val args = GroupListFragmentArgs.fromBundle(arguments!!)
