@@ -1,6 +1,7 @@
 package net.ballmerlabs.subrosa
 
 import android.content.Context
+import android.content.res.Configuration
 import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
@@ -38,8 +39,16 @@ class NewsPathElement(context: Context, attrs: AttributeSet) : View(context, att
         ).apply {
             try {
                 text = getString(R.styleable.NewsPathElement_text)?: "fmef"
-                textPaint.color = getColor(R.styleable.NewsPathElement_textColor, Color.GRAY)
-                rectPaint.color = getColor(R.styleable.NewsPathElement_backgroundColor, Color.BLACK)
+                when (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+                    Configuration.UI_MODE_NIGHT_NO -> {
+                        textPaint.color = getColor(R.styleable.NewsPathElement_textColor, Color.GRAY)
+                        rectPaint.color = getColor(R.styleable.NewsPathElement_backgroundColor, Color.BLACK)
+                    }
+                    Configuration.UI_MODE_NIGHT_YES -> {
+                        textPaint.color = getColor(R.styleable.NewsPathElement_textColor, Color.WHITE)
+                        rectPaint.color = getColor(R.styleable.NewsPathElement_backgroundColor, Color.LTGRAY)
+                    } // Night mode is active, we're using dark theme
+                }
                 cornerMargin = getDimension(R.styleable.NewsPathElement_edgeRadius, 128F)
             } finally {
                 recycle()
