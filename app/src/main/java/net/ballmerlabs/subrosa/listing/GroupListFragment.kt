@@ -64,10 +64,14 @@ class GroupListFragment @Inject constructor() : Fragment() {
         groupListAdapter.values.clear()
         binding.groupRecyclerview.adapter = groupListAdapter
         activityViewModel.collapsed.observe(viewLifecycleOwner) { v ->
-            if (v)
+            if (v) {
                 binding.groupRecyclerview.visibility = View.GONE
-            else
+                binding.threadRecyclerview.visibility = View.VISIBLE
+            }
+            else {
                 binding.groupRecyclerview.visibility = View.VISIBLE
+                binding.threadRecyclerview.visibility = View.GONE
+            }
         }
         lifecycleScope.launch(Dispatchers.Main) {
             groupListAdapter.values.addAll(args.grouplist)

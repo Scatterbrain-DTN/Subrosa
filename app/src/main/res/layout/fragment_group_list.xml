@@ -3,25 +3,26 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:layout_width="match_parent"
     tools:context=".listing.GroupListFragment">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/group_recyclerview"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_marginLeft="4dp"
         android:layout_marginRight="4dp"
         app:layoutManager="LinearLayoutManager"
         app:layout_constraintTop_toTopOf="parent"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/thread_recyclerview"
         tools:listitem="@layout/thread_card" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/thread_recyclerview"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_marginLeft="4dp"
         android:layout_marginRight="4dp"
         app:layoutManager="LinearLayoutManager"
