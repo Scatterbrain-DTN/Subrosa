@@ -1,34 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<net.ballmerlabs.subrosa.listing.NestedCoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_height="match_parent"
     android:layout_width="match_parent"
+    android:nestedScrollingEnabled="true"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".listing.GroupListFragment">
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+            android:layout_height="200dp">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/group_recyclerview"
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/group_scroll_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/group_recyclerview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layoutManager="LinearLayoutManager"
+                tools:listitem="@layout/group_item" />
+        </androidx.core.widget.NestedScrollView>
+    </com.google.android.material.appbar.AppBarLayout>
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/post_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginLeft="4dp"
-        android:layout_marginRight="4dp"
-        app:layoutManager="LinearLayoutManager"
-        app:layout_constraintTop_toTopOf="parent"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@id/thread_recyclerview"
-        tools:listitem="@layout/thread_card" />
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/thread_recyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layoutManager="LinearLayoutManager"
+            tools:listitem="@layout/thread_card" />
+    </androidx.core.widget.NestedScrollView>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/thread_recyclerview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginLeft="4dp"
-        android:layout_marginRight="4dp"
-        app:layoutManager="LinearLayoutManager"
-        app:layout_constraintTop_toBottomOf="@id/group_recyclerview"
-        app:layout_constraintBottom_toBottomOf="parent"
-        tools:listitem="@layout/thread_card" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</net.ballmerlabs.subrosa.listing.NestedCoordinatorLayout>
 
