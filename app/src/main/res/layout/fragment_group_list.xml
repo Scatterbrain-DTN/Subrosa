@@ -6,36 +6,56 @@
     android:layout_height="match_parent"
     android:layout_width="match_parent"
     android:nestedScrollingEnabled="true"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".listing.GroupListFragment">
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-            android:layout_height="200dp">
-
-        <androidx.core.widget.NestedScrollView
-            android:id="@+id/group_scroll_view"
+        android:layout_height="wrap_content"
+        android:nestedScrollingEnabled="true"
+        android:theme="@style/Theme.Subrosa.AppBarOverlay">
+        <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_width="match_parent"
+            android:nestedScrollingEnabled="true"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
             android:layout_height="match_parent">
-
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar_nested"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/colorPrimary"
+                app:layout_scrollFlags="scroll|exitUntilCollapsed"
+                app:popupTheme="@style/Theme.Subrosa.PopupOverlay">
+            </androidx.appcompat.widget.Toolbar>
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/group_recyclerview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="true"
+                app:layout_collapseMode="pin"
+                app:layout_scrollFlags="scroll|exitUntilCollapsed"
                 app:layoutManager="LinearLayoutManager"
                 tools:listitem="@layout/group_item" />
-        </androidx.core.widget.NestedScrollView>
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
     <androidx.core.widget.NestedScrollView
         android:id="@+id/post_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="No posts for you. Sad noises"/>
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/thread_recyclerview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layoutManager="LinearLayoutManager"
+            android:visibility="gone"
             tools:listitem="@layout/thread_card" />
+        </FrameLayout>
     </androidx.core.widget.NestedScrollView>
 
 </net.ballmerlabs.subrosa.listing.NestedCoordinatorLayout>

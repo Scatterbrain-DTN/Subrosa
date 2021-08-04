@@ -63,7 +63,6 @@ class GroupListFragment @Inject constructor() : Fragment() {
         binding = FragmentGroupListBinding.inflate(inflater)
         groupListAdapter.values.clear()
         binding.groupRecyclerview.adapter = groupListAdapter
-        binding.groupScrollView.isNestedScrollingEnabled = true
         binding.postScrollView.isNestedScrollingEnabled = true
         lifecycleScope.launch(Dispatchers.Main) {
             groupListAdapter.values.addAll(args.grouplist)
