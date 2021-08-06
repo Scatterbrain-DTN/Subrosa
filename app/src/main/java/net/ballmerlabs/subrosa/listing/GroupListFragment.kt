@@ -56,6 +56,16 @@ class GroupListFragment @Inject constructor() : Fragment() {
         }
     }
 
+    private fun setEmpty(empty: Boolean) {
+        if(empty) {
+            binding.noPostsTextview.visibility = View.VISIBLE
+            binding.threadRecyclerview.visibility = View.GONE
+        } else {
+            binding.noPostsTextview.visibility = View.GONE
+            binding.threadRecyclerview.visibility = View.VISIBLE
+        }
+    }
+
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
             savedInstanceState: Bundle?
@@ -78,6 +88,7 @@ class GroupListFragment @Inject constructor() : Fragment() {
             Log.v("debug", "starting post observation")
             repository.observePosts(args.parent).observe(viewLifecycleOwner) { posts ->
                 Log.e("debug", "livedata received posts ${posts.size}")
+                setEmpty(posts.isEmpty())
                 postAdapter.values.clear()
                 postAdapter.values.addAll(posts)
                 postAdapter.notifyDataSetChanged()
