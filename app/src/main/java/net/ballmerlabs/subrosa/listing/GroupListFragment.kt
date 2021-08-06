@@ -74,17 +74,18 @@ class GroupListFragment @Inject constructor() : Fragment() {
         groupListAdapter.values.clear()
         binding.groupRecyclerview.adapter = groupListAdapter
         binding.postScrollView.isNestedScrollingEnabled = true
-        lifecycleScope.launch(Dispatchers.Main) {
-            groupListAdapter.values.addAll(args.grouplist)
-            groupListAdapter.notifyDataSetChanged()
-        }
 
         with(binding.threadRecyclerview) {
             layoutManager = LinearLayoutManager(context)
             adapter = postAdapter
         }
 
-        if (!args.immutable) {
+        if (args.immutable) {
+            lifecycleScope.launch(Dispatchers.Main) {
+                groupListAdapter.values.addAll(args.grouplist)
+                groupListAdapter.notifyDataSetChanged()
+            }
+        } else {
             Log.v("debug", "starting post observation")
             repository.observePosts(args.parent).observe(viewLifecycleOwner) { posts ->
                 Log.e("debug", "livedata received posts ${posts.size}")
@@ -92,6 +93,12 @@ class GroupListFragment @Inject constructor() : Fragment() {
                 postAdapter.values.clear()
                 postAdapter.values.addAll(posts)
                 postAdapter.notifyDataSetChanged()
+            }
+
+            repository.observeChildren(args.parent.uuid).observe(viewLifecycleOwner) { children ->
+                groupListAdapter.values.clear()
+                groupListAdapter.values.addAll(children)
+                groupListAdapter.notifyDataSetChanged()
             }
         }
 

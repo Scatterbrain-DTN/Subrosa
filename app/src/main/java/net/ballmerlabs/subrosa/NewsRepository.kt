@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.util.Log
 import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.map
 import com.lelloman.identicon.drawable.GithubIdenticonDrawable
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.*
@@ -244,6 +245,12 @@ class NewsRepository @Inject constructor(
         updateConnected()
         val dbchild: NewsGroupChildren?= dao.getGroupWithChildren(group)
         return dbchild?.children?: ArrayList()
+    }
+
+
+    fun observeChildren(group: UUID): LiveData<List<NewsGroup>> {
+        return dao.observeGroupWithChildren(group)
+            .map { children -> children.children }
     }
 
     suspend fun observePosts(): Flow<Post> = flow {
