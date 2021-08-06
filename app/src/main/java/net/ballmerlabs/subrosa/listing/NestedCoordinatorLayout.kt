@@ -81,7 +81,7 @@ class NestedCoordinatorLayout : CoordinatorLayout, NestedScrollingChild2 {
     override fun onNestedPreScroll(target: View, dx: Int, dy: Int, consumed: IntArray) {
         dispatchNestedPreScroll(dx, dy, consumed, null)
         if (consumed[1] == 0) {
-            super.onNestedPreScroll(target, dx, dy, consumed, ViewCompat.TYPE_TOUCH)
+            super.onNestedPreScroll(target, dx, dy, consumed)
         }
     }
 
@@ -105,7 +105,20 @@ class NestedCoordinatorLayout : CoordinatorLayout, NestedScrollingChild2 {
         type: Int
     ) {
         super.onNestedScroll(target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, type)
-        dispatchNestedScroll(dxConsumed, dyConsumed, dxConsumed, dyUnconsumed, null, type)
+        dispatchNestedScroll(dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, null, type)
+    }
+
+    override fun onNestedScroll(
+        target: View,
+        dxConsumed: Int,
+        dyConsumed: Int,
+        dxUnconsumed: Int,
+        dyUnconsumed: Int,
+        type: Int,
+        consumed: IntArray
+    ) {
+        super.onNestedScroll(target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, type, consumed)
+        dispatchNestedScroll(dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, null, type)
     }
 
     override fun onStopNestedScroll(target: View) {
@@ -147,7 +160,7 @@ class NestedCoordinatorLayout : CoordinatorLayout, NestedScrollingChild2 {
             dxUnconsumed,
             dyUnconsumed,
             offsetInWindow,
-            ViewCompat.TYPE_TOUCH
+            type
         )
     }
 
@@ -163,7 +176,7 @@ class NestedCoordinatorLayout : CoordinatorLayout, NestedScrollingChild2 {
             dy,
             consumed,
             offsetInWindow,
-            ViewCompat.TYPE_TOUCH
+            type
         )
     }
 
@@ -195,7 +208,7 @@ class NestedCoordinatorLayout : CoordinatorLayout, NestedScrollingChild2 {
         dyConsumed: Int,
         dxUnconsumed: Int,
         dyUnconsumed: Int,
-        offsetInWindow: IntArray?
+        offsetInWindow: IntArray?,
     ): Boolean {
         return scrollingChildHelper.dispatchNestedScroll(
             dxConsumed,

@@ -10,11 +10,9 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:nestedScrollingEnabled="true"
         android:theme="@style/Theme.Subrosa.AppBarOverlay">
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_width="match_parent"
-            android:nestedScrollingEnabled="true"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
             android:layout_height="match_parent">
             <androidx.appcompat.widget.Toolbar
@@ -29,8 +27,6 @@
                 android:id="@+id/group_recyclerview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="true"
-                app:layout_collapseMode="pin"
                 app:layout_scrollFlags="scroll|exitUntilCollapsed"
                 app:layoutManager="LinearLayoutManager"
                 tools:listitem="@layout/group_item" />
