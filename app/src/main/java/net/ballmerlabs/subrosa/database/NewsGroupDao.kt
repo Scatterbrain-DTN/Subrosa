@@ -36,7 +36,6 @@ interface NewsGroupDao {
     @Query("SELECT * FROM newsgroup WHERE uuid = (:uuid)")
     suspend fun getGroupWithChildren(uuid: UUID): NewsGroupChildren
 
-
     @Transaction
     @Query("SELECT * FROM newsgroup WHERE uuid = (:uuid)")
     fun observeGroupWithChildren(uuid: UUID): LiveData<NewsGroupChildren>

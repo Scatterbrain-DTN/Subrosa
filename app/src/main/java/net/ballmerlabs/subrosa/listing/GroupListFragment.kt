@@ -96,6 +96,7 @@ class GroupListFragment @Inject constructor() : Fragment() {
             }
 
             repository.observeChildren(args.parent.uuid).observe(viewLifecycleOwner) { children ->
+                Log.v("debug", "observing groups ${children.size}")
                 groupListAdapter.values.clear()
                 groupListAdapter.values.addAll(children)
                 groupListAdapter.notifyDataSetChanged()
