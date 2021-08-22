@@ -1,3 +1,4 @@
 include ':app'
-include ':ScatterbrainSDK'
+include ':scatterbrainSDK'
+project(':scatterbrainSDK').projectDir = new File('ScatterbrainSDK/scatterbrainSDK')
 rootProject.name = "Subrosa"

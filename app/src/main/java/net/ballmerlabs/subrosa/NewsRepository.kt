@@ -106,19 +106,16 @@ class NewsRepository @Inject constructor(
         )
 
         Log.v("debug", "send post signed post")
-        val message = ScatterMessage.newBuilder()
+        val message = ScatterMessage.Builder.newInstance(post.bytes)
             .setApplication(context.getString(R.string.scatterbrainapplication))
-            .setBody(post.bytes)
-            .setFrom(post.author)
             .build()
         var par = post.parent
         val groupMsgs = ArrayList<ScatterMessage>()
         while (par.hasParent) {
             yield()
             par = dao.getGroup(par.parentCol!!)
-            val groupMsg = ScatterMessage.newBuilder()
+            val groupMsg = ScatterMessage.Builder.newInstance(post.bytes)
                 .setApplication(context.getString(R.string.scatterbrainapplication))
-                .setBody(par.bytes)
                 .build()
             groupMsgs.add(groupMsg)
         }
@@ -202,9 +199,8 @@ class NewsRepository @Inject constructor(
 
     suspend fun insertGroup(group: NewsGroup) {
         updateConnected()
-        val message = ScatterMessage.newBuilder()
+        val message = ScatterMessage.Builder.newInstance(group.bytes)
             .setApplication(context.getString(R.string.scatterbrainapplication))
-            .setBody(group.bytes)
             .build()
         dao.insertGroup(group)
         if (isConnected()) {
@@ -217,9 +213,8 @@ class NewsRepository @Inject constructor(
         updateConnected()
         dao.insertGroups(group)
         val messages = group.map { g ->
-            ScatterMessage.newBuilder()
+            ScatterMessage.Builder.newInstance(g.bytes)
                 .setApplication(context.getString(R.string.scatterbrainapplication))
-                .setBody(g.bytes)
                 .build()
         }
         if (isConnected()) {
@@ -258,7 +253,7 @@ class NewsRepository @Inject constructor(
         sdkComponent.binderWrapper.observeMessages(context.getString(R.string.scatterbrainapplication))
             .map { messages ->
                 for (message in messages) {
-                    if (!message.toDisk) {
+                    if (!message.isFile) {
                         val type = Message.parse(message.body!!)
                         when (type.typeVal) {
                             TypeVal.POST -> {
@@ -283,7 +278,7 @@ class NewsRepository @Inject constructor(
         requireConnected()
         sdkComponent.binderWrapper.getScatterMessages(context.getString(R.string.scatterbrainapplication))
             .forEach { message ->
-                if (!message.toDisk) {
+                if (!message.isFile) {
                     val type = Message.parse(message.body!!)
                     when (type.typeVal) {
                         TypeVal.POST -> {
