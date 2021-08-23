@@ -79,10 +79,10 @@ class GroupListFragment @Inject constructor() : Fragment() {
             layoutManager = LinearLayoutManager(context)
             adapter = postAdapter
         }
-
         if (args.immutable) {
             lifecycleScope.launch(Dispatchers.Main) {
                 groupListAdapter.values.addAll(args.grouplist)
+                binding.nestedAppbar.setExpanded(false, false)
                 groupListAdapter.notifyDataSetChanged()
             }
         } else {
@@ -92,13 +92,14 @@ class GroupListFragment @Inject constructor() : Fragment() {
                 setEmpty(posts.isEmpty())
                 postAdapter.values.clear()
                 postAdapter.values.addAll(posts)
-                postAdapter.notifyDataSetChanged()
+                groupListAdapter.notifyDataSetChanged()
             }
 
             repository.observeChildren(args.parent.uuid).observe(viewLifecycleOwner) { children ->
                 Log.v("debug", "observing groups ${children.size}")
                 groupListAdapter.values.clear()
                 groupListAdapter.values.addAll(children)
+                binding.nestedAppbar.setExpanded(false, false)
                 groupListAdapter.notifyDataSetChanged()
             }
         }
