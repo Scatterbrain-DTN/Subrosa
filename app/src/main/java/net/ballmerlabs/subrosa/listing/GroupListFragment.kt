@@ -82,6 +82,7 @@ class GroupListFragment @Inject constructor() : Fragment() {
         if (args.immutable) {
             lifecycleScope.launch(Dispatchers.Main) {
                 groupListAdapter.values.addAll(args.grouplist)
+                binding.nestedAppbar.setExpanded(false, false)
                 groupListAdapter.notifyDataSetChanged()
             }
         } else {
@@ -98,6 +99,7 @@ class GroupListFragment @Inject constructor() : Fragment() {
                 Log.v("debug", "observing groups ${children.size}")
                 groupListAdapter.values.clear()
                 groupListAdapter.values.addAll(children)
+                binding.nestedAppbar.setExpanded(false, false)
                 groupListAdapter.notifyDataSetChanged()
             }
         }
