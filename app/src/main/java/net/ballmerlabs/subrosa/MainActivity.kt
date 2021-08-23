@@ -174,7 +174,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setAppBar(expand: Boolean = false, text: String? = null) {
-        binding.contentMain.scrollView.isNestedScrollingEnabled = expand
         binding.pathscroll.visibility = if (expand) View.VISIBLE else View.GONE
         val layoutParams = binding.appbarlayout.layoutParams as CoordinatorLayout.LayoutParams
         if (layoutParams.behavior == null) {
