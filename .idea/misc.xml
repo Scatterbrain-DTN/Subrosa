@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="app/src/main/res/layout/content_main.xml" value="0.3686594202898551" />
+        <entry key="app/src/main/res/layout/fragment_group_create_dialog.xml" value="0.10726995424504321" />
+        <entry key="app/src/main/res/layout/fragment_group_list.xml" value="0.3686594202898551" />
+      </map>
+    </option>
+  </component>
   <component name="JavadocGenerationManager">
     <option name="OUTPUT_DIRECTORY" value="$USER_HOME$/javadoc_subrosa" />
     <option name="OPTION_INCLUDE_LIBS" value="true" />
