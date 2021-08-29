@@ -90,4 +90,8 @@
             android:name="parent"
             app:argType="net.ballmerlabs.subrosa.scatterbrain.NewsGroup"/>
     </dialog>
+    <fragment
+        android:id="@+id/mainSettings"
+        android:name="net.ballmerlabs.subrosa.prefs.MainSettings"
+        android:label="MainSettings" />
 </navigation>
