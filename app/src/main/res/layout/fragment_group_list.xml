@@ -21,7 +21,7 @@
                 android:id="@+id/toolbar_nested"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:background="?attr/colorPrimary"
+                android:background="@android:color/transparent"
                 app:layout_scrollFlags="scroll|exitUntilCollapsed"
                 app:popupTheme="@style/Theme.Subrosa.PopupOverlay">
             </androidx.appcompat.widget.Toolbar>
