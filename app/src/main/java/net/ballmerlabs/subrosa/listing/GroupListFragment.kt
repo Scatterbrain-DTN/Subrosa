@@ -35,9 +35,6 @@ class GroupListFragment @Inject constructor() : Fragment() {
 
     @Inject lateinit var repository: NewsRepository
 
-    private val viewModel by viewModels<GroupListViewModel>()
-    private val activityViewModel by activityViewModels<MainViewModel>()
-
     private val groupListAdapter = GroupListRecyclerViewAdapter { group -> onGroupListItemClick(group)}
 
 
@@ -66,19 +63,9 @@ class GroupListFragment @Inject constructor() : Fragment() {
         }
     }
 
-    override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?
-    ): View {
-        binding = FragmentGroupListBinding.inflate(inflater)
-        groupListAdapter.values.clear()
+    private fun initialSetupGroupList() {
         binding.groupRecyclerview.adapter = groupListAdapter
-        binding.postScrollView.isNestedScrollingEnabled = true
-
-        with(binding.threadRecyclerview) {
-            layoutManager = LinearLayoutManager(context)
-            adapter = postAdapter
-        }
+        groupListAdapter.values.clear()
         if (args.immutable) {
             lifecycleScope.launch(Dispatchers.Main) {
                 groupListAdapter.values.addAll(args.grouplist)
@@ -86,6 +73,25 @@ class GroupListFragment @Inject constructor() : Fragment() {
                 groupListAdapter.notifyDataSetChanged()
             }
         } else {
+            repository.observeChildren(args.parent.uuid).observe(viewLifecycleOwner) { children ->
+                Log.v("debug", "observing groups ${children.size}")
+                groupListAdapter.values.clear()
+                groupListAdapter.values.addAll(children)
+                binding.nestedAppbar.setExpanded(false, false)
+                groupListAdapter.notifyDataSetChanged()
+            }
+        }
+    }
+
+    private fun initialSetupPosts() {
+        binding.postScrollView.isNestedScrollingEnabled = true
+
+        with(binding.threadRecyclerview) {
+            layoutManager = LinearLayoutManager(context)
+            adapter = postAdapter
+        }
+
+        if (!args.immutable) {
             Log.v("debug", "starting post observation")
             repository.observePosts(args.parent).observe(viewLifecycleOwner) { posts ->
                 Log.e("debug", "livedata received posts ${posts.size}")
@@ -95,15 +101,16 @@ class GroupListFragment @Inject constructor() : Fragment() {
                 groupListAdapter.notifyDataSetChanged()
             }
 
-            repository.observeChildren(args.parent.uuid).observe(viewLifecycleOwner) { children ->
-                Log.v("debug", "observing groups ${children.size}")
-                groupListAdapter.values.clear()
-                groupListAdapter.values.addAll(children)
-                binding.nestedAppbar.setExpanded(false, false)
-                groupListAdapter.notifyDataSetChanged()
-            }
         }
+    }
 
+    override fun onCreateView(
+            inflater: LayoutInflater, container: ViewGroup?,
+            savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentGroupListBinding.inflate(inflater)
+        initialSetupGroupList()
+        initialSetupPosts()
         return binding.root
     }
 
