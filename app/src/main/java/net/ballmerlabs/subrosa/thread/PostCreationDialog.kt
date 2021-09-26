@@ -66,18 +66,8 @@ class PostCreationDialog @Inject constructor(): DialogFragment() {
                 arrayAdapter.notifyDataSetChanged()
             }
         }
-        binding.userAutocomplete.onItemClickListener = object:
-        AdapterView.OnItemClickListener {
-            override fun onItemClick(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                selectedUser = arrayAdapter.getItem(position)
-            }
-
-        }
+        binding.userAutocomplete.onItemClickListener =
+            AdapterView.OnItemClickListener { _, _, position, _ -> selectedUser = arrayAdapter.getItem(position) }
 
         binding.postButton.setOnClickListener {
             if (selectedUser == null) {
