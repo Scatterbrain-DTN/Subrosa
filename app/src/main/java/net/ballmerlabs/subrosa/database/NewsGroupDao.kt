@@ -44,7 +44,7 @@ interface NewsGroupDao {
     suspend fun insertGroup(newsGroup: NewsGroup)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertPost(post: Post)
+    suspend fun insertPost(vararg post: Post)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertGroups(newsGroup: NewsGroup)
