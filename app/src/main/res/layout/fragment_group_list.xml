@@ -50,13 +50,13 @@
             android:layout_height="wrap_content">
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:id="@+id/no_posts_textview"
             android:text="No posts for you. Sad noises"/>
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/thread_recyclerview"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             app:layoutManager="LinearLayoutManager"
             android:visibility="gone"
             tools:listitem="@layout/thread_card" />
