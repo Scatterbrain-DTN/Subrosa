@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
@@ -95,6 +96,9 @@ class UserCreationFragment @Inject constructor(): DialogFragment() {
         binding.confirmButton.setOnClickListener {
             commit()
             findNavController().popBackStack()
+        }
+        (binding.profilepic.layoutParams as ConstraintLayout.LayoutParams).apply {
+            matchConstraintMaxWidth = Resources.getSystem().displayMetrics.widthPixels
         }
         return binding.root
     }
