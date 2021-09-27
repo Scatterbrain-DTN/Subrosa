@@ -54,13 +54,7 @@ class GroupListFragment @Inject constructor() : Fragment() {
     }
 
     private fun setEmpty(empty: Boolean) {
-        if(empty) {
-            binding.noPostsTextview.visibility = View.VISIBLE
-            binding.threadRecyclerview.visibility = View.GONE
-        } else {
-            binding.noPostsTextview.visibility = View.GONE
-            binding.threadRecyclerview.visibility = View.VISIBLE
-        }
+        binding.threadRecyclerview.visibility = View.VISIBLE
     }
 
     private fun initialSetupGroupList() {
@@ -84,8 +78,6 @@ class GroupListFragment @Inject constructor() : Fragment() {
     }
 
     private fun initialSetupPosts() {
-        binding.postScrollView.isNestedScrollingEnabled = true
-
         with(binding.threadRecyclerview) {
             layoutManager = LinearLayoutManager(context)
             adapter = postAdapter
@@ -98,7 +90,7 @@ class GroupListFragment @Inject constructor() : Fragment() {
                 setEmpty(posts.isEmpty())
                 postAdapter.values.clear()
                 postAdapter.values.addAll(posts)
-                groupListAdapter.notifyDataSetChanged()
+                postAdapter.notifyDataSetChanged()
             }
 
         }

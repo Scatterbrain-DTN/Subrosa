@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:layout_width="match_parent"
     android:nestedScrollingEnabled="true"
+    android:id="@+id/nested_coordinator_layout"
     tools:context=".listing.GroupListFragment">
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/nested_appbar"
@@ -40,28 +41,15 @@
                 android:layout_gravity="bottom|center"/>
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
-    <FrameLayout
-        android:id="@+id/post_scroll_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/no_posts_textview"
-            android:text="No posts for you. Sad noises"/>
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/thread_recyclerview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layoutManager="LinearLayoutManager"
-            android:visibility="gone"
-            tools:listitem="@layout/thread_card" />
-        </FrameLayout>
-    </FrameLayout>
+            tools:listitem="@layout/thread_card"
+            android:paddingBottom="@dimen/bottom_nav_height"
+            android:clipToPadding="false"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
 </net.ballmerlabs.subrosa.listing.NestedCoordinatorLayout>
 
