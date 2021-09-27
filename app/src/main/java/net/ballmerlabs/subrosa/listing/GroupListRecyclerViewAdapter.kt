@@ -21,6 +21,7 @@ class GroupListRecyclerViewAdapter(private val itemClickListener: (group: NewsGr
         set(value) {
             binding.name.text = value.name
             binding.itemIdenticon.hash = value.hashCode()
+            binding.root.setOnClickListener { listener(value) }
             field = value
         }
 
