@@ -57,16 +57,34 @@
                     android:inputType="none" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:hintAnimationEnabled="true"
+                android:id="@+id/post_header_layout"
+                android:hint="@string/post_header_hint"
+                android:paddingTop="10dp"
+                app:layout_constraintTop_toBottomOf="@id/select_user"
+                app:layout_constraintStart_toStartOf="parent">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/post_header_edittext"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="top"
+                    android:inputType="textMultiLine" />
+            </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
+                android:id="@+id/post_body_layout"
                 android:layout_height="0dp"
                 app:hintAnimationEnabled="true"
                 android:hint="@string/write_post_hint"
                 android:paddingTop="10dp"
                 app:layout_constraintBottom_toTopOf="@id/post_button"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/select_user">
+                app:layout_constraintTop_toBottomOf="@id/post_header_layout">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/post_body_edittext"

@@ -80,7 +80,7 @@ class PostCreationDialog @Inject constructor(): DialogFragment() {
                         repository.sendPost(
                             args.current,
                             user!!.identity,
-                            "fmef default header",
+                            binding.postHeaderEdittext.text.toString(),
                             binding.postBodyEdittext.text.toString(),
 
                             )
