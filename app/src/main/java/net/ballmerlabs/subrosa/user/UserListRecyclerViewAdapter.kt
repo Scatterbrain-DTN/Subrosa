@@ -14,7 +14,7 @@ import net.ballmerlabs.subrosa.databinding.FragmentUserlistItemBinding
  * [RecyclerView.Adapter] that can display users
  */
 class UserListRecyclerViewAdapter(
-    private val values: List<User>
+    var values: List<User>
 ) : RecyclerView.Adapter<UserListRecyclerViewAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

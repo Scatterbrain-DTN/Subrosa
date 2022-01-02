@@ -25,6 +25,8 @@ class UserListFragment @Inject constructor() : Fragment() {
     private var columnCount = 1
     private lateinit var binding: FragmentUserlistListBinding
 
+    private lateinit var userAdapter: UserListRecyclerViewAdapter
+
     @Inject lateinit var repository: NewsRepository
 
     override fun onCreateView(
@@ -39,8 +41,19 @@ class UserListFragment @Inject constructor() : Fragment() {
             }
             lifecycleScope.launch(Dispatchers.IO) {
                 val users = repository.readAllUsers()
-                withContext(Dispatchers.Main) { adapter = UserListRecyclerViewAdapter(users) }
+                withContext(Dispatchers.Main) {
+                    userAdapter = UserListRecyclerViewAdapter(users)
+                    adapter = userAdapter
+                    repository.observeUsers()
+                        .observe(viewLifecycleOwner) { users ->
+                            userAdapter.values = users
+                            userAdapter.notifyDataSetChanged()
+                        }
+                }
             }
+
+
+
         }
         return binding.root
     }
