@@ -41,6 +41,11 @@
                 android:layout_gravity="bottom|center"/>
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/swipe_refresh_layout"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/thread_recyclerview"
             android:layout_width="match_parent"
@@ -48,8 +53,7 @@
             app:layoutManager="LinearLayoutManager"
             tools:listitem="@layout/thread_card"
             android:paddingBottom="@dimen/bottom_nav_height"
-            android:clipToPadding="false"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
-
+            android:clipToPadding="false" />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </net.ballmerlabs.subrosa.listing.NestedCoordinatorLayout>
 

@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -18,9 +19,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.ballmerlabs.subrosa.MainViewModel
 import net.ballmerlabs.subrosa.NewsRepository
+import net.ballmerlabs.subrosa.R
 import net.ballmerlabs.subrosa.databinding.FragmentGroupListBinding
 import net.ballmerlabs.subrosa.scatterbrain.NewsGroup
 import net.ballmerlabs.subrosa.thread.PostListRecylerViewAdapter
+import java.util.*
 import javax.inject.Inject
 
 /**
@@ -77,6 +80,19 @@ class GroupListFragment @Inject constructor() : Fragment() {
         }
     }
 
+    private suspend fun refreshLatest() {
+        val time = repository.getLastSyncTime()
+        if (!repository.fullSync(time)) {
+            withContext(Dispatchers.Main) {
+                val toast = Toast(requireContext())
+                toast.setText(R.string.refresh_in_progress)
+                toast.show()
+            }
+        } else {
+            repository.setLastSyncTime(Date())
+        }
+    }
+
     private fun initialSetupPosts() {
         with(binding.threadRecyclerview) {
             layoutManager = LinearLayoutManager(context)
@@ -103,6 +119,12 @@ class GroupListFragment @Inject constructor() : Fragment() {
         binding = FragmentGroupListBinding.inflate(inflater)
         initialSetupGroupList()
         initialSetupPosts()
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            lifecycleScope.launch {
+                refreshLatest()
+                binding.swipeRefreshLayout.isRefreshing = false
+            }
+        }
         return binding.root
     }
 

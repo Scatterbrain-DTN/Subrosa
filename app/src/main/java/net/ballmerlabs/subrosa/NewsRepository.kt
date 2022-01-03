@@ -1,8 +1,10 @@
 package net.ballmerlabs.subrosa
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.util.Log
+import androidx.core.content.edit
 import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.map
@@ -10,10 +12,7 @@ import com.lelloman.identicon.drawable.GithubIdenticonDrawable
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import net.ballmerlabs.scatterbrainsdk.ScatterMessage
 import net.ballmerlabs.scatterbrainsdk.ScatterbrainApi
 import net.ballmerlabs.subrosa.database.NewsGroupChildren
@@ -22,6 +21,7 @@ import net.ballmerlabs.subrosa.database.User
 import net.ballmerlabs.subrosa.scatterbrain.*
 import net.ballmerlabs.subrosa.util.uuidConvert
 import java.util.*
+import java.util.concurrent.atomic.AtomicReference
 import javax.inject.Inject
 import javax.inject.Named
 import kotlin.collections.ArrayList
@@ -34,8 +34,11 @@ class NewsRepository @Inject constructor(
     @Named(ScatterbrainModule.API_COROUTINE_SCOPE) val coroutineScope: CoroutineScope
     ) {
 
+    private val prefs = context.getSharedPreferences(SubrosaApplication.SHARED_PREFS_DEFAULT, Context.MODE_PRIVATE)
+
     private val connectedCallback: MutableSet<(connected: Boolean) -> Unit> = HashSet()
     private var isConnected = false
+    private val refreshInProgress = AtomicReference(false)
 
     init {
         sdkComponent.broadcastReceiver.register()
@@ -263,6 +266,7 @@ class NewsRepository @Inject constructor(
     suspend fun observePosts(): Flow<Post> = flow {
         requireConnected()
         sdkComponent.binderWrapper.observeMessages(context.getString(R.string.scatterbrainapplication))
+            .onEach { currentCoroutineContext().ensureActive() }
             .map { messages ->
                 for (message in messages) {
                     if (!message.isFile) {
@@ -286,31 +290,79 @@ class NewsRepository @Inject constructor(
             }
     }
 
-    suspend fun fullSync() {
-        requireConnected()
-        sdkComponent.binderWrapper.getScatterMessages(context.getString(R.string.scatterbrainapplication))
-            .forEach { message ->
-                if (!message.isFile) {
-                    val type = Message.parse(message.body!!)
-                    when (type.typeVal) {
-                        TypeVal.POST -> {
-                            val post = Message.parse<Post>(message.body!!, type)
-                            dao.insertPost(post)
-                        }
-                        TypeVal.NEWSGROUP -> {
-                            val newsgroup = Message.parse<NewsGroup>(message.body!!, type)
-                            dao.insertGroup(newsgroup)
-                        }
-                        else -> {
-                            Log.e(TAG, "invalid message type received")
-                        }
+    private suspend fun processScatterMessages(messages: List<ScatterMessage>) {
+        messages.forEach { message ->
+            if (!message.isFile) {
+                val type = Message.parse(message.body!!)
+                when (type.typeVal) {
+                    TypeVal.POST -> {
+                        val post = Message.parse<Post>(message.body!!, type)
+                        dao.insertPost(post)
+                    }
+                    TypeVal.NEWSGROUP -> {
+                        val newsgroup = Message.parse<NewsGroup>(message.body!!, type)
+                        dao.insertGroup(newsgroup)
+                    }
+                    else -> {
+                        Log.e(TAG, "invalid message type received")
                     }
                 }
             }
+        }
+    }
+
+    fun getLastSyncTime(): Date {
+        val time = prefs.getLong(PREF_LAST_SYNC_TIME, 0)
+        return Date(time)
+    }
+
+    fun setLastSyncTime(time: Date) {
+        prefs.edit {
+            putLong(PREF_LAST_SYNC_TIME, time.time)
+            commit()
+        }
+    }
+
+    suspend fun fullSync(): Boolean {
+        requireConnected()
+        if (refreshInProgress.getAndSet(true)) {
+            return false
+        }
+        val messages = withContext(Dispatchers.IO) { sdkComponent.binderWrapper.getScatterMessages(context.getString(R.string.scatterbrainapplication)) }
+        withContext(Dispatchers.Default) { processScatterMessages(messages) }
+        refreshInProgress.set(false)
+        return true
+    }
+
+    suspend fun fullSync(since: Date): Boolean {
+        requireConnected()
+        if (refreshInProgress.getAndSet(true)) {
+            return false
+        }
+        val messages = withContext(Dispatchers.IO) {
+            sdkComponent.binderWrapper.getScatterMessages(context.getString(R.string.scatterbrainapplication), since)
+        }
+        withContext(Dispatchers.Default) { processScatterMessages(messages) }
+        refreshInProgress.set(false)
+        return true
+    }
+
+    suspend fun fullSync(start: Date, end: Date): Boolean {
+        requireConnected()
+        if (refreshInProgress.getAndSet(true)) {
+            return false
+        }
+        val messages = withContext(Dispatchers.IO) {
+            sdkComponent.binderWrapper.getScatterMessages(context.getString(R.string.scatterbrainapplication), start, end)
+        }
+        withContext(Dispatchers.Default) { processScatterMessages(messages) }
+        refreshInProgress.set(false)
+        return true
     }
 
     companion object {
         const val TAG = "NewsRepository"
+        const val PREF_LAST_SYNC_TIME  = "last_sync_time"
     }
 
 }

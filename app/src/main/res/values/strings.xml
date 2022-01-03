@@ -10,6 +10,8 @@
 
     <string name="fail_delete_user">Failed to delete scatterbrain identity</string>
 
+    <string name="refresh_in_progress">Refresh already in progress</string>
+
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
     <!-- TODO: Remove or change this placeholder text -->
