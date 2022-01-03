@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
@@ -13,7 +14,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.ballmerlabs.subrosa.NewsRepository
+import net.ballmerlabs.subrosa.R
 import net.ballmerlabs.subrosa.databinding.FragmentUserlistListBinding
+import java.util.*
 import javax.inject.Inject
 
 /**
@@ -29,6 +32,17 @@ class UserListFragment @Inject constructor() : Fragment() {
 
     @Inject lateinit var repository: NewsRepository
 
+    private suspend fun onUserDelete(uuid: UUID) {
+        val res = withContext(Dispatchers.IO) { repository.deleteUser(uuid) }
+        if (!res) {
+            withContext(Dispatchers.Main) {
+                val toast = Toast(requireContext())
+                toast.setText(R.string.fail_delete_user)
+                toast.show()
+            }
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -42,7 +56,12 @@ class UserListFragment @Inject constructor() : Fragment() {
             lifecycleScope.launch(Dispatchers.IO) {
                 val users = repository.readAllUsers()
                 withContext(Dispatchers.Main) {
-                    userAdapter = UserListRecyclerViewAdapter(users)
+                    userAdapter = UserListRecyclerViewAdapter(users, requireContext())
+                    userAdapter.setOnDeleteClickListener { uuid ->
+                        lifecycleScope.launch {
+                            onUserDelete(uuid)
+                        }
+                    }
                     adapter = userAdapter
                     repository.observeUsers()
                         .observe(viewLifecycleOwner) { users ->

@@ -40,6 +40,9 @@ interface NewsGroupDao {
     @Query("SELECT * FROM newsgroup WHERE uuid = (:uuid)")
     fun observeGroupWithChildren(uuid: UUID): LiveData<NewsGroupChildren>
 
+    @Query("DELETE FROM user WHERE identity = :identity")
+    suspend fun deleteByIdentity(identity: UUID)
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertGroup(newsGroup: NewsGroup)
 
@@ -54,6 +57,9 @@ interface NewsGroupDao {
 
     @Insert
     suspend fun insertUsers(vararg user: User)
+
+    @Delete
+    suspend fun deleteUsers(vararg user: User)
 
     @Insert
     suspend fun insertUsers(user: List<User>)

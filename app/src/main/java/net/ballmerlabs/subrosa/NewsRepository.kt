@@ -222,6 +222,18 @@ class NewsRepository @Inject constructor(
         }
     }
 
+
+    suspend fun deleteUser(user: UUID): Boolean {
+        requireConnected()
+        dao.deleteByIdentity(user)
+        val identity = sdkComponent.binderWrapper.getIdentity(user)
+        return if (identity != null) {
+            sdkComponent.binderWrapper.removeIdentity(identity)
+        } else {
+            false
+        }
+    }
+
     suspend fun createGroup(name: String, parent: NewsGroup): NewsGroup {
         updateConnected()
         val uuid = UUID.randomUUID()
