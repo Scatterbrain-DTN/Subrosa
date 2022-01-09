@@ -70,7 +70,7 @@ class UserListFragment @Inject constructor() : Fragment() {
         repository.observeUsers()
             .observe(viewLifecycleOwner) { users ->
                 Log.v("debug", "observed users ${users.size}" )
-                userAdapter.addItem(users)
+                userAdapter.addItems(users)
             }
 
         return binding.root

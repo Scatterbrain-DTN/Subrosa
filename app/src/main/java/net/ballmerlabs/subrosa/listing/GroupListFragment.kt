@@ -62,20 +62,16 @@ class GroupListFragment @Inject constructor() : Fragment() {
 
     private fun initialSetupGroupList() {
         binding.groupRecyclerview.adapter = groupListAdapter
-        groupListAdapter.values.clear()
         if (args.immutable) {
             lifecycleScope.launch(Dispatchers.Main) {
-                groupListAdapter.values.addAll(args.grouplist)
+                groupListAdapter.addItems(args.grouplist.asList())
                 binding.nestedAppbar.setExpanded(false, false)
-                groupListAdapter.notifyDataSetChanged()
             }
         } else {
             repository.observeChildren(args.parent.uuid).observe(viewLifecycleOwner) { children ->
                 Log.v("debug", "observing groups ${children.size}")
-                groupListAdapter.values.clear()
-                groupListAdapter.values.addAll(children)
+                groupListAdapter.addItems(children)
                 binding.nestedAppbar.setExpanded(false, false)
-                groupListAdapter.notifyDataSetChanged()
             }
         }
     }
@@ -104,9 +100,7 @@ class GroupListFragment @Inject constructor() : Fragment() {
             repository.observePosts(args.parent).observe(viewLifecycleOwner) { posts ->
                 Log.e("debug", "livedata received posts ${posts.size}")
                 setEmpty(posts.isEmpty())
-                postAdapter.values.clear()
-                postAdapter.values.addAll(posts)
-                postAdapter.notifyDataSetChanged()
+                postAdapter.addItems(posts)
             }
 
         }

@@ -7,11 +7,12 @@ import androidx.recyclerview.widget.RecyclerView
 import net.ballmerlabs.subrosa.R
 import net.ballmerlabs.subrosa.databinding.GroupItemBinding
 import net.ballmerlabs.subrosa.scatterbrain.NewsGroup
+import net.ballmerlabs.subrosa.util.MapRecyclerViewAdapter
+import java.util.*
+import kotlin.collections.ArrayList
 
 class GroupListRecyclerViewAdapter(private val itemClickListener: (group: NewsGroup) -> Unit) :
-    RecyclerView.Adapter<GroupListRecyclerViewAdapter.ViewHolder>() {
-
-    val values: ArrayList<NewsGroup> = arrayListOf()
+    MapRecyclerViewAdapter<UUID, NewsGroup, GroupListRecyclerViewAdapter.ViewHolder>() {
 
     inner class ViewHolder(view: View, private val listener: (group: NewsGroup) -> Unit):
         RecyclerView.ViewHolder(view) {
@@ -37,7 +38,7 @@ class GroupListRecyclerViewAdapter(private val itemClickListener: (group: NewsGr
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = values[position]
+        val item = valueMap[values[position]]!!
         holder.newsGroup = item
     }
 

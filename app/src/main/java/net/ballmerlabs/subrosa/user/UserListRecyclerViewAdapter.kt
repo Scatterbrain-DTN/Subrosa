@@ -11,19 +11,16 @@ import androidx.recyclerview.widget.RecyclerView
 import net.ballmerlabs.subrosa.R
 import net.ballmerlabs.subrosa.database.User
 import net.ballmerlabs.subrosa.databinding.UserlistItemBinding
+import net.ballmerlabs.subrosa.util.MapRecyclerViewAdapter
 import java.util.*
-import java.util.concurrent.ConcurrentHashMap
 
 /**
  * [RecyclerView.Adapter] that can display users
  */
 class UserListRecyclerViewAdapter(
     val context: Context
-) : RecyclerView.Adapter<UserListRecyclerViewAdapter.ViewHolder>() {
+) : MapRecyclerViewAdapter<UUID, User, UserListRecyclerViewAdapter.ViewHolder>() {
 
-    private val valueMap = ConcurrentHashMap<UUID, User>()
-
-    private val values = mutableListOf<UUID>()
     private var onDeleteClickListener: (uuid: UUID) -> Unit = {}
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -34,28 +31,6 @@ class UserListRecyclerViewAdapter(
 
     fun setOnDeleteClickListener(func: (uuid: UUID) -> Unit) {
         onDeleteClickListener = func
-    }
-
-    fun addItem(items: List<User>) {
-        val uuids = items.map { i -> i.identity }
-        val removes = valueMap.keys - uuids
-        items.forEach { item ->
-            if(valueMap.putIfAbsent(item.identity, item) == null) {
-                val index = values.size
-                values.add(index, item.identity)
-                notifyItemChanged(index)
-            }
-        }
-        removes.forEach { item -> delItem(item) }
-    }
-
-    private fun delItem(item: UUID) {
-        if (valueMap.remove(item) != null) {
-            Log.v("debug", "removeItem $item")
-            val index = values.indexOf(item)
-            values.removeAt(index)
-            notifyItemRemoved(index)
-        }
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {

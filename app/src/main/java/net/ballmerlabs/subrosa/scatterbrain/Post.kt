@@ -3,8 +3,10 @@ package net.ballmerlabs.subrosa.scatterbrain
 import androidx.room.*
 import com.google.protobuf.ByteString
 import net.ballmerlabs.subrosa.SubrosaProto
+import net.ballmerlabs.subrosa.util.HasKey
 import net.ballmerlabs.subrosa.util.uuidConvert
 import net.ballmerlabs.subrosa.util.uuidConvertProto
+import java.security.MessageDigest
 import java.util.*
 
 @Entity(
@@ -12,7 +14,7 @@ import java.util.*
 )
 class Post(
     packet: SubrosaProto.Post
-): Message<SubrosaProto.Post>(packet) {
+): Message<SubrosaProto.Post>(packet), HasKey<Int> {
 
     @Ignore
     override val typePacket: SubrosaProto.Type =  SubrosaProto.Type.newBuilder()
@@ -47,6 +49,15 @@ class Post(
             .setSig(ByteString.copyFrom(sig))
             .build()
     )
+
+    private fun postToArray(): ByteArray {
+        return parent.hash + uuidConvert(author) + header.encodeToByteArray() + body.encodeToByteArray()
+    }
+
+
+    override fun hasKey(): Int {
+        return id
+    }
 
 
     companion object {

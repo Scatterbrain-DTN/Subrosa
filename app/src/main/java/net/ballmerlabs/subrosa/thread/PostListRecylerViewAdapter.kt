@@ -1,5 +1,6 @@
 package net.ballmerlabs.subrosa.thread
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -7,11 +8,11 @@ import androidx.recyclerview.widget.RecyclerView
 import net.ballmerlabs.subrosa.R
 import net.ballmerlabs.subrosa.databinding.ThreadCardBinding
 import net.ballmerlabs.subrosa.scatterbrain.Post
+import net.ballmerlabs.subrosa.util.MapRecyclerViewAdapter
 
 class PostListRecylerViewAdapter():
-    RecyclerView.Adapter<PostListRecylerViewAdapter.ViewHolder>() {
+    MapRecyclerViewAdapter<Int, Post, PostListRecylerViewAdapter.ViewHolder>() {
 
-    val values: ArrayList<Post> = arrayListOf()
     inner class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
         private val binding: ThreadCardBinding = ThreadCardBinding.bind(view)
 
@@ -48,11 +49,15 @@ class PostListRecylerViewAdapter():
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = values[position]
-        holder.body = item.body
-        holder.fingerprint = item.author.toString()
-        holder.header = item.header
-        holder.name = "todo: default name"
+        val item = valueMap[values[position]]
+        if (item != null) {
+            holder.body = item.body
+            holder.fingerprint = item.author.toString()
+            holder.header = item.header
+            holder.name = "todo: default name"
+        } else {
+            Log.e("debug", "post at $position was null")
+        }
     }
 
     override fun getItemCount(): Int = values.size

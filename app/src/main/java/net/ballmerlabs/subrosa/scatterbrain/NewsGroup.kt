@@ -6,6 +6,7 @@ import android.os.Parcelable
 import androidx.room.*
 import com.google.protobuf.ByteString
 import net.ballmerlabs.subrosa.SubrosaProto
+import net.ballmerlabs.subrosa.util.HasKey
 import net.ballmerlabs.subrosa.util.uuidConvert
 import net.ballmerlabs.subrosa.util.uuidConvertProto
 import java.lang.IllegalArgumentException
@@ -37,9 +38,8 @@ data class Parent(
     }
 
     override fun hashCode(): Int {
-        var result = parentUUID.hashCode()
-        result = 31 * result + parentHash.contentHashCode()
-        return result
+        val result = 31 *  parentHash.contentHashCode() + parentUUID.leastSignificantBits + parentUUID.mostSignificantBits
+        return result.mod(Int.MAX_VALUE)
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -81,7 +81,7 @@ data class Parent(
 class NewsGroup(
     packet: SubrosaProto.NewsGroup,
     @Ignore val empty: Boolean = false
-): Message<SubrosaProto.NewsGroup>(packet), Parcelable {
+): Message<SubrosaProto.NewsGroup>(packet), Parcelable, HasKey<UUID> {
 
     @Ignore
     override val typePacket: SubrosaProto.Type = SubrosaProto.Type.newBuilder()
@@ -123,6 +123,9 @@ class NewsGroup(
 
     var name = packet.name
 
+    override fun hasKey(): UUID {
+        return uuid
+    }
 
     constructor(parcel: Parcel): this(
         name = parcel.readString()!!,

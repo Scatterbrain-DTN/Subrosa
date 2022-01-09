@@ -7,6 +7,7 @@ import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import kotlinx.coroutines.*
+import net.ballmerlabs.subrosa.util.HasKey
 import java.io.File
 import java.util.*
 
@@ -17,7 +18,7 @@ class User(
     val bio: String,
     val imagePath: String = "$identity.png",
     val owned: Boolean = false,
-){
+): HasKey<UUID> {
     @Ignore var image: Bitmap? = null
     suspend fun getImageFromPath(context: Context): Boolean = withContext(Dispatchers.IO) {
         val file = File(context.filesDir, imagePath)
@@ -37,6 +38,10 @@ class User(
     suspend fun delImage(context: Context): Boolean = withContext(Dispatchers.IO) {
         val file = File(context.filesDir, imagePath)
         file.delete()
+    }
+
+    override fun hasKey(): UUID {
+        return identity
     }
 
     override fun toString(): String {
