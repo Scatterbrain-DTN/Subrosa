@@ -34,6 +34,11 @@ class User(
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, file.outputStream())
     }
 
+    suspend fun delImage(context: Context): Boolean = withContext(Dispatchers.IO) {
+        val file = File(context.filesDir, imagePath)
+        file.delete()
+    }
+
     override fun toString(): String {
         return name
     }

@@ -137,7 +137,6 @@ class NewsRepository @Inject constructor(
     ) {
         requireConnected()
         val hashcode = (name + bio).hashCode()
-        val image = imageBitmap?: GithubIdenticonDrawable(64, 64, hashcode).toBitmap()
         val id = sdkComponent.binderWrapper.generateIdentity(name)
         val user = User(
             identity = id.fingerprint,
@@ -145,7 +144,9 @@ class NewsRepository @Inject constructor(
             bio = bio,
             owned = true
         )
-        user.writeImage(image, context)
+        if (imageBitmap != null) {
+            user.writeImage(imageBitmap, context)
+        }
         dao.insertUsers(user)
         user
     }
@@ -249,7 +250,9 @@ class NewsRepository @Inject constructor(
 
 
     suspend fun deleteUser(user: UUID): Boolean {
-        return dao.deleteByIdentity(user) == 1
+        val u = dao.getUsersByIdentity(user)
+        val res = dao.deleteByIdentity(user) == 1
+        return res && u.delImage(context)
     }
 
     suspend fun createGroup(name: String, parent: NewsGroup): NewsGroup {

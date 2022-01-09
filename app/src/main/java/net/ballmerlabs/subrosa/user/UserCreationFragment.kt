@@ -34,12 +34,14 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class UserCreationFragment @Inject constructor(): DialogFragment() {
     private lateinit var binding: FragmentUserCreationDialogBinding
+    private var imageSet = false
     private val req = registerForActivityResult(ActivityResultContracts.OpenDocument()) { res ->
         if (res != null) {
             lifecycleScope.launch(Dispatchers.IO) {
                 val source = ImageDecoder.createSource(requireContext().contentResolver, res)
                 val bitmap = ImageDecoder.decodeBitmap(source)
                 withContext(Dispatchers.Main) { binding.profilepic.setImageBitmap(bitmap) }
+                imageSet = true
             }
         }
     }
@@ -54,13 +56,13 @@ class UserCreationFragment @Inject constructor(): DialogFragment() {
         dialog?.window?.setLayout(percentWidth.toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
     }
 
-    fun commit() {
+    private fun commit() {
         repository.coroutineScope.launch {
             try {
                 val user = repository.createUser(
                     binding.nameedit.editText!!.text.toString(),
                     binding.bioEdit.editText!!.text.toString(),
-                    imageBitmap = binding.profilepic.drawable.toBitmap()
+                    imageBitmap = if (imageSet) binding.profilepic.drawable.toBitmap() else null
                 )
 
                 withContext(Dispatchers.Main) {
