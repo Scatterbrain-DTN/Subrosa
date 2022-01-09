@@ -54,7 +54,7 @@ class PostListRecylerViewAdapter():
             holder.body = item.body
             holder.fingerprint = item.author.toString()
             holder.header = item.header
-            holder.name = "todo: default name"
+            holder.name = item.user?.userName?: "unknown"
         } else {
             Log.e("debug", "post at $position was null")
         }

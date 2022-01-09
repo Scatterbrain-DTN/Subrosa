@@ -3,6 +3,7 @@ package net.ballmerlabs.subrosa.database
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
@@ -14,7 +15,7 @@ import java.util.*
 @Entity
 class User(
     @PrimaryKey val identity: UUID,
-    val name: String,
+    val userName: String,
     val bio: String,
     val imagePath: String = "$identity.png",
     val owned: Boolean = false,
@@ -45,6 +46,6 @@ class User(
     }
 
     override fun toString(): String {
-        return name
+        return userName
     }
 }

@@ -68,7 +68,7 @@ class UserCreationFragment @Inject constructor(): DialogFragment() {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(
                         requireContext(),
-                        "created user ${user.name}",
+                        "created user ${user.userName}",
                         Toast.LENGTH_SHORT
                     )
                         .show()

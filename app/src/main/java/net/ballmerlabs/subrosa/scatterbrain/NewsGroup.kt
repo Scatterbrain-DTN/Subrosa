@@ -9,8 +9,6 @@ import net.ballmerlabs.subrosa.SubrosaProto
 import net.ballmerlabs.subrosa.util.HasKey
 import net.ballmerlabs.subrosa.util.uuidConvert
 import net.ballmerlabs.subrosa.util.uuidConvertProto
-import java.lang.IllegalArgumentException
-import java.lang.IllegalStateException
 import java.security.MessageDigest
 import java.util.*
 
@@ -121,14 +119,14 @@ class NewsGroup(
         return value
     }
 
-    var name = packet.name
+    var groupName = packet.name
 
     override fun hasKey(): UUID {
         return uuid
     }
 
     constructor(parcel: Parcel): this(
-        name = parcel.readString()!!,
+        groupName = parcel.readString()!!,
         uuid = parcel.readParcelable<ParcelUuid>(ParcelUuid::class.java.classLoader)!!.uuid,
         parentCol = parcel.readParcelable<ParcelUuid>(ParcelUuid::class.java.classLoader)!!.uuid,
         parentHash = parcel.createByteArray()!!,
@@ -137,13 +135,13 @@ class NewsGroup(
     constructor(
         uuid: UUID,
         parentCol: UUID?,
-        name: String,
+        groupName: String,
         parentHash: ByteArray?
     ): this(
         if (parentCol == null && parentHash == null)
             SubrosaProto.NewsGroup.newBuilder()
                 .setToplevel(true)
-                .setName(name)
+                .setName(groupName)
                 .setUuid(uuidConvertProto(uuid))
                 .build()
         else if (parentCol != null && parentHash != null)
@@ -154,7 +152,7 @@ class NewsGroup(
                         .setParentuuid(uuidConvertProto(parentCol))
                         .build()
                 )
-                .setName(name)
+                .setName(groupName)
                 .setUuid(uuidConvertProto(uuid))
                 .build()
         else

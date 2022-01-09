@@ -139,7 +139,7 @@ class NewsRepository @Inject constructor(
         val id = sdkComponent.binderWrapper.generateIdentity(name)
         val user = User(
             identity = id.fingerprint,
-            name = name,
+            userName = name,
             bio = bio,
             owned = true
         )
@@ -261,7 +261,7 @@ class NewsRepository @Inject constructor(
         val group = NewsGroup(
             uuid = uuid,
             parentCol = if (parent.empty) null else parent.uuid,
-            name = name,
+            groupName = name,
             parentHash = if (parent.empty) null else parent.hash
         )
         insertGroup(group)

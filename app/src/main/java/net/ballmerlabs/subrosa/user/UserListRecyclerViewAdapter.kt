@@ -36,7 +36,7 @@ class UserListRecyclerViewAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val key = values[position]
         val item = valueMap[key]!!
-        holder.name = item.name
+        holder.name = item.userName
         holder.uuid = item.identity.toString()
         holder.setImage(item.image)
         if (item.owned) holder.setOwned()

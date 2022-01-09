@@ -11,5 +11,5 @@ class MainViewModel @Inject constructor(): ViewModel() {
     val path = MutableLiveData<List<NewsGroup>>(ArrayList())
     val collapsed = MutableLiveData(false)
     val strPath: List<String>
-    get() = path.value!!.map { v -> if (v.empty) "root" else v.name}.toMutableList()
+    get() = path.value!!.map { v -> if (v.empty) "root" else v.groupName}.toMutableList()
 }

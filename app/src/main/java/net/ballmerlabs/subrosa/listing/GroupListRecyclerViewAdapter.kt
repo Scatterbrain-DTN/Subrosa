@@ -9,7 +9,6 @@ import net.ballmerlabs.subrosa.databinding.GroupItemBinding
 import net.ballmerlabs.subrosa.scatterbrain.NewsGroup
 import net.ballmerlabs.subrosa.util.MapRecyclerViewAdapter
 import java.util.*
-import kotlin.collections.ArrayList
 
 class GroupListRecyclerViewAdapter(private val itemClickListener: (group: NewsGroup) -> Unit) :
     MapRecyclerViewAdapter<UUID, NewsGroup, GroupListRecyclerViewAdapter.ViewHolder>() {
@@ -20,7 +19,7 @@ class GroupListRecyclerViewAdapter(private val itemClickListener: (group: NewsGr
 
         var newsGroup = NewsGroup.empty()
         set(value) {
-            binding.name.text = value.name
+            binding.name.text = value.groupName
             binding.itemIdenticon.hash = value.hashCode()
             binding.root.setOnClickListener { listener(value) }
             field = value

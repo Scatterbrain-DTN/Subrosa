@@ -5,10 +5,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.snackbar.Snackbar
@@ -51,7 +49,7 @@ class GroupCreateDialog @Inject constructor() : DialogFragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentGroupCreateDialogBinding.inflate(inflater)
-        binding.groupcreateToolbar.title = "creating child group of ${args.parent.name}"
+        binding.groupcreateToolbar.title = "creating child group of ${args.parent.groupName}"
         binding.gcConfirmButton.setOnClickListener {
             if (validate()) {
                 repository.coroutineScope.launch(Dispatchers.Default) {
@@ -59,7 +57,7 @@ class GroupCreateDialog @Inject constructor() : DialogFragment() {
                     val group = NewsGroup(
                         uuid = UUID.randomUUID(),
                         parentCol = args.parent.uuid,
-                        name = text.toString(),
+                        groupName = text.toString(),
                         parentHash = args.parent.hash
                     )
                     repository.insertGroup(group)

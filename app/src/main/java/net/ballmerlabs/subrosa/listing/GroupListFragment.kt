@@ -7,8 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
@@ -17,7 +15,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import net.ballmerlabs.subrosa.MainViewModel
 import net.ballmerlabs.subrosa.NewsRepository
 import net.ballmerlabs.subrosa.R
 import net.ballmerlabs.subrosa.databinding.FragmentGroupListBinding
@@ -42,7 +39,7 @@ class GroupListFragment @Inject constructor() : Fragment() {
 
 
     private fun onGroupListItemClick(group: NewsGroup) {
-        Log.e("debug", "entering group with parent ${group.name} ${args.path.size}")
+        Log.e("debug", "entering group with parent ${group.groupName} ${args.path.size}")
         lifecycleScope.launch {
             val children = withContext(Dispatchers.IO) { repository.getChildren(group.uuid) }
             Log.e("debug", "found ${children.size} children")

@@ -200,7 +200,7 @@ class MainActivity : AppCompatActivity() {
         mainViewModel.path.observe(this) { v ->
             val p = v.map { group ->
                 Log.v("debug", "setting path")
-                if(group.empty) "root" else group.name
+                if(group.empty) "root" else group.groupName
             }.toTypedArray()
             Log.e("debug", "received livedata ${p.size}")
             binding.flowlayout.setPaths(p)
@@ -248,7 +248,7 @@ class MainActivity : AppCompatActivity() {
                     val args = GroupListFragmentArgs.fromBundle(arguments!!)
                     Log.v("debug", "on newsgroup ${args.parent}")
                     mainViewModel.path.value = args.path.toList()
-                    binding.toolbar.title = args.parent.name
+                    binding.toolbar.title = args.parent.groupName
                     setFabExpand(
                         lowerIcon = R.drawable.ic_baseline_create_new_folder_24,
                         upperIcon = R.drawable.ic_baseline_email_24
@@ -290,7 +290,7 @@ class MainActivity : AppCompatActivity() {
                     val uuid = uuidSha256(s.encodeToByteArray())
                     NewsGroup(
                         uuid = uuid,
-                        name = s,
+                        groupName = s,
                         parentCol = null,
                         parentHash = null
                 ) }

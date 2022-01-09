@@ -3,6 +3,7 @@ package net.ballmerlabs.subrosa.scatterbrain
 import androidx.room.*
 import com.google.protobuf.ByteString
 import net.ballmerlabs.subrosa.SubrosaProto
+import net.ballmerlabs.subrosa.database.User
 import net.ballmerlabs.subrosa.util.HasKey
 import net.ballmerlabs.subrosa.util.uuidConvert
 import net.ballmerlabs.subrosa.util.uuidConvertProto
@@ -24,6 +25,9 @@ class Post(
     @Embedded
     var parent: NewsGroup = NewsGroup(packet.parent)
 
+    @Embedded
+    var user: User? = null
+
     var author = uuidConvertProto(packet.author)
 
     var header = packet.header
@@ -39,7 +43,7 @@ class Post(
         author: UUID,
         header: String,
         body: String,
-        sig: ByteArray
+        sig: ByteArray,
     ): this(
         SubrosaProto.Post.newBuilder()
             .setParent(parent.packet)
