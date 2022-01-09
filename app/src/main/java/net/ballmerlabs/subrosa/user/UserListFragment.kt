@@ -42,8 +42,6 @@ class UserListFragment @Inject constructor() : Fragment() {
                 toast.setText(R.string.fail_delete_user)
                 toast.show()
             }
-        } else {
-           withContext(Dispatchers.Main) {  userAdapter.delItem(uuid) }
         }
     }
 
@@ -72,9 +70,7 @@ class UserListFragment @Inject constructor() : Fragment() {
         repository.observeUsers()
             .observe(viewLifecycleOwner) { users ->
                 Log.v("debug", "observed users ${users.size}" )
-                users.forEach { u ->
-                    userAdapter.addItem(u)
-                }
+                userAdapter.addItem(users)
             }
 
         return binding.root

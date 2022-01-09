@@ -36,15 +36,20 @@ class UserListRecyclerViewAdapter(
         onDeleteClickListener = func
     }
 
-    fun addItem(item: User) {
-        if(valueMap.putIfAbsent(item.identity, item) == null) {
-            val index = values.size
-            values.add(index, item.identity)
-            notifyItemChanged(index)
+    fun addItem(items: List<User>) {
+        val uuids = items.map { i -> i.identity }
+        val removes = valueMap.keys - uuids
+        items.forEach { item ->
+            if(valueMap.putIfAbsent(item.identity, item) == null) {
+                val index = values.size
+                values.add(index, item.identity)
+                notifyItemChanged(index)
+            }
         }
+        removes.forEach { item -> delItem(item) }
     }
 
-    fun delItem(item: UUID) {
+    private fun delItem(item: UUID) {
         if (valueMap.remove(item) != null) {
             Log.v("debug", "removeItem $item")
             val index = values.indexOf(item)
