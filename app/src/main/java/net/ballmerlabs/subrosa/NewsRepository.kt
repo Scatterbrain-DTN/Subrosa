@@ -292,21 +292,27 @@ class NewsRepository @Inject constructor(
 
     private suspend fun processScatterMessages(messages: List<ScatterMessage>) {
         messages.forEach { message ->
-            if (!message.isFile) {
-                val type = Message.parse(message.body!!)
-                when (type.typeVal) {
-                    TypeVal.POST -> {
-                        val post = Message.parse<Post>(message.body!!, type)
-                        dao.insertPost(post)
-                    }
-                    TypeVal.NEWSGROUP -> {
-                        val newsgroup = Message.parse<NewsGroup>(message.body!!, type)
-                        dao.insertGroup(newsgroup)
-                    }
-                    else -> {
-                        Log.e(TAG, "invalid message type received")
+            try {
+                if (!message.isFile) {
+                    val type = Message.parse(message.body!!)
+                    Log.v(TAG, "processing message type ${type.typeVal}")
+                    when (type.typeVal) {
+                        TypeVal.POST -> {
+                            val post = Message.parse<Post>(message.body!!, type)
+                            dao.insertPost(post)
+                        }
+                        TypeVal.NEWSGROUP -> {
+                            val newsgroup = Message.parse<NewsGroup>(message.body!!, type)
+                            dao.insertGroup(newsgroup)
+                        }
+                        else -> {
+                            Log.e(TAG, "invalid message type received")
+                        }
                     }
                 }
+            } catch (exc: Exception) {
+                Log.e(TAG, "failed to process message from ${message.id}: $exc")
+                exc.printStackTrace()
             }
         }
     }
@@ -342,7 +348,9 @@ class NewsRepository @Inject constructor(
         val messages = withContext(Dispatchers.IO) {
             sdkComponent.binderWrapper.getScatterMessages(context.getString(R.string.scatterbrainapplication), since)
         }
-        withContext(Dispatchers.Default) { processScatterMessages(messages) }
+        withContext(Dispatchers.Default) {
+            processScatterMessages(messages)
+        }
         refreshInProgress.set(false)
         return true
     }

@@ -27,18 +27,12 @@ fun fromProto(type: SubrosaProto.Type.PostType): TypeVal {
     }
 }
 
-class Type(packet: SubrosaProto.Type) : Message<SubrosaProto.Type>(packet) {
+class Type(packet: SubrosaProto.Type, val size: Int) : Message<SubrosaProto.Type>(packet) {
     val typeVal = fromProto(packet.type)
 
     override val typePacket: SubrosaProto.Type =  SubrosaProto.Type.newBuilder()
         .setType(toProto(TypeVal.TYPE))
         .build()
-
-    constructor(typeVal: TypeVal): this(
-        SubrosaProto.Type.newBuilder()
-            .setType(toProto(typeVal))
-            .build()
-    )
 
     companion object {
         class Parser: Message.Companion.Parser<SubrosaProto.Type, Type>(SubrosaProto.Type.parser()) {
