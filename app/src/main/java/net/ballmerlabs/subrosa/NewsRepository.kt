@@ -136,7 +136,6 @@ class NewsRepository @Inject constructor(
         Dispatchers.IO
     ) {
         requireConnected()
-        val hashcode = (name + bio).hashCode()
         val id = sdkComponent.binderWrapper.generateIdentity(name)
         val user = User(
             identity = id.fingerprint,

@@ -78,7 +78,10 @@ class UserListRecyclerViewAdapter(
 
         var uuid
         get() = binding.uuid.text
-        set(value) { binding.uuid.text = value }
+        set(value) {
+            binding.uuid.text = value
+            binding.userIdenticon.hash = value.hashCode()
+        }
 
         var name
         get() = binding.name.text
@@ -100,7 +103,6 @@ class UserListRecyclerViewAdapter(
 
 
         init {
-            binding.userIdenticon.hash = binding.uuid.hashCode()
             binding.menuButton.setOnClickListener { v ->
                 val menu = PopupMenu(context, v)
                 menu.inflate(R.menu.identity_options_menu)
