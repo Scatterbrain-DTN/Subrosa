@@ -1,6 +1,7 @@
 package net.ballmerlabs.subrosa.user
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -33,6 +34,7 @@ class UserListFragment @Inject constructor() : Fragment() {
     @Inject lateinit var repository: NewsRepository
 
     private suspend fun onUserDelete(uuid: UUID) {
+        Log.v("debug", "onUserDelete $uuid")
         val res = withContext(Dispatchers.IO) { repository.deleteUser(uuid) }
         if (!res) {
             withContext(Dispatchers.Main) {
@@ -40,6 +42,8 @@ class UserListFragment @Inject constructor() : Fragment() {
                 toast.setText(R.string.fail_delete_user)
                 toast.show()
             }
+        } else {
+           withContext(Dispatchers.Main) {  userAdapter.delItem(uuid) }
         }
     }
 
@@ -56,7 +60,7 @@ class UserListFragment @Inject constructor() : Fragment() {
             lifecycleScope.launch(Dispatchers.IO) {
                 val users = repository.readAllUsers()
                 withContext(Dispatchers.Main) {
-                    userAdapter = UserListRecyclerViewAdapter(users, requireContext())
+                    userAdapter = UserListRecyclerViewAdapter(requireContext())
                     userAdapter.setOnDeleteClickListener { uuid ->
                         lifecycleScope.launch {
                             onUserDelete(uuid)
@@ -65,8 +69,7 @@ class UserListFragment @Inject constructor() : Fragment() {
                     adapter = userAdapter
                     repository.observeUsers()
                         .observe(viewLifecycleOwner) { users ->
-                            userAdapter.values = users
-                            userAdapter.notifyDataSetChanged()
+                            users.forEach { u -> userAdapter.addItem(u) }
                         }
                 }
             }

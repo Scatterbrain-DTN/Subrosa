@@ -12,15 +12,19 @@ import net.ballmerlabs.subrosa.database.User
 import net.ballmerlabs.subrosa.databinding.UserlistItemBinding
 import java.lang.Exception
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
+import kotlin.collections.HashMap
 
 /**
  * [RecyclerView.Adapter] that can display users
  */
 class UserListRecyclerViewAdapter(
-    var values: List<User>,
     val context: Context
 ) : RecyclerView.Adapter<UserListRecyclerViewAdapter.ViewHolder>() {
 
+    private val valueMap = ConcurrentHashMap<UUID, User>()
+
+    private val values = mutableListOf<UUID>()
     private var onDeleteClickListener: (uuid: UUID) -> Unit = {}
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -33,8 +37,26 @@ class UserListRecyclerViewAdapter(
         onDeleteClickListener = func
     }
 
+    fun addItem(item: User) {
+        if(valueMap.putIfAbsent(item.identity, item) == null) {
+            val index = values.size
+            values.add(index, item.identity)
+            notifyItemChanged(index)
+        }
+    }
+
+    fun delItem(item: UUID) {
+        if (valueMap.remove(item) != null) {
+            Log.v("debug", "removeItem $item")
+            val index = values.indexOf(item)
+            values.removeAt(index)
+            notifyItemRemoved(index)
+        }
+    }
+
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = values[position]
+        val key = values[position]
+        val item = valueMap[key]!!
         holder.name = item.name
         holder.uuid = item.identity.toString()
         if (item.owned) holder.setOwned()

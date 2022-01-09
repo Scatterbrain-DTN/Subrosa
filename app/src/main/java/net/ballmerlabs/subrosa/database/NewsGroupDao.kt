@@ -41,7 +41,7 @@ interface NewsGroupDao {
     fun observeGroupWithChildren(uuid: UUID): LiveData<NewsGroupChildren>
 
     @Query("DELETE FROM user WHERE identity = :identity")
-    suspend fun deleteByIdentity(identity: UUID)
+    suspend fun deleteByIdentity(identity: UUID): Int
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertGroup(newsGroup: NewsGroup)

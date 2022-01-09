@@ -15,6 +15,15 @@
         app:hash="0"
         android:id="@+id/user_identicon"/>
 
+    <ImageView
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:visibility="invisible"
+        android:id="@+id/user_imageview"/>
+
     <TextView
         android:id="@+id/name"
         android:layout_width="wrap_content"

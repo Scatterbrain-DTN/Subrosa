@@ -227,14 +227,7 @@ class NewsRepository @Inject constructor(
 
 
     suspend fun deleteUser(user: UUID): Boolean {
-        requireConnected()
-        dao.deleteByIdentity(user)
-        val identity = sdkComponent.binderWrapper.getIdentity(user)
-        return if (identity != null) {
-            sdkComponent.binderWrapper.removeIdentity(identity)
-        } else {
-            false
-        }
+        return dao.deleteByIdentity(user) == 1
     }
 
     suspend fun createGroup(name: String, parent: NewsGroup): NewsGroup {
