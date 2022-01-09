@@ -16,14 +16,17 @@ class User(
     val name: String,
     val bio: String,
     val imagePath: String = "$identity.png",
-    val owned: Boolean = false
+    val owned: Boolean = false,
 ){
-    suspend fun getImageFromPath(context: Context) : Bitmap = withContext(Dispatchers.IO) {
+    @Ignore var image: Bitmap? = null
+    suspend fun getImageFromPath(context: Context): Boolean = withContext(Dispatchers.IO) {
         val file = File(context.filesDir, imagePath)
-        if (!file.exists()) {
-            throw IllegalStateException("file path not valid")
+        if (file.exists()) {
+            image = BitmapFactory.decodeStream(file.inputStream())
+            true
+        } else {
+            false
         }
-        BitmapFactory.decodeStream(file.inputStream())
     }
 
     suspend fun writeImage(bitmap: Bitmap, context: Context) = withContext(Dispatchers.IO) {

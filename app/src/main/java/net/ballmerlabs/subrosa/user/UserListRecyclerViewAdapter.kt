@@ -1,6 +1,7 @@
 package net.ballmerlabs.subrosa.user
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -10,10 +11,8 @@ import androidx.recyclerview.widget.RecyclerView
 import net.ballmerlabs.subrosa.R
 import net.ballmerlabs.subrosa.database.User
 import net.ballmerlabs.subrosa.databinding.UserlistItemBinding
-import java.lang.Exception
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.collections.HashMap
 
 /**
  * [RecyclerView.Adapter] that can display users
@@ -59,6 +58,7 @@ class UserListRecyclerViewAdapter(
         val item = valueMap[key]!!
         holder.name = item.name
         holder.uuid = item.identity.toString()
+        holder.setImage(item.image)
         if (item.owned) holder.setOwned()
     }
 
@@ -78,6 +78,14 @@ class UserListRecyclerViewAdapter(
         var name
         get() = binding.name.text
         set(value) { binding.name.text = value }
+
+        fun setImage(image: Bitmap?) {
+            if (image != null) {
+                binding.userIdenticon.visibility = View.INVISIBLE
+                binding.userImageview.setImageBitmap(image)
+                binding.userImageview.visibility = View.VISIBLE
+            }
+        }
 
         fun setOwned() {
             binding.name.setTextAppearance(R.style.TextAppearance_AppCompat_Large_Inverse)

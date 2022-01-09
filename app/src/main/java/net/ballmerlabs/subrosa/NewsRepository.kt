@@ -1,13 +1,14 @@
 package net.ballmerlabs.subrosa
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.util.Log
 import androidx.core.content.edit
 import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.liveData
 import androidx.lifecycle.map
+import androidx.lifecycle.switchMap
 import com.lelloman.identicon.drawable.GithubIdenticonDrawable
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.*
@@ -166,11 +167,25 @@ class NewsRepository @Inject constructor(
     }
 
 
+    private fun getUsersWithFiles(userlist: List<User>): LiveData<List<User>> = liveData {
+        userlist.forEach { user ->
+            user.getImageFromPath(context)
+            Log.v(TAG, "getting image for ${user.identity}")
+        }
+        Log.v(TAG, "emit")
+        emit(userlist)
+    }
+
     fun observeUsers(owned: Boolean? = null): LiveData<List<User>> {
         return if(owned == null) {
             dao.observeAllUsers()
+                .switchMap { userlist ->
+                    Log.v(TAG, "fnmef")
+                    getUsersWithFiles(userlist)
+                  }
         } else {
             dao.observeAllOwnedUsers(owned)
+                .switchMap { userlist -> getUsersWithFiles(userlist) }
         }
     }
 
@@ -192,12 +207,19 @@ class NewsRepository @Inject constructor(
 
     suspend fun readUsers(owned: Boolean): List<User> {
         updateConnected()
+
         return dao.getAllOwnedUsers(owned)
+            .map { u ->
+                u.getImageFromPath(context)
+                u
+            }
     }
 
     suspend fun readUsers(uuid: UUID): User {
         updateConnected()
-        return dao.getUsersByIdentity(uuid)
+        val user = dao.getUsersByIdentity(uuid)
+        user.getImageFromPath(context)
+        return user
     }
 
     suspend fun insertGroup(group: NewsGroup) {

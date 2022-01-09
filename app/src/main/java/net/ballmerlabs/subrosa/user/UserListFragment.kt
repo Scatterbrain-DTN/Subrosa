@@ -58,25 +58,25 @@ class UserListFragment @Inject constructor() : Fragment() {
                 else -> GridLayoutManager(context, columnCount)
             }
             lifecycleScope.launch(Dispatchers.IO) {
-                val users = repository.readAllUsers()
                 withContext(Dispatchers.Main) {
                     userAdapter = UserListRecyclerViewAdapter(requireContext())
+                    adapter = userAdapter
                     userAdapter.setOnDeleteClickListener { uuid ->
                         lifecycleScope.launch {
                             onUserDelete(uuid)
                         }
                     }
-                    adapter = userAdapter
-                    repository.observeUsers()
-                        .observe(viewLifecycleOwner) { users ->
-                            users.forEach { u -> userAdapter.addItem(u) }
-                        }
+                }
+            }
+        }
+        repository.observeUsers()
+            .observe(viewLifecycleOwner) { users ->
+                Log.v("debug", "observed users ${users.size}" )
+                users.forEach { u ->
+                    userAdapter.addItem(u)
                 }
             }
 
-
-
-        }
         return binding.root
     }
 }
