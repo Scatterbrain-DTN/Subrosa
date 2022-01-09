@@ -79,15 +79,15 @@ data class Parent(
     ]
 )
 class NewsGroup(
-    packet: SubrosaProto.NewsGroup,
-    @Ignore val empty: Boolean = false
+    packet: SubrosaProto.NewsGroup
 ): Message<SubrosaProto.NewsGroup>(packet), Parcelable, HasKey<UUID> {
-
     @Ignore
     override val typePacket: SubrosaProto.Type = SubrosaProto.Type.newBuilder()
         .setType(toProto(TypeVal.NEWSGROUP))
         .build()
 
+    @Ignore
+    var empty = false
 
     @PrimaryKey
     var uuid: UUID = uuidConvertProto(packet.uuid)
@@ -159,7 +159,6 @@ class NewsGroup(
                 .build()
         else
             throw IllegalArgumentException("parent hash nullablity must be the same"),
-        empty = false
     )
 
 
@@ -195,11 +194,12 @@ class NewsGroup(
         }
 
         fun empty(): NewsGroup {
-            return NewsGroup(
+            val group =  NewsGroup(
                 SubrosaProto.NewsGroup.newBuilder()
                     .build(),
-                empty = true
             )
+            group.empty = true
+            return group
         }
 
     }

@@ -50,11 +50,6 @@ class Post(
             .build()
     )
 
-    private fun postToArray(): ByteArray {
-        return parent.hash + uuidConvert(author) + header.encodeToByteArray() + body.encodeToByteArray()
-    }
-
-
     override fun hasKey(): Int {
         return id
     }
