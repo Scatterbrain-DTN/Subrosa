@@ -14,6 +14,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
+import net.ballmerlabs.scatterbrainsdk.BinderWrapper
 import net.ballmerlabs.scatterbrainsdk.ScatterMessage
 import net.ballmerlabs.scatterbrainsdk.ScatterbrainApi
 import net.ballmerlabs.subrosa.database.NewsGroupChildren
@@ -67,16 +68,6 @@ class NewsRepository @Inject constructor(
     private suspend fun updateConnected() {
         val c = sdkComponent.binderWrapper.isConnected()
         updateConnected(c)
-    }
-
-    @ExperimentalCoroutinesApi
-    suspend fun observeConnections() = callbackFlow {
-        val callback: (connected: Boolean) -> Unit = { b ->
-            offer(b)
-        }
-        connectedCallback.add(callback)
-
-        awaitClose { connectedCallback.remove(callback) }
     }
 
     suspend fun requireConnected() {
@@ -203,6 +194,11 @@ class NewsRepository @Inject constructor(
 
     suspend fun getPosts(newsGroup: NewsGroup): List<Post> {
         return dao.getPostsForGroup(newsGroup.uuid)
+    }
+
+
+    fun observeConnectionState(): LiveData<BinderWrapper.Companion.BinderState> {
+        return sdkComponent.binderWrapper.observeBinderState()
     }
 
     suspend fun readUsers(owned: Boolean): List<User> {

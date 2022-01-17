@@ -19,6 +19,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import net.ballmerlabs.scatterbrainsdk.BinderWrapper
 import net.ballmerlabs.scatterbrainsdk.ScatterbrainBroadcastReceiver
 import net.ballmerlabs.subrosa.databinding.ActivityMainBinding
 import net.ballmerlabs.subrosa.listing.GroupListFragmentArgs
@@ -110,13 +111,6 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         broadcastReceiver.register()
-        lifecycleScope.launch(Dispatchers.IO) {
-            if (!repository.isConnected()) {
-                withContext(Dispatchers.Main) { binding.connectionLostBanner.show() }
-            } else {
-                withContext(Dispatchers.Main) { binding.connectionLostBanner.dismiss() }
-            }
-        }
     }
 
     private fun setFab(action: NavDirections? = null, icon: Int? = null) {
@@ -308,15 +302,13 @@ class MainActivity : AppCompatActivity() {
             withContext(Dispatchers.Main) { navController.graph = graph }
         }
 
-        lifecycleScope.launch(Dispatchers.Main) {
-            repository.observeConnections().collect { c ->
-                if (c) {
-                    binding.connectionLostBanner.dismiss()
-                } else {
-                    binding.connectionLostBanner.show()
+        repository.observeConnectionState()
+            .observe(this) { state ->
+                when (state) {
+                    BinderWrapper.Companion.BinderState.STATE_DISCONNECTED -> binding.connectionLostBanner.show()
+                    BinderWrapper.Companion.BinderState.STATE_CONNECTED -> binding.connectionLostBanner.dismiss()
                 }
             }
-        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
