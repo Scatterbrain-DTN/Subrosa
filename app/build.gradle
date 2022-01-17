@@ -104,11 +104,11 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
     implementation 'androidx.preference:preference:1.1.1'
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
+    implementation project(':sdk')
     kapt "com.google.dagger:hilt-compiler:$hilt_version"
     testImplementation 'junit:junit:4.+'
     implementation 'com.google.dagger:dagger:2.40'
     kapt 'com.google.dagger:dagger-compiler:2.40'
-    implementation 'net.ballmerlabs.scatterbrainsdk:sdk:0.0050-alpha'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
