@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.View
 import android.widget.HorizontalScrollView
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -183,6 +184,14 @@ class MainActivity : AppCompatActivity() {
         binding.collapsingToolbar.title = text?: ""
     }
 
+    private suspend fun checkRouterConnected() {
+        if (!repository.sdkComponent.binderWrapper.isConnected()) {
+            val toast = Toast(baseContext)
+            toast.setText(R.string.router_not_connected)
+            toast.show()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -200,6 +209,9 @@ class MainActivity : AppCompatActivity() {
             binding.flowlayout.setPaths(p)
         }
         binding.connectionLostBanner.setLeftButtonListener { b -> b.dismiss() }
+        binding.connectionLostBanner.setRightButtonListener {
+            lifecycleScope.launch { checkRouterConnected() }
+        }
         binding.appbarlayout.setExpanded(false)
         binding.appbarlayout.addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener {
                 appBarLayout, verticalOffset ->
@@ -307,6 +319,7 @@ class MainActivity : AppCompatActivity() {
                 when (state) {
                     BinderWrapper.Companion.BinderState.STATE_DISCONNECTED -> binding.connectionLostBanner.show()
                     BinderWrapper.Companion.BinderState.STATE_CONNECTED -> binding.connectionLostBanner.dismiss()
+                    null -> binding.connectionLostBanner.show()
                 }
             }
     }

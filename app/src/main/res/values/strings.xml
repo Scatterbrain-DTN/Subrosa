@@ -3,7 +3,7 @@
     <string name="scatterbrainapplication">newsnet</string>
 
     <string name="not_connected">Not connected to Scatterbrain router. Some functionality will be unavailable</string>
-    <string name="launch_scatterbrain">Launch Scatterbrain</string>
+    <string name="refresh_banner">Refresh</string>
     <string name="dismiss">Dismiss</string>
     <string name="post">Post</string>
     <string name="hint_group_name">Group name</string>
@@ -24,6 +24,8 @@
     <string name="select_user_hint">Select user</string>
     <string name="write_post_hint">Post body</string>
     <string name="post_header_hint">Title</string>
+
+    <string name="router_not_connected">Scatterbrain router not connected</string>
 
     <string-array name="default_newsgroups">
         <item>comp</item>

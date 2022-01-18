@@ -58,7 +58,7 @@
         android:id="@+id/connection_lost_banner"
         android:visibility="gone"
         app:buttonLeftText="@string/dismiss"
-        app:buttonRightText="@string/launch_scatterbrain"
+        app:buttonRightText="@string/refresh_banner"
         app:messageText="@string/not_connected"
         android:elevation="30dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
