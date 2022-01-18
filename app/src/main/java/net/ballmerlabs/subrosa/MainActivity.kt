@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.view.ViewCompat
 import androidx.core.view.get
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.*
@@ -29,6 +30,7 @@ import net.ballmerlabs.subrosa.user.UserListFragmentDirections
 import net.ballmerlabs.subrosa.util.uuidSha256
 import javax.inject.Inject
 import kotlin.math.abs
+import kotlin.math.exp
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -168,20 +170,23 @@ class MainActivity : AppCompatActivity() {
 
     private fun setAppBar(expand: Boolean = false, text: String? = null) {
         binding.pathscroll.visibility = if (expand) View.VISIBLE else View.GONE
-        val layoutParams = binding.appbarlayout.layoutParams as CoordinatorLayout.LayoutParams
-        if (layoutParams.behavior == null) {
-            layoutParams.behavior = AppBarLayout.Behavior()
+        if(!expand) {
+            binding.appbarlayout.setExpanded(false, true)
+            binding.currentIdenticon.visibility = View.GONE
+        } else {
+            binding.currentIdenticon.visibility = View.VISIBLE
         }
-        val behavior = layoutParams.behavior as AppBarLayout.Behavior
-        behavior.setDragCallback(object : AppBarLayout.Behavior.DragCallback() {
-            override fun canDrag(appBarLayout: AppBarLayout): Boolean {
-                return expand
-            }
 
-        })
+        (binding.collapsingToolbar.layoutParams as AppBarLayout.LayoutParams).apply {
+            scrollFlags = if (expand)
+                AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
+            else
+                AppBarLayout.LayoutParams.SCROLL_FLAG_NO_SCROLL
+        }
         binding.collapsingToolbar.setCollapsedTitleTextAppearance(
             if (text == null) R.style.Transparent else R.style.TextAppearance_AppCompat_Large
         )
+       // ViewCompat.setNestedScrollingEnabled(binding.collapsingToolbar, expand)
         binding.collapsingToolbar.title = text?: ""
     }
 
@@ -247,6 +252,39 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun changeDestinationGroupListFragment(arguments: Bundle) {
+        val args = GroupListFragmentArgs.fromBundle(arguments)
+        Log.v("debug", "on newsgroup ${args.parent}")
+        mainViewModel.path.value = args.path.toList()
+        binding.toolbar.title = args.parent.groupName
+        setFabExpand(
+            lowerIcon = R.drawable.ic_baseline_create_new_folder_24,
+            upperIcon = R.drawable.ic_baseline_email_24
+        ) { type, _ ->
+            when(type) {
+                FabType.UPPER -> {
+                    val action = GroupListFragmentDirections.actionGroupListFragmentToPostCreationDialog(args.parent)
+                    navController.navigate(action)
+                }
+                FabType.LOWER -> {
+                    binding.appbarlayout.setExpanded(true)
+                    val action = GroupListFragmentDirections.actionGroupListFragmentToGroupCreateDialog(args.parent)
+                    navController.navigate(action)
+                }
+            }
+        }
+        setAppBar(expand = true)
+
+    }
+
+    private fun changeDestinationUserListFragment() {
+        setFab(
+            action = UserListFragmentDirections.actionUserListFragmentToUserCreationFragment(),
+            icon = R.drawable.ic_baseline_person_add_alt_1_24
+        )
+        setAppBar(false, text = "Users")
+    }
+
     private fun setupNavController() {
         navController  = findNavController(R.id.nav_host_fragment)
         NavigationUI.setupWithNavController(binding.bottomNavigation, navController)
@@ -254,37 +292,8 @@ class MainActivity : AppCompatActivity() {
         navController.addOnDestinationChangedListener { _, destination, arguments ->
             Log.v("debug", "navigating to $destination")
             when(destination.id) {
-                R.id.GroupListFragment -> {
-                    val args = GroupListFragmentArgs.fromBundle(arguments!!)
-                    Log.v("debug", "on newsgroup ${args.parent}")
-                    mainViewModel.path.value = args.path.toList()
-                    binding.toolbar.title = args.parent.groupName
-                    setFabExpand(
-                        lowerIcon = R.drawable.ic_baseline_create_new_folder_24,
-                        upperIcon = R.drawable.ic_baseline_email_24
-                    ) { type, _ ->
-                        when(type) {
-                            FabType.UPPER -> {
-                                val action = GroupListFragmentDirections.actionGroupListFragmentToPostCreationDialog(args.parent)
-                                navController.navigate(action)
-                            }
-                            FabType.LOWER -> {
-                                binding.appbarlayout.setExpanded(true)
-                                val action = GroupListFragmentDirections.actionGroupListFragmentToGroupCreateDialog(args.parent)
-                                navController.navigate(action)
-                            }
-                        }
-                    }
-                    setAppBar(expand = true)
-
-                }
-                R.id.userListFragment -> {
-                    setFab(
-                        action = UserListFragmentDirections.actionUserListFragmentToUserCreationFragment(),
-                        icon = R.drawable.ic_baseline_person_add_alt_1_24
-                    )
-                    setAppBar(false, text = "Users")
-                }
+                R.id.GroupListFragment -> { changeDestinationGroupListFragment(arguments!!) }
+                R.id.userListFragment -> { changeDestinationUserListFragment() }
                 else -> {
                     setFab()
                     setAppBar(false)

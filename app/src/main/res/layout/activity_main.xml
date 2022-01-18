@@ -9,13 +9,13 @@
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbarlayout"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="wrap_content"
         android:theme="@style/Theme.Subrosa.AppBarOverlay">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:id="@+id/collapsing_toolbar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             app:collapsedTitleTextAppearance="@style/Transparent"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
             <androidx.appcompat.widget.Toolbar
@@ -44,6 +44,8 @@
                 android:id="@+id/current_identicon"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
+                android:layout_marginTop="60dp"
+                android:layout_marginBottom="40dp"
                 android:layout_gravity="end|center"
                 android:layout_marginHorizontal="32dp"
                 app:hash="923757579" />
