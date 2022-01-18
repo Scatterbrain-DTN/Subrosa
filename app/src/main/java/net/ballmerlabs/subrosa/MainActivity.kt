@@ -17,7 +17,6 @@ import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.ballmerlabs.scatterbrainsdk.BinderWrapper
@@ -46,6 +45,8 @@ class MainActivity : AppCompatActivity() {
     private var fabExpanded = false
 
     private val mainViewModel by viewModels<MainViewModel>()
+
+    private lateinit var navGraph: NavGraph
 
     enum class State {
         IDLE,
@@ -192,26 +193,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        setSupportActionBar(binding.toolbar)
 
-        setupBottomNavigation()
-
-        mainViewModel.path.observe(this) { v ->
-            val p = v.map { group ->
-                Log.v("debug", "setting path")
-                if(group.empty) "root" else group.groupName
-            }.toTypedArray()
-            Log.e("debug", "received livedata ${p.size}")
-            binding.flowlayout.setPaths(p)
-        }
-        binding.connectionLostBanner.setLeftButtonListener { b -> b.dismiss() }
-        binding.connectionLostBanner.setRightButtonListener {
-            lifecycleScope.launch { checkRouterConnected() }
-        }
+    private fun setupAppBarLayout() {
         binding.appbarlayout.setExpanded(false)
         binding.appbarlayout.addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener {
                 appBarLayout, verticalOffset ->
@@ -239,12 +222,33 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
+    }
+
+    private fun setupBanners() {
+        binding.connectionLostBanner.setLeftButtonListener { b -> b.dismiss() }
+        binding.connectionLostBanner.setRightButtonListener {
+            lifecycleScope.launch { checkRouterConnected() }
+        }
+
+    }
+
+    private fun setupPathsView() {
+        mainViewModel.path.observe(this) { v ->
+            val p = v.map { group ->
+                Log.v("debug", "setting path")
+                if(group.empty) "root" else group.groupName
+            }.toTypedArray()
+            Log.e("debug", "received livedata ${p.size}")
+            binding.flowlayout.setPaths(p)
+        }
+        setupBanners()
         binding.pathscroll.addOnLayoutChangeListener { _: View, _: Int, _: Int, _: Int, _: Int, _: Int, _: Int, _: Int, _: Int ->
             binding.pathscroll.fullScroll(HorizontalScrollView.FOCUS_RIGHT)
         }
+    }
 
+    private fun setupNavController() {
         navController  = findNavController(R.id.nav_host_fragment)
-
         NavigationUI.setupWithNavController(binding.bottomNavigation, navController)
 
         navController.addOnDestinationChangedListener { _, destination, arguments ->
@@ -287,9 +291,11 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
 
+    private fun setupNavGraph(id: Int) {
         val inflater = navController.navInflater
-        val graph = inflater.inflate(R.navigation.nav_graph)
+        navGraph = inflater.inflate(R.navigation.nav_graph)
         lifecycleScope.launch(Dispatchers.Default) {
             val groups = resources.getStringArray(R.array.default_newsgroups)
                 .map { s ->
@@ -299,20 +305,36 @@ class MainActivity : AppCompatActivity() {
                         groupName = s,
                         parentCol = null,
                         parentHash = null
-                ) }
+                    ) }
 
             withContext(Dispatchers.IO) { repository.insertGroup(groups)}
             Log.e("debug", "groups inserted")
-            val arg = NavArgument.Builder().setDefaultValue(groups.toTypedArray()).build()
-            val top = NavArgument.Builder().setDefaultValue(NewsGroup.empty()).build()
-            val path = NavArgument.Builder().setDefaultValue(arrayOf(NewsGroup.empty())).build()
-            val immutable = NavArgument.Builder().setDefaultValue(true).build()
-            graph[R.id.GroupListFragment].addArgument("grouplist", arg)
-            graph[R.id.GroupListFragment].addArgument("immutable", immutable)
-            graph[R.id.GroupListFragment].addArgument("parent", top)
-            graph[R.id.GroupListFragment].addArgument("path", path)
-            withContext(Dispatchers.Main) { navController.graph = graph }
+
+            defaultArgument(id, "grouplist", groups.toTypedArray())
+            defaultArgument(id, "immutable", true)
+            defaultArgument(id, "parent", NewsGroup.empty())
+            defaultArgument(id, "path", arrayOf(NewsGroup.empty()))
+
+            withContext(Dispatchers.Main) { navController.graph = navGraph }
         }
+    }
+
+    private fun <T> defaultArgument(id: Int, name: String, value: T) {
+        val arg = NavArgument.Builder().setDefaultValue(value).build()
+        navGraph[id].addArgument(name, arg)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        setSupportActionBar(binding.toolbar)
+        setupNavController()
+        setupNavGraph(R.id.GroupListFragment)
+        setupBottomNavigation()
+        setupPathsView()
+        setupAppBarLayout()
+        setupNavController()
 
         repository.observeConnectionState()
             .observe(this) { state ->
