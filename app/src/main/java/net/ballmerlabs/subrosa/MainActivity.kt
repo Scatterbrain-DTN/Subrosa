@@ -162,10 +162,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupBottomNavigation() {
         binding.bottomNavigation.background = null
-        binding.bottomNavigation.menu[2].apply {
-            isEnabled = false
-            isVisible = false
-        }
     }
 
     private fun setAppBar(expand: Boolean = false, text: String? = null) {
