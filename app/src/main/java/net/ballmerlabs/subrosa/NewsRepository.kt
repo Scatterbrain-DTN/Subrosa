@@ -43,10 +43,6 @@ class NewsRepository @Inject constructor(
         sdkComponent.broadcastReceiver.register()
     }
 
-    suspend fun tryBind() = withTimeout(1000) {
-        sdkComponent.binderWrapper.getScatterMessages("")
-    }
-
     suspend fun isConnected(): Boolean {
         val c = sdkComponent.binderWrapper.isConnected()
         updateConnected(c)
@@ -145,17 +141,6 @@ class NewsRepository @Inject constructor(
         dao.insertUsers(user)
     }
 
-    suspend fun readAllUsers(): List<User> {
-        updateConnected()
-        return dao.getAllUsers()
-    }
-
-
-    suspend fun getUser(uuid: UUID): User {
-        return dao.getUsersByIdentity(uuid)
-    }
-
-
     private fun getUsersWithFiles(userlist: List<User>): LiveData<List<User>> = liveData {
         Log.v(TAG, "emit")
         emit(userlist)
@@ -178,19 +163,6 @@ class NewsRepository @Inject constructor(
         return dao.observePostsForGroup(group.uuid)
     }
 
-    fun observePosts(group: UUID): LiveData<List<Post>> {
-        return dao.observePostsForGroup(group)
-    }
-
-    suspend fun getPosts(group: UUID): List<Post> {
-        return dao.getPostsForGroup(group)
-    }
-
-    suspend fun getPosts(newsGroup: NewsGroup): List<Post> {
-        return dao.getPostsForGroup(newsGroup.uuid)
-    }
-
-
     fun observeConnectionState(): LiveData<BinderWrapper.Companion.BinderState> {
         return sdkComponent.binderWrapper.observeBinderState()
     }
@@ -199,11 +171,6 @@ class NewsRepository @Inject constructor(
         updateConnected()
 
         return dao.getAllOwnedUsers(owned)
-    }
-
-    suspend fun readUsers(uuid: UUID): User {
-        updateConnected()
-        return dao.getUsersByIdentity(uuid)
     }
 
     suspend fun insertGroup(group: NewsGroup) {
