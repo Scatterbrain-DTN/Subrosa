@@ -25,6 +25,7 @@ import kotlinx.coroutines.withContext
 import net.ballmerlabs.subrosa.NewsRepository
 import net.ballmerlabs.subrosa.R
 import net.ballmerlabs.subrosa.databinding.FragmentUserCreationDialogBinding
+import net.ballmerlabs.subrosa.scatterbrain.User
 import javax.inject.Inject
 
 /**
@@ -40,7 +41,7 @@ class UserCreationFragment @Inject constructor(): DialogFragment() {
         if (res != null) {
             lifecycleScope.launch(Dispatchers.IO) {
                 val source = ImageDecoder.createSource(requireContext().contentResolver, res)
-                val bitmap = resizeBitmapCentered(ImageDecoder.decodeBitmap(source), IMAGE_WIDTH)
+                val bitmap = User.resizeBitmapCentered(ImageDecoder.decodeBitmap(source), IMAGE_WIDTH)
                 withContext(Dispatchers.Main) { binding.profilepic.setImageBitmap(bitmap) }
                 imageSet = true
             }
@@ -48,22 +49,6 @@ class UserCreationFragment @Inject constructor(): DialogFragment() {
     }
 
     @Inject lateinit var repository: NewsRepository
-
-    private fun DialogFragment.setWidth(percent: Int) {
-        val p = percent.toFloat() / 100
-        val dm = Resources.getSystem().displayMetrics
-        val rect = dm.run { Rect(0, 0, widthPixels, heightPixels) }
-        val percentWidth = rect.width() * p
-        dialog?.window?.setLayout(percentWidth.toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
-    }
-
-    private fun resizeBitmapCentered(bitmap: Bitmap, width: Int): Bitmap {
-        val scaledsize = bitmap.width.coerceAtMost(bitmap.height)
-        val wstart = bitmap.width - scaledsize
-        val hstart = bitmap.height - scaledsize
-        val new = Bitmap.createBitmap(bitmap, wstart, hstart, scaledsize, scaledsize)
-        return new.scale(width, width)
-    }
 
     private fun commit() {
         repository.coroutineScope.launch {

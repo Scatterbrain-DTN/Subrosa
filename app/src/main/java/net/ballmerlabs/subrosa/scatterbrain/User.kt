@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
+import androidx.core.graphics.scale
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
@@ -93,11 +94,20 @@ class User(
             val builder = SubrosaProto.User.newBuilder()
            return if (bitmap != null) {
             val os = ByteArrayOutputStream()
-                bitmap.compress(Bitmap.CompressFormat.PNG, 90, os)
+                 resizeBitmapCentered(bitmap, 512).compress(Bitmap.CompressFormat.PNG, 90, os)
                 builder.setImagebytes(ByteString.copyFrom(os.toByteArray()))
             } else {
                 builder
             }
+        }
+
+
+        fun resizeBitmapCentered(bitmap: Bitmap, width: Int): Bitmap {
+            val scaledsize = bitmap.width.coerceAtMost(bitmap.height)
+            val wstart = bitmap.width - scaledsize
+            val hstart = bitmap.height - scaledsize
+            val new = Bitmap.createBitmap(bitmap, wstart, hstart, scaledsize, scaledsize)
+            return new.scale(width, width)
         }
     }
 }
