@@ -2,8 +2,6 @@ package net.ballmerlabs.subrosa.user
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.BlendMode
-import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -11,7 +9,7 @@ import android.view.ViewGroup
 import android.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import net.ballmerlabs.subrosa.R
-import net.ballmerlabs.subrosa.database.User
+import net.ballmerlabs.subrosa.scatterbrain.User
 import net.ballmerlabs.subrosa.databinding.UserlistItemBinding
 import net.ballmerlabs.subrosa.util.MapRecyclerViewAdapter
 import java.util.*
@@ -40,7 +38,7 @@ class UserListRecyclerViewAdapter(
         val item = valueMap[key]!!
         holder.name = item.userName
         holder.uuid = item.identity.toString()
-        holder.setImage(item.image)
+        holder.setImage(item.decodeImage())
         if (item.owned) holder.setOwned()
     }
 

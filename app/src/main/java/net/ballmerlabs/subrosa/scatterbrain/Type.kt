@@ -6,7 +6,8 @@ enum class TypeVal {
     POST,
     NEWSGROUP,
     TYPE,
-    INVALID
+    INVALID,
+    USER
 }
 
 fun toProto(typeVal: TypeVal): SubrosaProto.Type.PostType {
@@ -14,6 +15,7 @@ fun toProto(typeVal: TypeVal): SubrosaProto.Type.PostType {
         TypeVal.POST -> SubrosaProto.Type.PostType.POST
         TypeVal.NEWSGROUP -> SubrosaProto.Type.PostType.NEWSGROUP
         TypeVal.TYPE -> SubrosaProto.Type.PostType.TYPE
+        TypeVal.USER -> SubrosaProto.Type.PostType.USER
         else -> SubrosaProto.Type.PostType.UNRECOGNIZED
     }
 }
@@ -23,6 +25,7 @@ fun fromProto(type: SubrosaProto.Type.PostType): TypeVal {
         SubrosaProto.Type.PostType.NEWSGROUP -> TypeVal.NEWSGROUP
         SubrosaProto.Type.PostType.POST -> TypeVal.POST
         SubrosaProto.Type.PostType.TYPE -> TypeVal.TYPE
+        SubrosaProto.Type.PostType.USER -> TypeVal.USER
         else -> TypeVal.INVALID
     }
 }

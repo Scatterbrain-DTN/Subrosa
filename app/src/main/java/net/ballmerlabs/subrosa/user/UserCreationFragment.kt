@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.graphics.drawable.toBitmap
+import androidx.core.graphics.scale
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -39,7 +40,7 @@ class UserCreationFragment @Inject constructor(): DialogFragment() {
         if (res != null) {
             lifecycleScope.launch(Dispatchers.IO) {
                 val source = ImageDecoder.createSource(requireContext().contentResolver, res)
-                val bitmap = ImageDecoder.decodeBitmap(source)
+                val bitmap = resizeBitmapCentered(ImageDecoder.decodeBitmap(source), IMAGE_WIDTH)
                 withContext(Dispatchers.Main) { binding.profilepic.setImageBitmap(bitmap) }
                 imageSet = true
             }
@@ -56,13 +57,24 @@ class UserCreationFragment @Inject constructor(): DialogFragment() {
         dialog?.window?.setLayout(percentWidth.toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
     }
 
+    private fun resizeBitmapCentered(bitmap: Bitmap, width: Int): Bitmap {
+        val scaledsize = bitmap.width.coerceAtMost(bitmap.height)
+        val wstart = bitmap.width - scaledsize
+        val hstart = bitmap.height - scaledsize
+        val new = Bitmap.createBitmap(bitmap, wstart, hstart, scaledsize, scaledsize)
+        return new.scale(width, width)
+    }
+
     private fun commit() {
         repository.coroutineScope.launch {
             try {
                 val user = repository.createUser(
                     binding.nameedit.editText!!.text.toString(),
                     binding.bioEdit.editText!!.text.toString(),
-                    imageBitmap = if (imageSet) binding.profilepic.drawable.toBitmap() else null
+                    imageBitmap = if (imageSet)
+                        binding.profilepic.drawable.toBitmap()
+                    else
+                        null
                 )
 
                 withContext(Dispatchers.Main) {
@@ -120,12 +132,7 @@ class UserCreationFragment @Inject constructor(): DialogFragment() {
     }
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @return A new instance of fragment UserCreationFragment.
-         */
+        const val IMAGE_WIDTH = 512
         @JvmStatic
         fun newInstance() = UserCreationFragment().apply {}
     }

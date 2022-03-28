@@ -19,9 +19,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.ballmerlabs.subrosa.NewsRepository
 import net.ballmerlabs.subrosa.R
-import net.ballmerlabs.subrosa.database.User
+import net.ballmerlabs.subrosa.scatterbrain.User
 import net.ballmerlabs.subrosa.databinding.FragmentPostCreationDialogBinding
-import net.ballmerlabs.subrosa.scatterbrain.Post
 import javax.inject.Inject
 
 // TODO: Rename parameter arguments, choose names that match

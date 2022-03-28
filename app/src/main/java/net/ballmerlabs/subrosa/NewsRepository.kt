@@ -4,22 +4,19 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
 import androidx.core.content.edit
-import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.liveData
 import androidx.lifecycle.map
 import androidx.lifecycle.switchMap
-import com.lelloman.identicon.drawable.GithubIdenticonDrawable
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
 import net.ballmerlabs.scatterbrainsdk.BinderWrapper
 import net.ballmerlabs.scatterbrainsdk.ScatterMessage
 import net.ballmerlabs.scatterbrainsdk.ScatterbrainApi
 import net.ballmerlabs.subrosa.database.NewsGroupChildren
 import net.ballmerlabs.subrosa.database.NewsGroupDao
-import net.ballmerlabs.subrosa.database.User
+import net.ballmerlabs.subrosa.scatterbrain.User
 import net.ballmerlabs.subrosa.scatterbrain.*
 import net.ballmerlabs.subrosa.util.uuidConvert
 import java.util.*
@@ -132,18 +129,15 @@ class NewsRepository @Inject constructor(
             identity = id.fingerprint,
             userName = name,
             bio = bio,
-            owned = true
+            owned = true,
+            image = imageBitmap
         )
-        if (imageBitmap != null) {
-            user.writeImage(imageBitmap, context)
-        }
         dao.insertUsers(user)
         user
     }
 
-    suspend fun insertUser(user: User, image: Bitmap) {
+    suspend fun insertUser(user: User) {
         updateConnected()
-        user.writeImage(image, context)
         dao.insertUsers(user)
     }
 
@@ -159,10 +153,6 @@ class NewsRepository @Inject constructor(
 
 
     private fun getUsersWithFiles(userlist: List<User>): LiveData<List<User>> = liveData {
-        userlist.forEach { user ->
-            user.getImageFromPath(context)
-            Log.v(TAG, "getting image for ${user.identity}")
-        }
         Log.v(TAG, "emit")
         emit(userlist)
     }
@@ -205,17 +195,11 @@ class NewsRepository @Inject constructor(
         updateConnected()
 
         return dao.getAllOwnedUsers(owned)
-            .map { u ->
-                u.getImageFromPath(context)
-                u
-            }
     }
 
     suspend fun readUsers(uuid: UUID): User {
         updateConnected()
-        val user = dao.getUsersByIdentity(uuid)
-        user.getImageFromPath(context)
-        return user
+        return dao.getUsersByIdentity(uuid)
     }
 
     suspend fun insertGroup(group: NewsGroup) {
@@ -246,8 +230,7 @@ class NewsRepository @Inject constructor(
 
     suspend fun deleteUser(user: UUID): Boolean {
         val u = dao.getUsersByIdentity(user)
-        val res = dao.deleteByIdentity(user) == 1
-        return res && u.delImage(context)
+        return dao.deleteByIdentity(user) == 1
     }
 
     suspend fun createGroup(name: String, parent: NewsGroup): NewsGroup {

@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.*
 import net.ballmerlabs.subrosa.scatterbrain.NewsGroup
 import net.ballmerlabs.subrosa.scatterbrain.Post
+import net.ballmerlabs.subrosa.scatterbrain.User
 import java.util.*
 
 @Dao
