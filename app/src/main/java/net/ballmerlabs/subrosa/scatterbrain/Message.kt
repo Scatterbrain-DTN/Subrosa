@@ -82,6 +82,7 @@ abstract class Message<T: MessageLite>(@Ignore val packet: T) {
                 when (type.typeVal) {
                     TypeVal.POST -> parse(Post.parser, bytes, messageOffset, rs) as T
                     TypeVal.NEWSGROUP -> parse(NewsGroup.parser, bytes, messageOffset, rs) as T
+                    TypeVal.USER -> parse(User.parser, bytes, messageOffset, rs) as T
                     else -> throw IllegalStateException("invalid type: ${type.typeVal}")
                 }
             }

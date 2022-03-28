@@ -109,5 +109,10 @@ class User(
             val new = Bitmap.createBitmap(bitmap, wstart, hstart, scaledsize, scaledsize)
             return new.scale(width, width)
         }
+
+        class Parser: Message.Companion.Parser<SubrosaProto.User, User>(SubrosaProto.User.parser()) {
+            override val type: SubrosaProto.Type.PostType = SubrosaProto.Type.PostType.USER
+        }
+        val parser = Parser()
     }
 }

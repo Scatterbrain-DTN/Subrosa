@@ -132,6 +132,10 @@ class NewsRepository @Inject constructor(
             owned = true,
             image = imageBitmap
         )
+        val message = ScatterMessage.Builder.newInstance(user.bytes)
+            .setApplication(context.getString(R.string.scatterbrainapplication))
+            .build()
+        sdkComponent.binderWrapper.sendMessage(message)
         dao.insertUsers(user)
         user
     }
@@ -300,6 +304,10 @@ class NewsRepository @Inject constructor(
                         TypeVal.NEWSGROUP -> {
                             val newsgroup = Message.parse<NewsGroup>(message.body!!, type)
                             dao.insertGroup(newsgroup)
+                        }
+                        TypeVal.USER -> {
+                            val user = Message.parse<User>(message.body!!, type)
+                            insertUser(user)
                         }
                         else -> {
                             Log.e(TAG, "invalid message type received")
