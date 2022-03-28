@@ -2,6 +2,8 @@ package net.ballmerlabs.subrosa.user
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BlendMode
+import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -71,8 +73,7 @@ class UserListRecyclerViewAdapter(
         }
 
         fun setOwned() {
-            binding.name.setTextAppearance(R.style.TextAppearance_AppCompat_Large_Inverse)
-            binding.itemLayout.setBackgroundColor(context.getColor(R.color.material_on_background_disabled))
+            binding.ownedChip.visibility = View.VISIBLE
         }
 
 

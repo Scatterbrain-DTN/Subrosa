@@ -1,54 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/item_layout"
-    android:orientation="horizontal">
+    android:paddingHorizontal="8dp"
+    android:paddingVertical="8dp"
+    android:layout_marginVertical="4dp"
+    android:id="@+id/item_cardview"
+    app:cardElevation="4dp">
 
-    <com.lelloman.identicon.view.GithubIdenticonView
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:hash="0"
-        android:id="@+id/user_identicon"/>
-
-    <ImageView
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:visibility="invisible"
-        android:id="@+id/user_imageview"/>
-
-    <TextView
-        android:id="@+id/name"
-        android:layout_width="wrap_content"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/item_layout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:text="default name"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toEndOf="@id/user_identicon"/>
+        android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/uuid"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="default uuid"
-        android:textAppearance="?attr/textAppearanceListItem"
-        app:layout_constraintStart_toStartOf="@id/name"
-        app:layout_constraintTop_toBottomOf="@id/name"/>
+        <com.lelloman.identicon.view.GithubIdenticonView
+            android:id="@+id/user_identicon"
+            android:layout_width="128dp"
+            android:layout_height="128dp"
+            app:hash="0"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:layout_width="30dp"
-        android:layout_height="0dp"
-        android:id="@+id/menu_button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:src="@drawable/ic_baseline_overflow_menu"/>
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <ImageView
+            android:id="@+id/user_imageview"
+            android:layout_width="128dp"
+            android:layout_height="128dp"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:text="default name"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
+            app:layout_constraintBottom_toTopOf="@id/uuid"
+            app:layout_constraintEnd_toStartOf="@id/owned_chip"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@id/user_identicon"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/owned_chip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="owned!"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toTopOf="@id/uuid"
+            app:layout_constraintEnd_toStartOf="@id/menu_button"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <TextView
+            android:id="@+id/uuid"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="default uuid"
+            android:textAppearance="?attr/textAppearanceListItem"
+            app:layout_constraintStart_toStartOf="@id/name"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/menu_button"/>
+
+        <ImageView
+            android:id="@+id/menu_button"
+            android:layout_width="30dp"
+            android:layout_height="0dp"
+            android:src="@drawable/ic_baseline_overflow_menu"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>
