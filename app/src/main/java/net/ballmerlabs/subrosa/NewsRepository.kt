@@ -263,31 +263,12 @@ class NewsRepository @Inject constructor(
             .map { children -> children.children }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     suspend fun observePosts(): Flow<Post> = flow {
         requireConnected()
         sdkComponent.binderWrapper.observeMessages(context.getString(R.string.scatterbrainapplication))
             .onEach { currentCoroutineContext().ensureActive() }
-            .map { messages ->
-                for (message in messages) {
-                    if (!message.isFile) {
-                        val type = Message.parse(message.body!!)
-                        when (type.typeVal) {
-                            TypeVal.POST -> {
-                                val post = Message.parse<Post>(message.body!!, type)
-                                dao.insertPost(post)
-                                emit(post)
-                            }
-                            TypeVal.NEWSGROUP -> {
-                                val newsGroup = Message.parse<NewsGroup>(message.body!!, type)
-                                dao.insertGroup(newsGroup)
-                            }
-                            else -> {
-                                yield()
-                            }
-                        }
-                    }
-                }
-            }
+            .map { messages -> processScatterMessages(messages) }
     }
 
     private suspend fun processScatterMessages(messages: List<ScatterMessage>) {
