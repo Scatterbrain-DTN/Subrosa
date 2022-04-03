@@ -20,6 +20,7 @@ import net.ballmerlabs.subrosa.R
 import net.ballmerlabs.subrosa.databinding.FragmentGroupListBinding
 import net.ballmerlabs.subrosa.scatterbrain.NewsGroup
 import net.ballmerlabs.subrosa.thread.PostListRecylerViewAdapter
+import java.lang.Exception
 import java.util.*
 import javax.inject.Inject
 
@@ -74,15 +75,23 @@ class GroupListFragment @Inject constructor() : Fragment() {
     }
 
     private suspend fun refreshLatest() {
-        val time = repository.getLastSyncTime()
-        if (!repository.fullSync(time)) {
-            withContext(Dispatchers.Main) {
-                val toast = Toast(requireContext())
-                toast.setText(R.string.refresh_in_progress)
-                toast.show()
+        if (repository.isConnected()) {
+            try {
+                val time = repository.getLastSyncTime()
+                if (!repository.fullSync(time)) {
+                    withContext(Dispatchers.Main) {
+                        val toast = Toast(requireContext())
+                        toast.setText(R.string.refresh_in_progress)
+                        toast.show()
+                    }
+                } else {
+                    repository.setLastSyncTime(Date())
+                }
+            } catch (exc: Exception) {
+                Log.e("debug", "exception: $exc while refreshing posts")
             }
         } else {
-            repository.setLastSyncTime(Date())
+            Toast.makeText(context, R.string.not_connected, Toast.LENGTH_LONG).show()
         }
     }
 
