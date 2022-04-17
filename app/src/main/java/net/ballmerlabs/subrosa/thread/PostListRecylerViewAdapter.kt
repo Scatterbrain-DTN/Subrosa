@@ -11,7 +11,7 @@ import net.ballmerlabs.subrosa.scatterbrain.Post
 import net.ballmerlabs.subrosa.util.MapRecyclerViewAdapter
 
 class PostListRecylerViewAdapter():
-    MapRecyclerViewAdapter<Int, Post, PostListRecylerViewAdapter.ViewHolder>() {
+    MapRecyclerViewAdapter<String, Post, PostListRecylerViewAdapter.ViewHolder>() {
 
     inner class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
         private val binding: ThreadCardBinding = ThreadCardBinding.bind(view)

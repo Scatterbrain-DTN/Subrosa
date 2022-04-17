@@ -1,10 +1,13 @@
 package net.ballmerlabs.subrosa.scatterbrain
 
+import android.util.Log
 import androidx.room.*
 import com.google.protobuf.ByteString
 import net.ballmerlabs.subrosa.SubrosaProto
 import net.ballmerlabs.subrosa.util.HasKey
 import net.ballmerlabs.subrosa.util.uuidConvertProto
+import java.security.MessageDigest
+import java.security.NoSuchAlgorithmException
 import java.util.*
 
 @Entity(
@@ -12,7 +15,7 @@ import java.util.*
 )
 class Post(
     packet: SubrosaProto.Post
-): Message<SubrosaProto.Post>(packet), HasKey<Int> {
+): Message<SubrosaProto.Post>(packet), HasKey<String> {
 
     @Ignore
     override val typePacket: SubrosaProto.Type =  SubrosaProto.Type.newBuilder()
@@ -51,8 +54,12 @@ class Post(
             .build()
     )
 
-    override fun hasKey(): Int {
-        return id
+    override fun hasKey(): String {
+        val digest = MessageDigest.getInstance("SHA-256")
+        digest.update(bytes)
+        val base64 = Base64.getEncoder().encodeToString(digest.digest())
+        Log.e("debug", "digest ${base64}")
+        return base64
     }
 
 
