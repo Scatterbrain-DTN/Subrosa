@@ -3,13 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/GroupListFragment">
+    app:startDestination="@id/PostListFragment">
 
     <fragment
-        android:id="@+id/GroupListFragment"
-        android:name="net.ballmerlabs.subrosa.listing.GroupListFragment"
+        android:id="@+id/PostListFragment"
+        android:name="net.ballmerlabs.subrosa.listing.PostListFragment"
         android:label="@string/first_fragment_label"
-        tools:layout="@layout/fragment_group_list">
+        tools:layout="@layout/fragment_post_list">
         <argument
             android:name="grouplist"
             app:argType="net.ballmerlabs.subrosa.scatterbrain.NewsGroup[]"/>
@@ -23,16 +23,16 @@
             android:name="path"
             app:argType="net.ballmerlabs.subrosa.scatterbrain.NewsGroup[]"/>
         <action
-            android:id="@+id/action_GroupListFragment_to_UserCreationDialog"
+            android:id="@+id/action_PostListFragment_to_UserCreationDialog"
             app:destination="@id/UserCreationFragment" />
         <action
-            android:id="@+id/action_GroupListFragment_to_Self"
-            app:destination="@id/GroupListFragment" />
+            android:id="@+id/action_PostListFragment_to_Self"
+            app:destination="@id/PostListFragment" />
         <action
-            android:id="@+id/action_GroupListFragment_to_postCreationDialog"
+            android:id="@+id/action_PostListFragment_to_postCreationDialog"
             app:destination="@id/postCreationDialog" />
         <action
-            android:id="@+id/action_GroupListFragment_to_groupCreateDialog"
+            android:id="@+id/action_PostListFragment_to_groupCreateDialog"
             app:destination="@id/groupCreateDialog" />
     </fragment>
 
@@ -61,8 +61,8 @@
         android:label="fragment_post_creation_dialog"
         tools:layout="@layout/fragment_post_creation_dialog" >
         <action
-            android:id="@+id/action_postCreationDialog_to_GroupListFragment"
-            app:destination="@id/GroupListFragment" />
+            android:id="@+id/action_postCreationDialog_to_PostListFragment"
+            app:destination="@id/PostListFragment" />
 
         <argument
             android:name="current"

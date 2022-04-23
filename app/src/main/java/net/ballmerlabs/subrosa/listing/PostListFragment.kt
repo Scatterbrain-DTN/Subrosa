@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.ballmerlabs.subrosa.NewsRepository
 import net.ballmerlabs.subrosa.R
-import net.ballmerlabs.subrosa.databinding.FragmentGroupListBinding
+import net.ballmerlabs.subrosa.databinding.FragmentPostListBinding
 import net.ballmerlabs.subrosa.scatterbrain.NewsGroup
 import net.ballmerlabs.subrosa.thread.PostListRecylerViewAdapter
 import java.lang.Exception
@@ -28,10 +28,10 @@ import javax.inject.Inject
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
 @AndroidEntryPoint
-class GroupListFragment @Inject constructor() : Fragment() {
+class PostListFragment @Inject constructor() : Fragment() {
 
-    private val args: GroupListFragmentArgs by navArgs()
-    private lateinit var binding: FragmentGroupListBinding
+    private val args: PostListFragmentArgs by navArgs()
+    private lateinit var binding: FragmentPostListBinding
     private val postAdapter = PostListRecylerViewAdapter()
 
     @Inject lateinit var repository: NewsRepository
@@ -44,7 +44,7 @@ class GroupListFragment @Inject constructor() : Fragment() {
         lifecycleScope.launch {
             val children = withContext(Dispatchers.IO) { repository.getChildren(group.uuid) }
             Log.e("debug", "found ${children.size} children")
-            val action = GroupListFragmentDirections.actionGroupListFragmentToSelf(
+            val action = PostListFragmentDirections.actionPostListFragmentToSelf(
                 children.toTypedArray(),
                 false,
                 group,
@@ -116,7 +116,7 @@ class GroupListFragment @Inject constructor() : Fragment() {
             inflater: LayoutInflater, container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View {
-        binding = FragmentGroupListBinding.inflate(inflater)
+        binding = FragmentPostListBinding.inflate(inflater)
         initialSetupGroupList()
         initialSetupPosts()
         binding.swipeRefreshLayout.setOnRefreshListener {

@@ -23,8 +23,8 @@ import kotlinx.coroutines.withContext
 import net.ballmerlabs.scatterbrainsdk.BinderWrapper
 import net.ballmerlabs.scatterbrainsdk.ScatterbrainBroadcastReceiver
 import net.ballmerlabs.subrosa.databinding.ActivityMainBinding
-import net.ballmerlabs.subrosa.listing.GroupListFragmentArgs
-import net.ballmerlabs.subrosa.listing.GroupListFragmentDirections
+import net.ballmerlabs.subrosa.listing.PostListFragmentArgs
+import net.ballmerlabs.subrosa.listing.PostListFragmentDirections
 import net.ballmerlabs.subrosa.scatterbrain.NewsGroup
 import net.ballmerlabs.subrosa.user.UserListFragmentDirections
 import net.ballmerlabs.subrosa.util.uuidSha256
@@ -248,8 +248,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun changeDestinationGroupListFragment(arguments: Bundle) {
-        val args = GroupListFragmentArgs.fromBundle(arguments)
+    private fun changeDestinationPostListFragment(arguments: Bundle) {
+        val args = PostListFragmentArgs.fromBundle(arguments)
         Log.v("debug", "on newsgroup ${args.parent}")
         mainViewModel.path.value = args.path.toList()
         binding.toolbar.title = args.parent.groupName
@@ -259,12 +259,12 @@ class MainActivity : AppCompatActivity() {
         ) { type, _ ->
             when(type) {
                 FabType.UPPER -> {
-                    val action = GroupListFragmentDirections.actionGroupListFragmentToPostCreationDialog(args.parent)
+                    val action = PostListFragmentDirections.actionPostListFragmentToPostCreationDialog(args.parent)
                     navController.navigate(action)
                 }
                 FabType.LOWER -> {
                     binding.appbarlayout.setExpanded(true)
-                    val action = GroupListFragmentDirections.actionGroupListFragmentToGroupCreateDialog(args.parent)
+                    val action = PostListFragmentDirections.actionPostListFragmentToGroupCreateDialog(args.parent)
                     navController.navigate(action)
                 }
             }
@@ -288,7 +288,7 @@ class MainActivity : AppCompatActivity() {
         navController.addOnDestinationChangedListener { _, destination, arguments ->
             Log.v("debug", "navigating to $destination")
             when(destination.id) {
-                R.id.GroupListFragment -> { changeDestinationGroupListFragment(arguments!!) }
+                R.id.PostListFragment -> { changeDestinationPostListFragment(arguments!!) }
                 R.id.userListFragment -> { changeDestinationUserListFragment() }
                 else -> {
                     setFab()
@@ -335,7 +335,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
         setupNavController()
-        setupNavGraph(R.id.GroupListFragment)
+        setupNavGraph(R.id.PostListFragment)
         setupBottomNavigation()
         setupPathsView()
         setupAppBarLayout()
