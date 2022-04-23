@@ -224,6 +224,9 @@ class NewsRepository @Inject constructor(
         return dbchild?.children?: ArrayList()
     }
 
+    fun observeGroups(): LiveData<List<NewsGroup>> {
+        return dao.observeAllGroups()
+    }
 
     fun observeChildren(group: UUID): LiveData<List<NewsGroup>> {
         return dao.observeGroupWithChildren(group)

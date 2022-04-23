@@ -315,11 +315,6 @@ class MainActivity : AppCompatActivity() {
             withContext(Dispatchers.IO) { repository.insertGroup(groups)}
             Log.e("debug", "groups inserted")
 
-            defaultArgument(id, "grouplist", groups.toTypedArray())
-            defaultArgument(id, "immutable", true)
-            defaultArgument(id, "parent", NewsGroup.empty())
-            defaultArgument(id, "path", arrayOf(NewsGroup.empty()))
-
             withContext(Dispatchers.Main) { navController.graph = navGraph }
         }
     }
@@ -335,7 +330,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
         setupNavController()
-        setupNavGraph(R.id.PostListFragment)
+        setupNavGraph(R.id.groupListFragment)
         setupBottomNavigation()
         setupPathsView()
         setupAppBarLayout()

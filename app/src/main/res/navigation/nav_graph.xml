@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/PostListFragment">
+    app:startDestination="@id/groupListFragment">
 
     <fragment
         android:id="@+id/PostListFragment"
@@ -60,9 +60,6 @@
         android:name="net.ballmerlabs.subrosa.thread.PostCreationDialog"
         android:label="fragment_post_creation_dialog"
         tools:layout="@layout/fragment_post_creation_dialog" >
-        <action
-            android:id="@+id/action_postCreationDialog_to_PostListFragment"
-            app:destination="@id/PostListFragment" />
 
         <argument
             android:name="current"
@@ -94,4 +91,14 @@
         android:id="@+id/mainSettings"
         android:name="net.ballmerlabs.subrosa.prefs.MainSettings"
         android:label="MainSettings" />
+    <fragment
+        android:id="@+id/groupListFragment"
+        android:name="net.ballmerlabs.subrosa.GroupListFragment"
+        android:label="fragment_group_list"
+        tools:layout="@layout/fragment_group_list" >
+        <action
+            android:id="@+id/action_groupListFragment_to_PostListFragment"
+
+            app:destination="@id/PostListFragment" />
+    </fragment>
 </navigation>

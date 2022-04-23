@@ -44,6 +44,10 @@ interface NewsGroupDao {
     @Query("SELECT * FROM newsgroup WHERE uuid = (:uuid)")
     fun observeGroupWithChildren(uuid: UUID): LiveData<NewsGroupChildren>
 
+    @Transaction
+    @Query("SELECT * FROM newsgroup WHERE parent IS NULL")
+    fun observeAllGroups(): LiveData<List<NewsGroup>>
+
     @Query("DELETE FROM user WHERE identity = :identity")
     suspend fun deleteByIdentity(identity: UUID): Int
 
