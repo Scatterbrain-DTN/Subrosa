@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private var titleSet = false
-    
+
     @Inject lateinit var broadcastReceiver: ScatterbrainBroadcastReceiver
 
     @Inject lateinit var repository: NewsRepository
@@ -66,15 +66,12 @@ class MainActivity : AppCompatActivity() {
     
     private fun onExpanded() {
         mainViewModel.collapsed.value = false
+        popTitle()
     }
 
     private fun onCollapsed() {
-        if (titleSet) {
-            val list = mainViewModel.strPath.toTypedArray()
-            binding.flowlayout.setPaths(list)
-            binding.collapsingToolbar.title = ""
-            titleSet = false
-        }
+        popTitle()
+        fabExpanded = false
         mainViewModel.collapsed.value = true
     }
 
@@ -97,14 +94,21 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun onExpanding() {
-        if (!titleSet) {
+    private fun popTitle() {
+        Log.v("debug", "popTitle $fabExpanded")
+        if (mainViewModel.strPath.isNotEmpty()) {
             val list = mainViewModel.strPath.toMutableList()
-            val front = list.removeLast()
+            if (fabExpanded) {
+                val front = list.removeLast()
+                binding.collapsingToolbar.title = front
+            }
             binding.flowlayout.setPaths(list.toTypedArray())
-            binding.collapsingToolbar.title = front
-            titleSet = true
         }
+    }
+
+    private fun onExpanding() {
+        fabExpanded = true
+        popTitle()
     }
 
     override fun onPause() {
@@ -165,6 +169,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setAppBar(expand: Boolean = false, text: String? = null) {
+        fabExpanded = expand
         binding.pathscroll.visibility = if (expand) View.VISIBLE else View.GONE
         if(!expand) {
             binding.currentIdenticon.visibility = View.GONE
@@ -234,12 +239,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupPathsView() {
         mainViewModel.path.observe(this) { v ->
-            val p = v.map { group ->
-                Log.v("debug", "setting path")
-                if(group.empty) "root" else group.groupName
-            }.toTypedArray()
-            Log.e("debug", "received livedata ${p.size}")
-            binding.flowlayout.setPaths(p)
+            popTitle()
         }
         setupBanners()
         binding.pathscroll.addOnLayoutChangeListener { _: View, _: Int, _: Int, _: Int, _: Int, _: Int, _: Int, _: Int, _: Int ->
