@@ -54,22 +54,16 @@ class PostListFragment @Inject constructor() : Fragment() {
         }
     }
 
-    private fun setEmpty(empty: Boolean) {
-        binding.threadRecyclerview.visibility = View.VISIBLE
-    }
-
     private fun initialSetupGroupList() {
         binding.groupRecyclerview.adapter = groupListAdapter
         if (args.immutable) {
             lifecycleScope.launch(Dispatchers.Main) {
                 groupListAdapter.addItems(args.grouplist.asList())
-                binding.nestedAppbar.setExpanded(false, false)
             }
         } else {
             repository.observeChildren(args.parent.uuid).observe(viewLifecycleOwner) { children ->
                 Log.v("debug", "observing groups ${children.size}")
                 groupListAdapter.addItems(children)
-                binding.nestedAppbar.setExpanded(false, false)
             }
         }
     }
@@ -105,7 +99,6 @@ class PostListFragment @Inject constructor() : Fragment() {
             Log.v("debug", "starting post observation")
             repository.observePosts(args.parent).observe(viewLifecycleOwner) { posts ->
                 Log.e("debug", "livedata received posts ${posts.size}")
-                setEmpty(posts.isEmpty())
                 postAdapter.addItems(posts)
             }
 
@@ -119,6 +112,7 @@ class PostListFragment @Inject constructor() : Fragment() {
         binding = FragmentPostListBinding.inflate(inflater)
         initialSetupGroupList()
         initialSetupPosts()
+        binding.nestedAppbar.setExpanded(false, true)
         binding.swipeRefreshLayout.setOnRefreshListener {
             lifecycleScope.launch {
                 refreshLatest()

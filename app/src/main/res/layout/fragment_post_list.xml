@@ -12,6 +12,7 @@
         android:id="@+id/nested_appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:expanded="true"
         android:theme="@style/Theme.Subrosa.AppBarOverlay">
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:id="@+id/nested_collapsing_toolbar"

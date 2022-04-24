@@ -16,6 +16,7 @@
             android:id="@+id/collapsing_toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:focusedByDefault="true"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
@@ -29,13 +30,15 @@
             <HorizontalScrollView
                 android:id="@+id/pathscroll"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|center_vertical"
                 app:layout_collapseMode="parallax">
 
                 <net.ballmerlabs.subrosa.NewsPathFlow
                     android:id="@+id/flowlayout"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent">
+                    android:layout_gravity="start|center_vertical"
+                    android:layout_height="wrap_content">
                 </net.ballmerlabs.subrosa.NewsPathFlow>
             </HorizontalScrollView>
 

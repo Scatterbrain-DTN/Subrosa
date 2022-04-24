@@ -167,12 +167,10 @@ class MainActivity : AppCompatActivity() {
     private fun setAppBar(expand: Boolean = false, text: String? = null) {
         binding.pathscroll.visibility = if (expand) View.VISIBLE else View.GONE
         if(!expand) {
-            binding.appbarlayout.setExpanded(false, true)
             binding.currentIdenticon.visibility = View.GONE
         } else {
             binding.currentIdenticon.visibility = View.VISIBLE
         }
-
         (binding.collapsingToolbar.layoutParams as AppBarLayout.LayoutParams).apply {
             scrollFlags = if (expand)
                 AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
@@ -182,8 +180,10 @@ class MainActivity : AppCompatActivity() {
         binding.collapsingToolbar.setCollapsedTitleTextAppearance(
             if (text == null) R.style.Transparent else R.style.TextAppearance_AppCompat_Large
         )
-       // ViewCompat.setNestedScrollingEnabled(binding.collapsingToolbar, expand)
+        ViewCompat.setNestedScrollingEnabled(binding.collapsingToolbar, expand)
         binding.collapsingToolbar.title = text?: ""
+        binding.appbarlayout.setExpanded(expand, true)
+        binding.appbarlayout.requestFocus()
     }
 
     private suspend fun checkRouterConnected() {
@@ -196,7 +196,6 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun setupAppBarLayout() {
-        binding.appbarlayout.setExpanded(false)
         binding.appbarlayout.addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener {
                 appBarLayout, verticalOffset ->
             when (abs(verticalOffset)) {
@@ -263,7 +262,6 @@ class MainActivity : AppCompatActivity() {
                     navController.navigate(action)
                 }
                 FabType.LOWER -> {
-                    binding.appbarlayout.setExpanded(true)
                     val action = PostListFragmentDirections.actionPostListFragmentToGroupCreateDialog(args.parent)
                     navController.navigate(action)
                 }
@@ -279,6 +277,11 @@ class MainActivity : AppCompatActivity() {
             icon = R.drawable.ic_baseline_person_add_alt_1_24
         )
         setAppBar(false, text = "Users")
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        navController.popBackStack()
+        return super.onSupportNavigateUp()
     }
 
     private fun setupNavController() {
@@ -335,7 +338,7 @@ class MainActivity : AppCompatActivity() {
         setupPathsView()
         setupAppBarLayout()
         setupNavController()
-
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
         repository.observeConnectionState()
             .observe(this) { state ->
                 when (state) {
