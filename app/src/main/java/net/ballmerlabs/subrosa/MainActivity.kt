@@ -199,16 +199,10 @@ class MainActivity : AppCompatActivity() {
     private fun setTitle(text: String?) {
         Log.v("debug", "isTitleEnabled ${binding.collapsingToolbar.title}")
         if (text != null) {
-            binding.collapsingToolbar.setCollapsedTitleTextAppearance(
-                R.style.TextAppearance_AppCompat_Large
-            )
             binding.collapsingToolbar.isTitleEnabled = false
             binding.toolbar.title = text
             binding.collapsingToolbar.title = text
         } else {
-            binding.collapsingToolbar.setCollapsedTitleTextAppearance(
-                R.style.Transparent
-            )
             binding.collapsingToolbar.isTitleEnabled = true
             binding.toolbar.title = ""
             binding.collapsingToolbar.title = ""
