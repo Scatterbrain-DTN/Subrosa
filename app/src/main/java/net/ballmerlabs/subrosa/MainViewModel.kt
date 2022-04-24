@@ -10,6 +10,7 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(): ViewModel() {
     val path = MutableLiveData<List<NewsGroup>>(ArrayList())
     val collapsed = MutableLiveData(false)
+    var search: MutableLiveData<String?> = MutableLiveData(null)
     val strPath: List<String>
     get() = path.value!!.map { v -> if (v.empty) "root" else v.groupName}.toMutableList()
 }

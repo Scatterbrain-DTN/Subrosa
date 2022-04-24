@@ -2,4 +2,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="net.ballmerlabs.subrosa.MainActivity">
+
+    <group android:id="@+id/grouplistitems">
+        <item
+            android:id="@+id/action_search"
+            android:orderInCategory="100"
+            android:title="Search"
+            android:icon="@drawable/ic_search_black_24dp"
+            app:showAsAction="always" />
+    </group>
 </menu>

@@ -3,12 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:id="@+id/parent_coordinatorlayout"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbarlayout"
         android:layout_width="match_parent"
+        android:elevation="500dp"
         android:layout_height="wrap_content"
         android:theme="@style/Theme.Subrosa.AppBarOverlay">
 
@@ -17,10 +19,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:focusedByDefault="true"
+            android:elevation="500dp"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
+                android:elevation="500dp"
                 android:layout_height="?attr/actionBarSize"
                 android:background="?attr/colorPrimary"
                 app:layout_collapseMode="pin"
@@ -30,12 +34,14 @@
             <HorizontalScrollView
                 android:id="@+id/pathscroll"
                 android:layout_width="wrap_content"
+                android:elevation="500dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start|center_vertical"
                 app:layout_collapseMode="parallax">
 
                 <net.ballmerlabs.subrosa.NewsPathFlow
                     android:id="@+id/flowlayout"
+                    android:elevation="500dp"
                     android:layout_width="wrap_content"
                     android:layout_gravity="start|center_vertical"
                     android:layout_height="wrap_content">
@@ -47,6 +53,7 @@
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:layout_marginTop="60dp"
+                android:elevation="500dp"
                 android:layout_marginBottom="40dp"
                 android:layout_gravity="end|center"
                 android:layout_marginHorizontal="32dp"
@@ -68,12 +75,36 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         app:icon="@drawable/ic_baseline_signal_wifi_statusbar_connected_no_internet_4_24"/>
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/search_framelayout"
+        android:elevation="1dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/search_box"
+            android:elevation="400dp"
+            android:visibility="gone">
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/search_input"
+                android:imeOptions="actionSearch"
+                android:inputType="text"
+                android:elevation="400dp"
+                android:hint="Search"/>
+        </com.google.android.material.textfield.TextInputLayout>
+    </FrameLayout>
+
     <fragment
         android:id="@+id/nav_host_fragment"
         android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:defaultNavHost="true"
+        android:elevation="200dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"

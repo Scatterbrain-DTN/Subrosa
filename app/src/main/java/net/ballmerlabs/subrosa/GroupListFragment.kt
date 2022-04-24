@@ -3,10 +3,14 @@ package net.ballmerlabs.subrosa
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.switchMap
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
@@ -15,6 +19,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.ballmerlabs.subrosa.databinding.FragmentGroupListBinding
 import net.ballmerlabs.subrosa.listing.GroupListRecyclerViewAdapter
+import net.ballmerlabs.subrosa.listing.GroupListViewModel
 import net.ballmerlabs.subrosa.listing.PostListFragment
 import net.ballmerlabs.subrosa.listing.PostListFragmentDirections
 import net.ballmerlabs.subrosa.scatterbrain.NewsGroup
@@ -26,6 +31,9 @@ class GroupListFragment : Fragment() {
     private lateinit var binding: FragmentGroupListBinding
 
     @Inject lateinit var repository: NewsRepository
+
+    private val viewModel by viewModels<GroupListViewModel>()
+    private val mainViewModel by activityViewModels<MainViewModel>()
 
     private val groupAdapter = GroupListRecyclerViewAdapter { group ->
         onGroupListItemClick(group)
@@ -53,11 +61,24 @@ class GroupListFragment : Fragment() {
     ): View {
         binding = FragmentGroupListBinding.inflate(inflater)
         binding.groupListRecyclerview.adapter = groupAdapter
-        repository.observeGroups()
-            .observe(viewLifecycleOwner) { groups ->
+
+        mainViewModel.search.switchMap { search ->
+            if (search != null) {
+                repository.observeGroups(search)
+            } else {
+                repository.observeGroups()
+            }
+        }.observe(viewLifecycleOwner) { groups ->
                 Log.v("debug", "observed groups ${groups.size}")
                 groupAdapter.addItems(groups)
             }
         return binding.root
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId) {
+            R.id.action_search -> Log.v("debug", "search2")
+        }
+        return true
     }
 }

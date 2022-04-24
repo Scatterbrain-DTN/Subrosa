@@ -227,6 +227,10 @@ class NewsRepository @Inject constructor(
     fun observeGroups(): LiveData<List<NewsGroup>> {
         return dao.observeAllGroups()
     }
+    fun observeGroups(name: String): LiveData<List<NewsGroup>> {
+        return dao.observeAllGroups(name)
+    }
+
 
     fun observeChildren(group: UUID): LiveData<List<NewsGroup>> {
         return dao.observeGroupWithChildren(group)

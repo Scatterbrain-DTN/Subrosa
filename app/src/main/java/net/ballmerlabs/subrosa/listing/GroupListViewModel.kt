@@ -10,4 +10,5 @@ import javax.inject.Inject
 class GroupListViewModel @Inject constructor(
     val repository: NewsRepository
 ) : ViewModel(){
+    var search: String? = null
 }

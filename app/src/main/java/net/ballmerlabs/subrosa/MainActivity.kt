@@ -1,9 +1,15 @@
 package net.ballmerlabs.subrosa
 
+import android.content.Context
+import android.inputmethodservice.InputMethodService
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
 import android.view.Menu
+import android.view.MenuItem
 import android.view.View
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.HorizontalScrollView
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -14,6 +20,8 @@ import androidx.core.view.get
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.*
 import androidx.navigation.ui.NavigationUI
+import androidx.transition.Slide
+import androidx.transition.TransitionManager
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dagger.hilt.android.AndroidEntryPoint
@@ -25,6 +33,7 @@ import net.ballmerlabs.scatterbrainsdk.ScatterbrainBroadcastReceiver
 import net.ballmerlabs.subrosa.databinding.ActivityMainBinding
 import net.ballmerlabs.subrosa.listing.PostListFragmentArgs
 import net.ballmerlabs.subrosa.listing.PostListFragmentDirections
+import net.ballmerlabs.subrosa.listing.SearchDialogFragment
 import net.ballmerlabs.subrosa.scatterbrain.NewsGroup
 import net.ballmerlabs.subrosa.user.UserListFragmentDirections
 import net.ballmerlabs.subrosa.util.uuidSha256
@@ -295,8 +304,23 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        navController.popBackStack()
+        Log.v("debug", "nav up")
+        if(binding.searchBox.visibility == View.VISIBLE) {
+            hideSearch()
+        } else {
+            navController.popBackStack()
+        }
         return super.onSupportNavigateUp()
+    }
+
+    private fun handleSearchVisibility(destination: Int) {
+        val menuitem = findViewById<View>(R.id.action_search)
+        if (destination != R.id.groupListFragment) {
+            hideSearch(animate = false)
+            menuitem.visibility = View.GONE
+        } else {
+            menuitem.visibility = View.VISIBLE
+        }
     }
 
     private fun setupNavController() {
@@ -305,6 +329,7 @@ class MainActivity : AppCompatActivity() {
 
         navController.addOnDestinationChangedListener { _, destination, arguments ->
             Log.v("debug", "navigating to $destination")
+            handleSearchVisibility(destination.id)
             when(destination.id) {
                 R.id.PostListFragment -> { changeDestinationPostListFragment(arguments!!) }
                 R.id.userListFragment -> { changeDestinationUserListFragment() }
@@ -315,6 +340,35 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun showSearch() {
+        val transtion = Slide(Gravity.TOP)
+        transtion.duration = 600
+        transtion.addTarget(R.id.search_box)
+        TransitionManager.beginDelayedTransition(binding.searchFramelayout, transtion)
+        binding.searchBox.visibility = View.VISIBLE
+        binding.searchInput.requestFocus()
+        val input = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        input.showSoftInput(binding.searchInput, InputMethodManager.SHOW_IMPLICIT)
+
+    }
+
+    private fun hideSearch(animate: Boolean = true) {
+        val input = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        input.hideSoftInputFromWindow(binding.searchInput.windowToken, 0)
+        if (animate) {
+            val transtion = Slide(Gravity.TOP)
+            transtion.duration = 600
+            transtion.addTarget(R.id.search_box)
+            TransitionManager.beginDelayedTransition(binding.searchFramelayout, transtion)
+        }
+        binding.searchBox.visibility = View.INVISIBLE
+    }
+
+    private fun search() {
+        Log.v("debug",  "search")
+        showSearch()
     }
 
     private fun setupNavGraph(id: Int) {
@@ -343,6 +397,16 @@ class MainActivity : AppCompatActivity() {
         navGraph[id].addArgument(name, arg)
     }
 
+    private fun setupSearch() {
+        binding.searchInput.setOnEditorActionListener { view, id, event ->
+            mainViewModel.search.value = view.text.toString().ifBlank { null }
+            if (id == EditorInfo.IME_ACTION_SEARCH) {
+                hideSearch()
+            }
+            true
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -354,6 +418,7 @@ class MainActivity : AppCompatActivity() {
         setupPathsView()
         setupAppBarLayout()
         setupNavController()
+        setupSearch()
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         repository.observeConnectionState()
             .observe(this) { state ->
@@ -368,6 +433,14 @@ class MainActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId) {
+            R.id.action_search -> search()
+            android.R.id.home -> onSupportNavigateUp()
+        }
         return true
     }
 }
