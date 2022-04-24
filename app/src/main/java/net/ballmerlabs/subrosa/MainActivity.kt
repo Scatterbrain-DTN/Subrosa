@@ -182,11 +182,8 @@ class MainActivity : AppCompatActivity() {
             else
                 AppBarLayout.LayoutParams.SCROLL_FLAG_NO_SCROLL
         }
-        binding.collapsingToolbar.setCollapsedTitleTextAppearance(
-            if (text == null) R.style.Transparent else R.style.TextAppearance_AppCompat_Large
-        )
+        setTitle(text)
         ViewCompat.setNestedScrollingEnabled(binding.collapsingToolbar, expand)
-        binding.collapsingToolbar.title = text?: ""
         binding.appbarlayout.setExpanded(expand, true)
         binding.appbarlayout.requestFocus()
     }
@@ -199,6 +196,24 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun setTitle(text: String?) {
+        Log.v("debug", "isTitleEnabled ${binding.collapsingToolbar.title}")
+        if (text != null) {
+            binding.collapsingToolbar.setCollapsedTitleTextAppearance(
+                R.style.TextAppearance_AppCompat_Large
+            )
+            binding.collapsingToolbar.isTitleEnabled = false
+            binding.toolbar.title = text
+            binding.collapsingToolbar.title = text
+        } else {
+            binding.collapsingToolbar.setCollapsedTitleTextAppearance(
+                R.style.Transparent
+            )
+            binding.collapsingToolbar.isTitleEnabled = true
+            binding.toolbar.title = ""
+            binding.collapsingToolbar.title = ""
+        }
+    }
 
     private fun setupAppBarLayout() {
         binding.appbarlayout.addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener {
@@ -279,6 +294,12 @@ class MainActivity : AppCompatActivity() {
         setAppBar(false, text = "Users")
     }
 
+
+    private fun changeDestinationGroupListFragment() {
+        setFab()
+        setAppBar(expand = false, text = "Global Group List")
+    }
+
     override fun onSupportNavigateUp(): Boolean {
         navController.popBackStack()
         return super.onSupportNavigateUp()
@@ -293,9 +314,10 @@ class MainActivity : AppCompatActivity() {
             when(destination.id) {
                 R.id.PostListFragment -> { changeDestinationPostListFragment(arguments!!) }
                 R.id.userListFragment -> { changeDestinationUserListFragment() }
+                R.id.groupListFragment -> { changeDestinationGroupListFragment() }
                 else -> {
                     setFab()
-                    setAppBar(false)
+                    setAppBar(expand = false)
                 }
             }
         }
