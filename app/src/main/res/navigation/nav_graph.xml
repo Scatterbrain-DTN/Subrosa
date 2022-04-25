@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/PostListFragment"
         android:name="net.ballmerlabs.subrosa.listing.PostListFragment"
-        android:label="@string/first_fragment_label"
+        android:label="@string/post_list_label"
         tools:layout="@layout/fragment_post_list">
         <argument
             android:name="grouplist"

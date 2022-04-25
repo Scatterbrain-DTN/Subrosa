@@ -51,7 +51,7 @@
             android:id="@+id/owned_chip"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="owned!"
+            android:text="@string/owned"
             android:visibility="invisible"
             app:layout_constraintBottom_toTopOf="@id/uuid"
             app:layout_constraintEnd_toStartOf="@id/menu_button"
