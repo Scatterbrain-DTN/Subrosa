@@ -36,7 +36,7 @@ class Post(
 
     var sig = packet.sig.toByteArray()
 
-    @PrimaryKey(autoGenerate = true) var id = 0
+    @PrimaryKey() var id: String = hasKey()
 
     constructor(
         parent: NewsGroup,
@@ -56,9 +56,9 @@ class Post(
 
     override fun hasKey(): String {
         val digest = MessageDigest.getInstance("SHA-256")
-        digest.update(bytes)
+        digest.update(packet.toByteArray())
         val base64 = Base64.getEncoder().encodeToString(digest.digest())
-        Log.e("debug", "digest ${base64}")
+        Log.e("debug", "digest $base64")
         return base64
     }
 
