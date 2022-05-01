@@ -1,8 +1,11 @@
 package net.ballmerlabs.subrosa
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.inputmethodservice.InputMethodService
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
@@ -17,6 +20,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.get
 import androidx.lifecycle.lifecycleScope
@@ -26,6 +30,7 @@ import androidx.transition.Slide
 import androidx.transition.TransitionManager
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -70,6 +75,17 @@ class MainActivity : AppCompatActivity() {
                     UserListFragmentDirections.actionUserListFragmentToUserCreationFragment(idList.first().fingerprint.toString())
                 navController.navigate(action)
             }
+        }
+    }
+
+    private val adminPermissionListener = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+        if (isGranted) {
+            val action =
+                UserListFragmentDirections.actionUserListFragmentToUserCreationFragment()
+            navController.navigate(action)
+        } else {
+            val snackbar = Snackbar.make(binding.root,R.string.permissions_fail, Snackbar.LENGTH_LONG)
+            snackbar.show()
         }
     }
 
@@ -307,16 +323,22 @@ class MainActivity : AppCompatActivity() {
             lowerIcon = R.drawable.ic_baseline_person_add_alt_1_24,
             upperIcon = R.drawable.ic_baseline_import
         ) { type, _ ->
-            when(type) {
-                FabType.LOWER -> {
-                    val action =
-                        UserListFragmentDirections.actionUserListFragmentToUserCreationFragment()
-                    navController.navigate(action)
-                }
-                FabType.UPPER -> {
-                    importIdentity.launch(1)
-                }
+            val permission = ScatterbrainApi.PERMISSION_ADMIN
+            if (ContextCompat.checkSelfPermission(applicationContext, permission)
+                == PackageManager.PERMISSION_GRANTED) {
+                when (type) {
+                    FabType.LOWER -> {
+                        val action =
+                            UserListFragmentDirections.actionUserListFragmentToUserCreationFragment()
+                        navController.navigate(action)
+                    }
+                    FabType.UPPER -> {
+                        importIdentity.launch(1)
+                    }
 
+                }
+            } else {
+                adminPermissionListener.launch(permission)
             }
         }
         setAppBar(false, text = "Users")

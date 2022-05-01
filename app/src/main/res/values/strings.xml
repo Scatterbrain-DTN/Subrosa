@@ -44,6 +44,7 @@
     <string name="edit_bio">Bio</string>
     <string name="create_button">Create</string>
     <string name="label_user_creation_dialog">Create User</string>
+    <string name="permissions_fail">Scatterbrain admin permission not granted, unable to create user</string>
 
     <!-- post list fragment -->
     <string name="thread_fragment_label">Thread</string>\

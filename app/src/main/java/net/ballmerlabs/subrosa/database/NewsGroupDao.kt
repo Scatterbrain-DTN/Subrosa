@@ -63,7 +63,7 @@ interface NewsGroupDao {
         SELECT uuid FROM newsgroup, post_count
         WHERE newsgroup.parent=post_count.n
     )
-    SELECT COUNT() FROM posts
+    SELECT COUNT(posts.id) FROM posts
     WHERE uuid IN post_count;
     """)
     suspend fun getTotalPosts(group: UUID): Int

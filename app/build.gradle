@@ -9,13 +9,13 @@ plugins {
 def protobuf_version = "3.18.0"
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 32
     buildToolsVersion "30.0.2"
 
     defaultConfig {
         applicationId "net.ballmerlabs.subrosa"
         minSdkVersion 29
-        targetSdkVersion 31
+        targetSdkVersion 32
         versionCode 1
         versionName "1.0"
 
