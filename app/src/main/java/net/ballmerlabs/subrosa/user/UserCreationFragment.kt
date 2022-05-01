@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -26,6 +27,7 @@ import net.ballmerlabs.subrosa.NewsRepository
 import net.ballmerlabs.subrosa.R
 import net.ballmerlabs.subrosa.databinding.FragmentUserCreationDialogBinding
 import net.ballmerlabs.subrosa.scatterbrain.User
+import java.util.*
 import javax.inject.Inject
 
 /**
@@ -37,6 +39,7 @@ import javax.inject.Inject
 class UserCreationFragment @Inject constructor(): DialogFragment() {
     private lateinit var binding: FragmentUserCreationDialogBinding
     private var imageSet = false
+    private val args by navArgs<UserCreationFragmentArgs>()
     private val req = registerForActivityResult(ActivityResultContracts.OpenDocument()) { res ->
         if (res != null) {
             lifecycleScope.launch(Dispatchers.IO) {
@@ -59,7 +62,8 @@ class UserCreationFragment @Inject constructor(): DialogFragment() {
                     imageBitmap = if (imageSet)
                         binding.profilepic.drawable.toBitmap()
                     else
-                        null
+                        null,
+                    identity = if (args.uuid == null) null else UUID.fromString(args.uuid)
                 )
 
                 withContext(Dispatchers.Main) {

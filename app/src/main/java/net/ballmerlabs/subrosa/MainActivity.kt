@@ -1,6 +1,7 @@
 package net.ballmerlabs.subrosa
 
 import android.content.Context
+import android.content.Intent
 import android.inputmethodservice.InputMethodService
 import android.os.Bundle
 import android.util.Log
@@ -12,6 +13,7 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.HorizontalScrollView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -29,6 +31,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.ballmerlabs.scatterbrainsdk.BinderWrapper
+import net.ballmerlabs.scatterbrainsdk.IdentityImportContract
+import net.ballmerlabs.scatterbrainsdk.ScatterbrainApi
 import net.ballmerlabs.scatterbrainsdk.ScatterbrainBroadcastReceiver
 import net.ballmerlabs.subrosa.databinding.ActivityMainBinding
 import net.ballmerlabs.subrosa.listing.PostListFragmentArgs
@@ -53,9 +57,21 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var navController: NavController
 
-    private var fabExpanded = false
+    private val fabExpanded: Boolean
+    get() = binding.fabAlt2.translationY != 0.toFloat()
 
     private val mainViewModel by viewModels<MainViewModel>()
+
+    private val importIdentity = registerForActivityResult(IdentityImportContract()) { idList ->
+        if (idList != null) {
+            if (idList.size == 1) {
+                Log.v("debug", "registered ${idList.size} identities")
+                val action =
+                    UserListFragmentDirections.actionUserListFragmentToUserCreationFragment(idList.first().fingerprint.toString())
+                navController.navigate(action)
+            }
+        }
+    }
 
     private lateinit var navGraph: NavGraph
 
@@ -80,26 +96,25 @@ class MainActivity : AppCompatActivity() {
 
     private fun onCollapsed() {
         popTitle()
-        fabExpanded = false
         mainViewModel.collapsed.value = true
     }
 
 
     private fun expandFab() {
+        Log.v("debug", "fab expanding ${binding.fabAlt2.y}")
         if (!fabExpanded) {
             binding.fabAlt.animate().translationY(-resources.getDimension(R.dimen.fab_expand_lower))
             binding.fabAlt2.animate().translationY(-resources.getDimension(R.dimen.fab_expand_upper))
             binding.fab.setOnClickListener { contractFab() }
-            fabExpanded = true
         }
     }
 
     private fun contractFab() {
+        Log.v("debug", "fab contracting ${binding.fabAlt2.y}")
         if (fabExpanded) {
             binding.fabAlt.animate().translationY(0.toFloat())
             binding.fabAlt2.animate().translationY(0.toFloat())
             binding.fab.setOnClickListener { expandFab() }
-            fabExpanded = false
         }
     }
 
@@ -116,7 +131,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onExpanding() {
-        fabExpanded = true
         popTitle()
     }
 
@@ -178,7 +192,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setAppBar(expand: Boolean = false, text: String? = null) {
-        fabExpanded = expand
         binding.pathscroll.visibility = if (expand) View.VISIBLE else View.GONE
         if(!expand) {
             binding.currentIdenticon.visibility = View.GONE
@@ -290,16 +303,31 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun changeDestinationUserListFragment() {
-        setFab(
-            action = UserListFragmentDirections.actionUserListFragmentToUserCreationFragment(),
-            icon = R.drawable.ic_baseline_person_add_alt_1_24
-        )
+        setFabExpand(
+            lowerIcon = R.drawable.ic_baseline_person_add_alt_1_24,
+            upperIcon = R.drawable.ic_baseline_import
+        ) { type, _ ->
+            when(type) {
+                FabType.LOWER -> {
+                    val action =
+                        UserListFragmentDirections.actionUserListFragmentToUserCreationFragment()
+                    navController.navigate(action)
+                }
+                FabType.UPPER -> {
+                    importIdentity.launch(1)
+                }
+
+            }
+        }
         setAppBar(false, text = "Users")
     }
 
 
     private fun changeDestinationGroupListFragment() {
-        setFab()
+        setFab(
+            action = GroupListFragmentDirections.actionGroupListFragmentToGroupCreateDialog(null),
+            icon = R.drawable.ic_baseline_create_new_folder_24
+        )
         setAppBar(expand = false, text = "Global Group List")
     }
 

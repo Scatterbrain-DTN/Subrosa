@@ -54,6 +54,11 @@
         android:name="net.ballmerlabs.subrosa.user.UserCreationFragment"
         android:label="@string/label_user_creation_dialog"
         tools:layout="@layout/fragment_user_creation_dialog">
+        <argument
+            android:name="uuid"
+            app:nullable="true"
+            android:defaultValue="@null"
+            app:argType="string"/>
     </dialog>
     <dialog
         android:id="@+id/postCreationDialog"
@@ -85,6 +90,7 @@
 
         <argument
             android:name="parent"
+            app:nullable="true"
             app:argType="net.ballmerlabs.subrosa.scatterbrain.NewsGroup"/>
     </dialog>
     <fragment
@@ -100,5 +106,8 @@
             android:id="@+id/action_groupListFragment_to_PostListFragment"
 
             app:destination="@id/PostListFragment" />
+        <action
+            android:id="@+id/action_groupListFragment_to_groupCreateDialog"
+            app:destination="@id/groupCreateDialog" />
     </fragment>
 </navigation>

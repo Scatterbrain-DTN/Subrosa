@@ -35,9 +35,7 @@ class GroupListFragment : Fragment() {
     private val viewModel by viewModels<GroupListViewModel>()
     private val mainViewModel by activityViewModels<MainViewModel>()
 
-    private val groupAdapter = GroupListRecyclerViewAdapter { group ->
-        onGroupListItemClick(group)
-    }
+    private lateinit var groupAdapter: GroupListRecyclerViewAdapter
 
 
     private fun onGroupListItemClick(group: NewsGroup) {
@@ -60,6 +58,9 @@ class GroupListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentGroupListBinding.inflate(inflater)
+        groupAdapter = GroupListRecyclerViewAdapter(repository) { group ->
+            onGroupListItemClick(group)
+        }
         binding.groupListRecyclerview.adapter = groupAdapter
 
         mainViewModel.search.switchMap { search ->

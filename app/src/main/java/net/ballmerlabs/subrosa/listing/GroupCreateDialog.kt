@@ -49,16 +49,17 @@ class GroupCreateDialog @Inject constructor() : DialogFragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentGroupCreateDialogBinding.inflate(inflater)
-        binding.groupcreateToolbar.title = "creating child group of ${args.parent.groupName}"
+        binding.groupcreateToolbar.setNavigationOnClickListener { dismiss() }
+        binding.groupcreateToolbar.title = "creating child group of ${args.parent?.groupName}"
         binding.gcConfirmButton.setOnClickListener {
             if (validate()) {
                 repository.coroutineScope.launch(Dispatchers.Default) {
                     val text = binding.gcNameEdittext.text
                     val group = NewsGroup(
                         uuid = UUID.randomUUID(),
-                        parentCol = args.parent.uuid,
+                        parentCol = args.parent?.uuid,
                         groupName = text.toString(),
-                        parentHash = args.parent.hash
+                        parentHash = args.parent?.hash
                     )
                     repository.insertGroup(group)
                     withContext(Dispatchers.Main) {

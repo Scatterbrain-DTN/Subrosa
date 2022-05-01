@@ -58,6 +58,11 @@ class UserListFragment @Inject constructor() : Fragment() {
             lifecycleScope.launch(Dispatchers.IO) {
                 withContext(Dispatchers.Main) {
                     userAdapter = UserListRecyclerViewAdapter(requireContext())
+                    repository.observeUsers()
+                        .observe(viewLifecycleOwner) { users ->
+                            Log.v("debug", "observed users ${users.size}" )
+                            userAdapter.addItems(users)
+                        }
                     adapter = userAdapter
                     userAdapter.setOnDeleteClickListener { uuid ->
                         lifecycleScope.launch {
@@ -67,11 +72,7 @@ class UserListFragment @Inject constructor() : Fragment() {
                 }
             }
         }
-        repository.observeUsers()
-            .observe(viewLifecycleOwner) { users ->
-                Log.v("debug", "observed users ${users.size}" )
-                userAdapter.addItems(users)
-            }
+
 
         return binding.root
     }

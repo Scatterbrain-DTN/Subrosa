@@ -5,12 +5,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import net.ballmerlabs.subrosa.NewsRepository
 import net.ballmerlabs.subrosa.R
 import net.ballmerlabs.subrosa.databinding.ThreadCardBinding
 import net.ballmerlabs.subrosa.scatterbrain.Post
 import net.ballmerlabs.subrosa.util.MapRecyclerViewAdapter
 
-class PostListRecylerViewAdapter():
+class PostListRecylerViewAdapter(private val repository: NewsRepository? = null):
     MapRecyclerViewAdapter<String, Post, PostListRecylerViewAdapter.ViewHolder>() {
 
     inner class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
@@ -33,8 +37,6 @@ class PostListRecylerViewAdapter():
             set(value) {
                 binding.senderName.text = value
             }
-
-
         var header: CharSequence
             get() = binding.header.text
             set(value) {

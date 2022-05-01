@@ -116,11 +116,19 @@ class NewsRepository @Inject constructor(
         }
     }
 
-    suspend fun createUser(name: String, bio: String, imageBitmap: Bitmap? = null) : User = withContext(
+    suspend fun countPost(newsGroup: UUID): Int {
+        return dao.getTotalPosts(newsGroup)
+    }
+
+    suspend fun createUser(name: String, bio: String, imageBitmap: Bitmap? = null, identity: UUID? = null) : User = withContext(
         Dispatchers.IO
     ) {
         requireConnected()
-        val id = sdkComponent.binderWrapper.generateIdentity(name)
+        val id = if (identity != null) {
+            sdkComponent.binderWrapper.getIdentity(identity)!!
+        } else {
+            sdkComponent.binderWrapper.generateIdentity(name)
+        }
         val user = User(
             identity = id.fingerprint,
             userName = name,

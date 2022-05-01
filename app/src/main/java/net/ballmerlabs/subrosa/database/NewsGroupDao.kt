@@ -52,6 +52,22 @@ interface NewsGroupDao {
     @Query("SELECT * FROM newsgroup WHERE parent IS NULL AND groupName LIKE '%' || :name || '%'")
     fun observeAllGroups(name: String): LiveData<List<NewsGroup>>
 
+    @Query("SELECT COUNT() FROM posts WHERE parent = :group" )
+    suspend fun getPostCount(group: UUID): Int
+
+    @Query("""
+    WITH RECURSIVE
+    post_count(n) AS (
+        VALUES(:group)
+        UNION
+        SELECT uuid FROM newsgroup, post_count
+        WHERE newsgroup.parent=post_count.n
+    )
+    SELECT COUNT() FROM posts
+    WHERE uuid IN post_count;
+    """)
+    suspend fun getTotalPosts(group: UUID): Int
+
     @Query("DELETE FROM user WHERE identity = :identity")
     suspend fun deleteByIdentity(identity: UUID): Int
 
