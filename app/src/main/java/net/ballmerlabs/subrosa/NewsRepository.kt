@@ -58,11 +58,6 @@ class NewsRepository @Inject constructor(
         }
     }
 
-    private suspend fun updateConnected() {
-        val c = sdkComponent.binderWrapper.isConnected()
-        updateConnected(c)
-    }
-
     suspend fun requireConnected() {
         if (!isConnected()) {
             throw IllegalStateException("routingService not connected")
@@ -145,7 +140,6 @@ class NewsRepository @Inject constructor(
     }
 
     suspend fun insertUser(user: User) {
-        updateConnected()
         dao.insertUsers(user)
     }
 
@@ -176,13 +170,10 @@ class NewsRepository @Inject constructor(
     }
 
     suspend fun readUsers(owned: Boolean): List<User> {
-        updateConnected()
-
         return dao.getAllOwnedUsers(owned)
     }
 
     suspend fun insertGroup(group: NewsGroup) {
-        updateConnected()
         val message = ScatterMessage.Builder.newInstance(group.bytes)
             .setApplication(context.getString(R.string.scatterbrainapplication))
             .build()
@@ -194,7 +185,6 @@ class NewsRepository @Inject constructor(
 
 
     suspend fun insertGroup(group: List<NewsGroup>) {
-        updateConnected()
         dao.insertGroups(group)
         val messages = group.map { g ->
             ScatterMessage.Builder.newInstance(g.bytes)
@@ -206,14 +196,12 @@ class NewsRepository @Inject constructor(
         }
     }
 
-
     suspend fun deleteUser(user: UUID): Boolean {
         val u = dao.getUsersByIdentity(user)
         return dao.deleteByIdentity(user) == 1
     }
 
     suspend fun createGroup(name: String, parent: NewsGroup): NewsGroup {
-        updateConnected()
         val uuid = UUID.randomUUID()
         Log.e("debug", "parent emptu: ${parent.empty}")
         val group = NewsGroup(
@@ -227,7 +215,6 @@ class NewsRepository @Inject constructor(
     }
 
     suspend fun getChildren(group: UUID): List<NewsGroup> {
-        updateConnected()
         val dbchild: NewsGroupChildren?= dao.getGroupWithChildren(group)
         return dbchild?.children?: ArrayList()
     }
