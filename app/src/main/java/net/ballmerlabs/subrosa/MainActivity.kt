@@ -18,7 +18,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.*
+import androidx.navigation.NavController
+import androidx.navigation.NavDirections
+import androidx.navigation.NavGraph
+import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI
 import androidx.transition.Slide
 import androidx.transition.TransitionManager
@@ -46,7 +49,6 @@ import kotlin.math.abs
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private var titleSet = false
 
     @Inject lateinit var broadcastReceiver: ScatterbrainBroadcastReceiver
 
@@ -277,9 +279,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupPathsView() {
-        mainViewModel.path.observe(this) { v ->
-            popTitle()
-        }
+        mainViewModel.path.observe(this) { popTitle() }
         setupBanners()
         binding.pathscroll.addOnLayoutChangeListener { _: View, _: Int, _: Int, _: Int, _: Int, _: Int, _: Int, _: Int, _: Int ->
             binding.pathscroll.fullScroll(HorizontalScrollView.FOCUS_RIGHT)
@@ -415,12 +415,7 @@ class MainActivity : AppCompatActivity() {
         binding.searchBox.visibility = View.INVISIBLE
     }
 
-    private fun search() {
-        Log.v("debug",  "search")
-        showSearch()
-    }
-
-    private fun setupNavGraph(id: Int) {
+    private fun setupNavGraph() {
         val inflater = navController.navInflater
         navGraph = inflater.inflate(R.navigation.nav_graph)
         lifecycleScope.launch(Dispatchers.Default) {
@@ -441,13 +436,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun <T> defaultArgument(id: Int, name: String, value: T) {
-        val arg = NavArgument.Builder().setDefaultValue(value).build()
-        navGraph[id].addArgument(name, arg)
-    }
-
     private fun setupSearch() {
-        binding.searchInput.setOnEditorActionListener { view, id, event ->
+        binding.searchInput.setOnEditorActionListener { view, id, _ ->
             mainViewModel.search.value = view.text.toString().ifBlank { null }
             if (id == EditorInfo.IME_ACTION_SEARCH) {
                 hideSearch()
@@ -462,7 +452,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
         setupNavController()
-        setupNavGraph(R.id.groupListFragment)
+        setupNavGraph()
         setupBottomNavigation()
         setupPathsView()
         setupAppBarLayout()
@@ -487,7 +477,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
-            R.id.action_search -> search()
+            R.id.action_search -> showSearch()
             android.R.id.home -> onSupportNavigateUp()
         }
         return true
