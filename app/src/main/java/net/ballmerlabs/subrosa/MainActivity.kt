@@ -1,11 +1,7 @@
 package net.ballmerlabs.subrosa
 
-import android.Manifest
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
-import android.inputmethodservice.InputMethodService
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
@@ -19,10 +15,8 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
-import androidx.core.view.get
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.*
 import androidx.navigation.ui.NavigationUI
@@ -42,13 +36,11 @@ import net.ballmerlabs.scatterbrainsdk.ScatterbrainBroadcastReceiver
 import net.ballmerlabs.subrosa.databinding.ActivityMainBinding
 import net.ballmerlabs.subrosa.listing.PostListFragmentArgs
 import net.ballmerlabs.subrosa.listing.PostListFragmentDirections
-import net.ballmerlabs.subrosa.listing.SearchDialogFragment
 import net.ballmerlabs.subrosa.scatterbrain.NewsGroup
 import net.ballmerlabs.subrosa.user.UserListFragmentDirections
 import net.ballmerlabs.subrosa.util.uuidSha256
 import javax.inject.Inject
 import kotlin.math.abs
-import kotlin.math.exp
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -363,13 +355,20 @@ class MainActivity : AppCompatActivity() {
         return super.onSupportNavigateUp()
     }
 
-    private fun handleSearchVisibility(destination: Int) {
-        val menuitem = findViewById<View>(R.id.action_search)
+    private fun handleMenuVisibility(destination: Int) {
+        val search = findViewById<View>(R.id.action_search)
         if (destination != R.id.groupListFragment) {
             hideSearch(animate = false)
-            menuitem.visibility = View.GONE
+            search.visibility = View.GONE
         } else {
-            menuitem.visibility = View.VISIBLE
+            search.visibility = View.VISIBLE
+        }
+
+        val nested = findViewById<View>(R.id.action_subgroups)
+        if (destination != R.id.PostListFragment) {
+            nested.visibility = View.GONE
+        } else {
+            nested.visibility = View.VISIBLE
         }
     }
 
@@ -379,7 +378,7 @@ class MainActivity : AppCompatActivity() {
 
         navController.addOnDestinationChangedListener { _, destination, arguments ->
             Log.v("debug", "navigating to $destination")
-            handleSearchVisibility(destination.id)
+            handleMenuVisibility(destination.id)
             when(destination.id) {
                 R.id.PostListFragment -> { changeDestinationPostListFragment(arguments!!) }
                 R.id.userListFragment -> { changeDestinationUserListFragment() }

@@ -7,10 +7,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
+import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.slidingpanelayout.widget.SlidingPaneLayout
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -105,6 +108,17 @@ class PostListFragment @Inject constructor() : Fragment() {
         }
     }
 
+    private fun openGroupList() {
+        childFragmentManager.commit {
+            setReorderingAllowed(true)
+            if (binding.slidingPaneLayout.isOpen) {
+                setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+            }
+        }
+
+        binding.slidingPaneLayout.open()
+    }
+
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
             savedInstanceState: Bundle?
@@ -113,6 +127,9 @@ class PostListFragment @Inject constructor() : Fragment() {
         initialSetupGroupList()
         initialSetupPosts()
         binding.nestedAppbar.setExpanded(false, true)
+        val menu = requireActivity().findViewById<View>(R.id.action_subgroups)
+        binding.slidingPaneLayout.lockMode = SlidingPaneLayout.LOCK_MODE_UNLOCKED
+        menu.setOnClickListener { openGroupList() }
         binding.swipeRefreshLayout.setOnRefreshListener {
             lifecycleScope.launch {
                 refreshLatest()

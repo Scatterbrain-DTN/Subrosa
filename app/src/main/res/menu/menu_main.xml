@@ -3,12 +3,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="net.ballmerlabs.subrosa.MainActivity">
 
-    <group android:id="@+id/grouplistitems">
+    <group
+        android:id="@+id/grouplistitems">
         <item
             android:id="@+id/action_search"
             android:orderInCategory="100"
             android:title="Search"
             android:icon="@drawable/ic_search_black_24dp"
             app:showAsAction="always" />
+    </group>
+    <group
+        android:id="@+id/postlistitems">
+        <item
+            android:id="@+id/action_subgroups"
+            android:orderInCategory="101"
+            android:icon="@drawable/ic_baseline_more_group_24"
+            android:title="SubGroups"
+            app:showAsAction="always"/>
     </group>
 </menu>
