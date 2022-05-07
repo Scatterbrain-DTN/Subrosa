@@ -27,7 +27,7 @@ class GroupListRecyclerViewAdapter(
         var newsGroup = NewsGroup.empty()
         set(value) {
             binding.name.text = value.groupName
-            binding.itemIdenticon.hash = value.hashCode()
+            binding.itemIdenticon.hash = value.hash.contentHashCode()
             binding.root.setOnClickListener { listener(value) }
             field = value
         }

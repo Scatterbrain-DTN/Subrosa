@@ -291,6 +291,7 @@ class MainActivity : AppCompatActivity() {
         Log.v("debug", "on newsgroup ${args.parent}")
         mainViewModel.path.value = args.path.toList()
         binding.toolbar.title = args.parent.groupName
+        binding.currentIdenticon.hash = args.parent.hash.contentHashCode()
         setFabExpand(
             lowerIcon = R.drawable.ic_baseline_create_new_folder_24,
             upperIcon = R.drawable.ic_baseline_email_24
