@@ -272,7 +272,10 @@ class MainActivity : AppCompatActivity() {
     private fun setupBanners() {
         binding.connectionLostBanner.setLeftButtonListener { b -> b.dismiss() }
         binding.connectionLostBanner.setRightButtonListener {
-            lifecycleScope.launch { checkRouterConnected() }
+            lifecycleScope.launch {
+                repository.sdkComponent.binderWrapper.bindService()
+                checkRouterConnected()
+            }
         }
 
     }
@@ -472,6 +475,7 @@ class MainActivity : AppCompatActivity() {
         setupNavController()
         setupSearch()
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        lifecycleScope.launch { repository.sdkComponent.binderWrapper.bindService() }
         repository.observeConnectionState()
                 .observe(this) { state ->
                     when (state) {
