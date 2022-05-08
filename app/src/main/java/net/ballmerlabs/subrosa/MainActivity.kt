@@ -8,11 +8,12 @@ import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.HorizontalScrollView
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -57,6 +58,17 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var navController: NavController
 
+    private val accessPermissionLauncher = registerForActivityResult(RequestPermission()) { isGranted ->
+        if (isGranted) {
+            lifecycleScope.launch { repository.sdkComponent.binderWrapper.bindService() }
+        } else {
+            val toast = Toast(applicationContext)
+            toast.setText(R.string.access_permission)
+            toast.duration = Toast.LENGTH_LONG
+            toast.show()
+        }
+    }
+
     private val fabExpanded: Boolean
     get() = binding.fabAlt2.translationY != 0.toFloat()
 
@@ -73,7 +85,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private val adminPermissionListener = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+    private val adminPermissionListener = registerForActivityResult(RequestPermission()) { isGranted ->
         if (isGranted) {
             val action =
                 UserListFragmentDirections.actionUserListFragmentToUserCreationFragment()
@@ -453,7 +465,12 @@ class MainActivity : AppCompatActivity() {
 
     private suspend fun tryBind(): Boolean {
         return try {
-            repository.sdkComponent.binderWrapper.bindService()
+            val permission = net.ballmerlabs.subrosa.util.checkPermission(ScatterbrainApi.PERMISSION_ACCESS, applicationContext)
+            if (permission) {
+                repository.sdkComponent.binderWrapper.bindService()
+            } else {
+                accessPermissionLauncher.launch(ScatterbrainApi.PERMISSION_ACCESS)
+            }
             true
         } catch (exc: Exception) {
             Log.e("debug", "failed to bind service")
@@ -473,7 +490,7 @@ class MainActivity : AppCompatActivity() {
         setupNavController()
         setupSearch()
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        lifecycleScope.launch { repository.sdkComponent.binderWrapper.bindService() }
+        lifecycleScope.launch { tryBind() }
         repository.observeConnectionState()
                 .observe(this) { state ->
                     when (state) {

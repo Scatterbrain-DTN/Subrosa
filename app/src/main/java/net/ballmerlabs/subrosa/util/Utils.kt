@@ -1,6 +1,10 @@
 package net.ballmerlabs.subrosa.util
 
+import android.content.Context
+import android.content.pm.PackageManager
 import android.content.res.Resources
+import androidx.core.content.ContextCompat
+import kotlinx.coroutines.suspendCancellableCoroutine
 import net.ballmerlabs.subrosa.SubrosaProto
 import java.nio.ByteBuffer
 import java.security.MessageDigest
@@ -37,6 +41,20 @@ fun uuidConvertProto(uuid: UUID): SubrosaProto.UUID {
 
 fun uuidConvertProto(uuid: SubrosaProto.UUID): UUID {
     return UUID(uuid.upper, uuid.lower)
+}
+
+suspend fun checkPermission(permission: String, context: Context): Boolean = suspendCancellableCoroutine { c ->
+    if (ContextCompat.checkSelfPermission(
+            context,
+            permission
+        ) == PackageManager.PERMISSION_GRANTED
+    ) {
+        c.resumeWith(Result.success(true))
+    } else {
+
+        c.resumeWith(Result.success(false))
+    }
+
 }
 
 fun Int.toDp(): Int = (this / Resources.getSystem().displayMetrics.density).toInt()

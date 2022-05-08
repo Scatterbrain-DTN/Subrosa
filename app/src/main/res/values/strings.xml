@@ -8,6 +8,7 @@
     <string name="fail_delete_user">Failed to delete scatterbrain identity</string>
     <string name="refresh_in_progress">Refresh already in progress</string>
     <string name="router_not_connected">Scatterbrain router not connected</string>
+    <string name="access_permission">Scatterbrain access permission not granted, router unavailable</string>
 
     <!-- Main activity strings -->
     <string name="dismiss">Dismiss</string>
