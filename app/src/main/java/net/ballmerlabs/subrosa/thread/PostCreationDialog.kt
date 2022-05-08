@@ -34,14 +34,15 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 @AndroidEntryPoint
-class PostCreationDialog @Inject constructor(): DialogFragment() {
+class PostCreationDialog @Inject constructor() : DialogFragment() {
     private lateinit var binding: FragmentPostCreationDialogBinding
     private lateinit var arrayAdapter: ArrayAdapter<User>
     private var selectedUser: User? = null
 
     val args: PostCreationDialogArgs by navArgs()
 
-    @Inject lateinit var repository: NewsRepository
+    @Inject
+    lateinit var repository: NewsRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,7 +56,8 @@ class PostCreationDialog @Inject constructor(): DialogFragment() {
         // Inflate the layout for this fragment
         binding = FragmentPostCreationDialogBinding.inflate(inflater)
         binding.toolbar.setNavigationOnClickListener { dismiss() }
-        arrayAdapter = ArrayAdapter<User>(requireContext(), android.R.layout.simple_dropdown_item_1line)
+        arrayAdapter =
+            ArrayAdapter<User>(requireContext(), android.R.layout.simple_dropdown_item_1line)
         binding.userAutocomplete.setAdapter(arrayAdapter)
         lifecycleScope.launch(Dispatchers.IO) {
             val users = repository.readUsers(true)
@@ -66,40 +68,37 @@ class PostCreationDialog @Inject constructor(): DialogFragment() {
             }
         }
         binding.userAutocomplete.onItemClickListener =
-            AdapterView.OnItemClickListener { _, _, position, _ -> selectedUser = arrayAdapter.getItem(position) }
+            AdapterView.OnItemClickListener { _, _, position, _ ->
+                selectedUser = arrayAdapter.getItem(position)
+            }
 
         binding.postButton.setOnClickListener {
-            if (selectedUser == null) {
-                Toast.makeText(context, "user not selected", Toast.LENGTH_LONG)
-                    .show()
-            } else {
-                val user = selectedUser
-                repository.coroutineScope.launch {
-                    try {
-                        repository.sendPost(
-                            args.current,
-                            user!!.identity,
-                            binding.postHeaderEdittext.text.toString(),
-                            binding.postBodyEdittext.text.toString(),
+            val user = selectedUser
+            repository.coroutineScope.launch {
+                try {
+                    repository.sendPost(
+                        args.current,
+                        user?.identity,
+                        binding.postHeaderEdittext.text.toString(),
+                        binding.postBodyEdittext.text.toString(),
 
-                            )
-                        withContext(Dispatchers.Main) {
-                            Toast.makeText(context, "sent post!", Toast.LENGTH_LONG)
-                                .show()
-                        }
-                    } catch (exc: Exception) {
-                        exc.printStackTrace()
-                        withContext(Dispatchers.Main) {
-                            Toast.makeText(
-                                context,
-                                "failed to send post: ${exc.message}",
-                                Toast.LENGTH_LONG
-                            )
-                                .show()
-                        }
+                        )
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, "sent post!", Toast.LENGTH_LONG)
+                            .show()
+                    }
+                } catch (exc: Exception) {
+                    exc.printStackTrace()
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            context,
+                            "failed to send post: ${exc.message}",
+                            Toast.LENGTH_LONG
+                        )
+                            .show()
                     }
                 }
-                findNavController().popBackStack()
+                withContext(Dispatchers.Main) { findNavController().popBackStack() }
             }
         }
         return binding.root

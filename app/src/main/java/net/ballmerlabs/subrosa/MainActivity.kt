@@ -42,6 +42,7 @@ import net.ballmerlabs.subrosa.listing.PostListFragmentDirections
 import net.ballmerlabs.subrosa.scatterbrain.NewsGroup
 import net.ballmerlabs.subrosa.user.UserListFragmentDirections
 import net.ballmerlabs.subrosa.util.uuidSha256
+import java.lang.Exception
 import javax.inject.Inject
 import kotlin.math.abs
 
@@ -219,10 +220,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private suspend fun checkRouterConnected() {
+        tryBind()
         if (!repository.sdkComponent.binderWrapper.isConnected()) {
             val toast = Toast(baseContext)
             toast.setText(R.string.router_not_connected)
             toast.show()
+        } else {
+            Log.v("debug", "router connected")
         }
     }
 
@@ -439,6 +443,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private suspend fun tryBind() {
+        try {
+            repository.sdkComponent.binderWrapper.bindService()
+        } catch (exc: Exception) {
+            Log.e("debug", "failed to bind service")
+            exc.printStackTrace()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -452,14 +465,17 @@ class MainActivity : AppCompatActivity() {
         setupNavController()
         setupSearch()
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        lifecycleScope.launch {
+          tryBind()
+        }
         repository.observeConnectionState()
-            .observe(this) { state ->
-                when (state) {
-                    BinderWrapper.Companion.BinderState.STATE_DISCONNECTED -> binding.connectionLostBanner.show()
-                    BinderWrapper.Companion.BinderState.STATE_CONNECTED -> binding.connectionLostBanner.dismiss()
-                    null -> binding.connectionLostBanner.show()
+                .observe(this) { state ->
+                    when (state) {
+                        BinderWrapper.Companion.BinderState.STATE_DISCONNECTED -> binding.connectionLostBanner.show()
+                        BinderWrapper.Companion.BinderState.STATE_CONNECTED -> binding.connectionLostBanner.dismiss()
+                        null -> binding.connectionLostBanner.show()
+                    }
                 }
-            }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

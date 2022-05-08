@@ -68,24 +68,33 @@ class NewsRepository @Inject constructor(
         return parent.hash + uuidConvert(user) + header.encodeToByteArray() + body.encodeToByteArray()
     }
 
-    suspend fun sendPost(parent: NewsGroup, user: UUID, header: String, body: String) {
+    suspend fun sendPost(parent: NewsGroup, user: UUID?, header: String, body: String) {
         requireConnected()
 
-        val identity = sdkComponent.binderWrapper.getIdentity(user)
-            ?: throw IllegalStateException("user does not exist")
-
-        Log.v("debug", "send post got identity ${identity.fingerprint}")
-        val post = Post(
-            parent,
-            user,
-            header,
-            body,
+        val identity = if (user != null) {
+           sdkComponent.binderWrapper.getIdentity(user)
+                ?: throw IllegalStateException("user does not exist")
+        } else {
+            null
+        }
+        val sig = if (identity != null && user != null) {
             sdkComponent.binderWrapper.sign(identity, postToArray(
                 parent,
                 user,
                 header,
                 body
             ))
+        } else {
+            null
+        }
+
+        Log.v("debug", "send post got identity ${identity?.fingerprint}")
+        val post = Post(
+            parent,
+            user,
+            header,
+            body,
+            sig
         )
 
         Log.v("debug", "send post signed post")
@@ -107,7 +116,12 @@ class NewsRepository @Inject constructor(
         Log.v("debug", "send post inserted post")
         if (isConnected()) {
             sdkComponent.binderWrapper.sendMessage(groupMsgs)
-            sdkComponent.binderWrapper.sendMessage(message, post.author)
+            val author = post.author
+            if (author != null) {
+                sdkComponent.binderWrapper.sendMessage(message, author)
+            } else {
+                sdkComponent.binderWrapper.sendMessage(message)
+            }
         }
     }
 

@@ -28,7 +28,7 @@ class Post(
     @Embedded
     var user: User? = null
 
-    var author = uuidConvertProto(packet.author)
+    var author: UUID? = if(packet.hasAuthor()) { uuidConvertProto(packet.author) } else { null }
 
     var header = packet.header
 
@@ -40,18 +40,26 @@ class Post(
 
     constructor(
         parent: NewsGroup,
-        author: UUID,
+        author: UUID?,
         header: String,
         body: String,
-        sig: ByteArray,
+        sig: ByteArray?,
     ): this(
-        SubrosaProto.Post.newBuilder()
-            .setParent(parent.packet)
-            .setAuthor(uuidConvertProto(author))
-            .setHeader(header)
-            .setBody(body)
-            .setSig(ByteString.copyFrom(sig))
-            .build()
+        if (author != null) {
+            SubrosaProto.Post.newBuilder()
+                .setParent(parent.packet)
+                .setAuthor(uuidConvertProto(author))
+                .setHeader(header)
+                .setBody(body)
+                .setSig(ByteString.copyFrom(sig))
+                .build()
+        } else {
+            SubrosaProto.Post.newBuilder()
+                .setParent(parent.packet)
+                .setHeader(header)
+                .setBody(body)
+                .build()
+        }
     )
 
     override fun hasKey(): String {

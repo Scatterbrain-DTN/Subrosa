@@ -20,10 +20,10 @@ class PostListRecylerViewAdapter(private val repository: NewsRepository? = null)
     inner class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
         private val binding: ThreadCardBinding = ThreadCardBinding.bind(view)
 
-        var fingerprint: CharSequence
+        var fingerprint: CharSequence?
             get() = binding.fingerprint.text
             set(value) {
-                binding.fingerprint.text = value
+                binding.fingerprint.text = value?:"Anonymous"
             }
 
         var body: CharSequence
@@ -32,10 +32,10 @@ class PostListRecylerViewAdapter(private val repository: NewsRepository? = null)
                 binding.postBody.text = value
             }
 
-        var name: CharSequence
+        var name: CharSequence?
             get() = binding.senderName.text
             set(value) {
-                binding.senderName.text = value
+                binding.senderName.text = value?:"Anonymous"
             }
         var header: CharSequence
             get() = binding.header.text
@@ -54,7 +54,7 @@ class PostListRecylerViewAdapter(private val repository: NewsRepository? = null)
         val item = valueMap[values[position]]
         if (item != null) {
             holder.body = item.body
-            holder.fingerprint = item.author.toString()
+            holder.fingerprint = item.author?.toString()
             holder.header = item.header
             holder.name = item.user?.userName?: "unknown"
         } else {
