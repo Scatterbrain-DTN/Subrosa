@@ -78,7 +78,7 @@
                     android:layout_height="wrap_content"
                     android:nestedScrollingEnabled="true"
                     android:textAlignment="center"
-                    android:id="@+id/posts_gone_text"
+                    android:id="@+id/groups_gone_text"
                     android:gravity="center"
                     android:layout_gravity="center"
                     android:text="@string/no_nested"

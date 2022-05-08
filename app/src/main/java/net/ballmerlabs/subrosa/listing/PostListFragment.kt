@@ -70,6 +70,7 @@ class PostListFragment @Inject constructor() : Fragment() {
         } else {
             repository.observeChildren(args.parent.uuid).observe(viewLifecycleOwner) { children ->
                 Log.v("debug", "observing groups ${children.size}")
+                setGroupText(children)
                 groupListAdapter.addItems(children)
             }
         }
@@ -96,6 +97,10 @@ class PostListFragment @Inject constructor() : Fragment() {
         }
     }
 
+    private fun setGroupText(groups: List<NewsGroup>) {
+        binding.groupsGoneText.visibility = if (groups.isEmpty()) View.VISIBLE else View.GONE
+    }
+
     private fun initialSetupPosts() {
         with(binding.threadRecyclerview) {
             layoutManager = LinearLayoutManager(context)
@@ -106,7 +111,6 @@ class PostListFragment @Inject constructor() : Fragment() {
             Log.v("debug", "starting post observation")
             repository.observePosts(args.parent).observe(viewLifecycleOwner) { posts ->
                 Log.e("debug", "livedata received posts ${posts.size}")
-                binding.postsGoneText.visibility = if (posts.isEmpty()) View.VISIBLE else View.GONE
                 postAdapter.addItems(posts)
             }
 
