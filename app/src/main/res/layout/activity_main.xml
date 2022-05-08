@@ -35,7 +35,7 @@
                 android:id="@+id/pathscroll"
                 android:layout_width="wrap_content"
                 android:elevation="500dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_gravity="start|center_vertical"
                 app:layout_collapseMode="parallax">
 
@@ -44,7 +44,7 @@
                     android:elevation="500dp"
                     android:layout_width="wrap_content"
                     android:layout_gravity="start|center_vertical"
-                    android:layout_height="wrap_content">
+                    android:layout_height="match_parent">
                 </net.ballmerlabs.subrosa.NewsPathFlow>
             </HorizontalScrollView>
 

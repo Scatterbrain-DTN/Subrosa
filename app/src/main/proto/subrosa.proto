@@ -29,6 +29,7 @@ message NewsGroup {
         bool toplevel = 3;
     }
     string name = 4;
+    string description = 5;
 }
 
 message Post {

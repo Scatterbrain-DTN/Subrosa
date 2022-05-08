@@ -132,10 +132,8 @@ class MainActivity : AppCompatActivity() {
         Log.v("debug", "popTitle $fabExpanded")
         if (mainViewModel.strPath.isNotEmpty()) {
             val list = mainViewModel.strPath.toMutableList()
-            if (fabExpanded) {
-                val front = list.removeLast()
-                binding.collapsingToolbar.title = front
-            }
+            val front = list.removeLast()
+            setTitle(front)
             binding.flowlayout.setPaths(list.toTypedArray())
         }
     }
@@ -201,7 +199,7 @@ class MainActivity : AppCompatActivity() {
         binding.bottomNavigation.background = null
     }
 
-    private fun setAppBar(expand: Boolean = false, text: String? = null) {
+    private fun setAppBar(expand: Boolean = false, text: String? = null, isTitleEnabled: Boolean = true) {
         binding.pathscroll.visibility = if (expand) View.VISIBLE else View.GONE
         if(!expand) {
             binding.currentIdenticon.visibility = View.GONE
@@ -214,7 +212,7 @@ class MainActivity : AppCompatActivity() {
             else
                 AppBarLayout.LayoutParams.SCROLL_FLAG_NO_SCROLL
         }
-        setTitle(text)
+        setTitle(text, isTitleEnabled = isTitleEnabled)
         ViewCompat.setNestedScrollingEnabled(binding.collapsingToolbar, expand)
         binding.appbarlayout.setExpanded(expand, true)
         binding.appbarlayout.requestFocus()
@@ -228,17 +226,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun setTitle(text: String?) {
+    private fun setTitle(text: String?, isTitleEnabled: Boolean = true) {
         Log.v("debug", "isTitleEnabled ${binding.collapsingToolbar.title}")
-        if (text != null) {
-            binding.collapsingToolbar.isTitleEnabled = false
-            binding.toolbar.title = text
-            binding.collapsingToolbar.title = text
-        } else {
-            binding.collapsingToolbar.isTitleEnabled = true
-            binding.toolbar.title = ""
-            binding.collapsingToolbar.title = ""
-        }
+        binding.collapsingToolbar.isTitleEnabled = isTitleEnabled
+        binding.toolbar.title = text
+        binding.collapsingToolbar.title = text
     }
 
     private fun setupAppBarLayout() {
@@ -290,7 +282,6 @@ class MainActivity : AppCompatActivity() {
         val args = PostListFragmentArgs.fromBundle(arguments)
         Log.v("debug", "on newsgroup ${args.parent}")
         mainViewModel.path.value = args.path.toList()
-        binding.toolbar.title = args.parent.groupName
         binding.currentIdenticon.hash = args.parent.hash.contentHashCode()
         setFabExpand(
             lowerIcon = R.drawable.ic_baseline_create_new_folder_24,
@@ -307,7 +298,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-        setAppBar(expand = true)
+        setAppBar(expand = true, text = args.parent.groupName)
 
     }
 
@@ -334,7 +325,7 @@ class MainActivity : AppCompatActivity() {
                 adminPermissionListener.launch(permission)
             }
         }
-        setAppBar(false, text = "Users")
+        setAppBar(false, text = getString(R.string.user_list_title), isTitleEnabled = false)
     }
 
 
@@ -343,7 +334,7 @@ class MainActivity : AppCompatActivity() {
             action = GroupListFragmentDirections.actionGroupListFragmentToGroupCreateDialog(null),
             icon = R.drawable.ic_baseline_create_new_folder_24
         )
-        setAppBar(expand = false, text = "Global Group List")
+        setAppBar(expand = false, text = getString(R.string.grouplist_title), isTitleEnabled = false)
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -427,7 +418,8 @@ class MainActivity : AppCompatActivity() {
                         uuid = uuid,
                         groupName = s,
                         parentCol = null,
-                        parentHash = null
+                        parentHash = null,
+                        description = ""
                     ) }
 
             withContext(Dispatchers.IO) { repository.insertGroup(groups)}

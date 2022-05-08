@@ -127,6 +127,9 @@ class PostListFragment @Inject constructor() : Fragment() {
         initialSetupGroupList()
         initialSetupPosts()
         binding.nestedAppbar.setExpanded(false, true)
+        binding.descriptionText.text = args.parent.description.ifEmpty {
+            getString(R.string.default_description)
+        }
         val menu = requireActivity().findViewById<View>(R.id.action_subgroups)
         binding.slidingPaneLayout.lockMode = SlidingPaneLayout.LOCK_MODE_UNLOCKED
         menu.setOnClickListener { openGroupList() }

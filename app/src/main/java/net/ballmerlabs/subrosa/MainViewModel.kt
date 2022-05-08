@@ -12,5 +12,5 @@ class MainViewModel @Inject constructor(): ViewModel() {
     val collapsed = MutableLiveData(false)
     var search: MutableLiveData<String?> = MutableLiveData(null)
     val strPath: List<String>
-    get() = path.value!!.map { v -> if (v.empty) "root" else v.groupName}.toMutableList()
+    get() = path.value!!.map { v -> v.groupName}.toMutableList().apply { add(0, "/") }
 }

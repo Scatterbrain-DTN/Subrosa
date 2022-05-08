@@ -23,12 +23,15 @@
     <string name="hint_group_name">Group name</string>
     <string name="add_group_text">Add Newsgroup</string>
     <string name="add_group_hint">Group name</string>
+    <string name="hint_group_description">Group Description</string>
 
     <!-- user list fragment -->
     <string name="user_view_fragment_label">User View</string>
     <string name="owned">Owned!</string>
+    <string name="user_list_title">Users</string>
 
     <!-- group list fragment -->
+    <string name="grouplist_title">Global Groups</string>
     <string-array name="default_newsgroups">
         <item>comp</item>
         <item>news</item>
@@ -47,6 +50,7 @@
     <string name="permissions_fail">Scatterbrain admin permission not granted, unable to create user</string>
 
     <!-- post list fragment -->
-    <string name="thread_fragment_label">Thread</string>\
+    <string name="thread_fragment_label">Thread</string>
     <string name="post_list_label">Post List Fragment</string>
+    <string name="default_description"/>
 </resources>

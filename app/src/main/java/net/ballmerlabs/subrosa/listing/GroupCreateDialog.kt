@@ -55,11 +55,13 @@ class GroupCreateDialog @Inject constructor() : DialogFragment() {
             if (validate()) {
                 repository.coroutineScope.launch(Dispatchers.Default) {
                     val text = binding.gcNameEdittext.text
+                    val desc = binding.gcDescription.text
                     val group = NewsGroup(
                         uuid = UUID.randomUUID(),
                         parentCol = args.parent?.uuid,
                         groupName = text.toString(),
-                        parentHash = args.parent?.hash
+                        parentHash = args.parent?.hash,
+                        description = desc.toString()
                     )
                     repository.insertGroup(group)
                     withContext(Dispatchers.Main) {

@@ -29,8 +29,17 @@
                 app:layout_scrollFlags="scroll|exitUntilCollapsed"
                 app:popupTheme="@style/Theme.Subrosa.PopupOverlay" />
 
+            <TextView
+                android:id="@+id/description_text"
+                android:layout_width="match_parent"
+                android:gravity="center"
+                android:layout_marginBottom="?attr/actionBarSize"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:layout_height="?attr/actionBarSize"/>
+
             <ImageView
                 android:layout_width="wrap_content"
+                android:layout_marginTop="?attr/actionBarSize"
                 android:layout_height="?attr/actionBarSize"
                 android:layout_gravity="bottom|center"
                 android:src="@drawable/ic_baseline_expand_more_24" />
@@ -60,7 +69,7 @@
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/group_recyclerview"
-                android:layout_width="200dp"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:layoutManager="LinearLayoutManager"
                 tools:listitem="@layout/group_item" />

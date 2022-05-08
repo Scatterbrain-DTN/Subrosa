@@ -201,14 +201,15 @@ class NewsRepository @Inject constructor(
         return dao.deleteByIdentity(user) == 1
     }
 
-    suspend fun createGroup(name: String, parent: NewsGroup): NewsGroup {
+    suspend fun createGroup(name: String, description: String, parent: NewsGroup): NewsGroup {
         val uuid = UUID.randomUUID()
         Log.e("debug", "parent emptu: ${parent.empty}")
         val group = NewsGroup(
             uuid = uuid,
             parentCol = if (parent.empty) null else parent.uuid,
             groupName = name,
-            parentHash = if (parent.empty) null else parent.hash
+            parentHash = if (parent.empty) null else parent.hash,
+            description = description
         )
         insertGroup(group)
         return group
