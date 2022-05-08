@@ -106,6 +106,7 @@ class PostListFragment @Inject constructor() : Fragment() {
             Log.v("debug", "starting post observation")
             repository.observePosts(args.parent).observe(viewLifecycleOwner) { posts ->
                 Log.e("debug", "livedata received posts ${posts.size}")
+                binding.postsGoneText.visibility = if (posts.isEmpty()) View.VISIBLE else View.GONE
                 postAdapter.addItems(posts)
             }
 

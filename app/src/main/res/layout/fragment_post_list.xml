@@ -32,16 +32,16 @@
             <TextView
                 android:id="@+id/description_text"
                 android:layout_width="match_parent"
-                android:gravity="center"
+                android:layout_height="?attr/actionBarSize"
                 android:layout_marginBottom="?attr/actionBarSize"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                android:layout_height="?attr/actionBarSize"/>
+                android:gravity="center"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
             <ImageView
                 android:layout_width="wrap_content"
-                android:layout_marginTop="?attr/actionBarSize"
                 android:layout_height="?attr/actionBarSize"
                 android:layout_gravity="bottom|center"
+                android:layout_marginTop="?attr/actionBarSize"
                 android:src="@drawable/ic_baseline_expand_more_24" />
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
@@ -54,26 +54,42 @@
 
         <androidx.slidingpanelayout.widget.SlidingPaneLayout
             android:id="@+id/sliding_pane_layout"
-            android:filterTouchesWhenObscured="false"
             android:layout_width="match_parent"
-            android:paddingBottom="@dimen/bottom_nav_height"
+            android:layout_height="match_parent"
             android:clipToPadding="false"
-            android:layout_height="match_parent">
+            android:filterTouchesWhenObscured="false"
+            android:paddingBottom="@dimen/bottom_nav_height">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/thread_recyclerview"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:elevation="200dp"
                 app:layoutManager="LinearLayoutManager"
+                android:layout_marginBottom="@dimen/bottom_nav_height"
                 tools:listitem="@layout/thread_card" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/group_recyclerview"
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:layoutManager="LinearLayoutManager"
-                tools:listitem="@layout/group_item" />
+                android:layout_marginBottom="@dimen/bottom_nav_height"
+                android:elevation="200dp"
+                android:layout_height="match_parent">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="true"
+                    android:textAlignment="center"
+                    android:id="@+id/posts_gone_text"
+                    android:gravity="center"
+                    android:layout_gravity="center"
+                    android:text="@string/no_nested"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/group_recyclerview"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:layoutManager="LinearLayoutManager"
+                    tools:listitem="@layout/group_item" />
+            </FrameLayout>
         </androidx.slidingpanelayout.widget.SlidingPaneLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </net.ballmerlabs.subrosa.listing.NestedCoordinatorLayout>

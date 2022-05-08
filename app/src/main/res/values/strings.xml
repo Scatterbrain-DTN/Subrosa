@@ -41,6 +41,7 @@
         <item>talk</item>
         <item>alt</item>
     </string-array>
+    <string name="no_nested">No nested groups… Try creating one!</string>
 
     <!--create user -->
     <string name="edit_name">Display name</string>
