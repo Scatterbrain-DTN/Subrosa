@@ -31,10 +31,17 @@
                 app:popupTheme="@style/Theme.Subrosa.PopupOverlay">
             </androidx.appcompat.widget.Toolbar>
 
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
             <HorizontalScrollView
                 android:id="@+id/pathscroll"
-                android:layout_width="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/current_identicon"
+                android:layout_width="0dp"
                 android:elevation="500dp"
+                android:layout_marginEnd="16dp"
                 android:layout_height="match_parent"
                 android:layout_gravity="start|center_vertical"
                 app:layout_collapseMode="parallax">
@@ -48,16 +55,22 @@
                 </net.ballmerlabs.subrosa.NewsPathFlow>
             </HorizontalScrollView>
 
-            <com.lelloman.identicon.view.GithubIdenticonView
-                android:id="@+id/current_identicon"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_marginTop="60dp"
-                android:elevation="500dp"
-                android:layout_marginBottom="40dp"
-                android:layout_gravity="end|center"
-                android:layout_marginHorizontal="32dp"
-                app:hash="923757579" />
+                <com.lelloman.identicon.view.GithubIdenticonView
+                    android:id="@+id/current_identicon"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:layout_gravity="end|center"
+                    android:layout_marginHorizontal="32dp"
+                    android:layout_marginTop="80dp"
+                    android:layout_marginBottom="40dp"
+                    android:elevation="500dp"
+                    app:hash="923757579"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="1.0" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 
