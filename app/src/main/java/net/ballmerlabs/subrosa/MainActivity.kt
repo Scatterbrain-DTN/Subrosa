@@ -467,9 +467,6 @@ class MainActivity : AppCompatActivity() {
         setupNavController()
         setupSearch()
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        lifecycleScope.launch {
-          tryBind()
-        }
         repository.observeConnectionState()
                 .observe(this) { state ->
                     when (state) {

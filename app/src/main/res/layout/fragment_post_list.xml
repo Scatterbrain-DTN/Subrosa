@@ -64,6 +64,7 @@
                 android:id="@+id/thread_recyclerview"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:elevation="200dp"
                 app:layoutManager="LinearLayoutManager"
                 tools:listitem="@layout/thread_card" />
 
