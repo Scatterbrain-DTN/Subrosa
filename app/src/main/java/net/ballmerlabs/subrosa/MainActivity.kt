@@ -219,15 +219,18 @@ class MainActivity : AppCompatActivity() {
         binding.appbarlayout.requestFocus()
     }
 
-    private suspend fun checkRouterConnected() {
-        tryBind()
-        if (!repository.sdkComponent.binderWrapper.isConnected()) {
+    private suspend fun checkRouterConnected(): Boolean {
+        val res = tryBind()
+        if (!res) {
             val toast = Toast(baseContext)
             toast.setText(R.string.router_not_connected)
+            binding.connectionLostBanner.show()
             toast.show()
         } else {
             Log.v("debug", "router connected")
+            binding.connectionLostBanner.dismiss()
         }
+        return res
     }
 
     private fun setTitle(text: String?, isTitleEnabled: Boolean = true) {
@@ -445,12 +448,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private suspend fun tryBind() {
-        try {
+    private suspend fun tryBind(): Boolean {
+        return try {
             repository.sdkComponent.binderWrapper.bindService()
+            true
         } catch (exc: Exception) {
             Log.e("debug", "failed to bind service")
             exc.printStackTrace()
+            false
         }
     }
 
