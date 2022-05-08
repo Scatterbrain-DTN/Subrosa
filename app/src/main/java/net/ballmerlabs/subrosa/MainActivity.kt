@@ -287,26 +287,26 @@ class MainActivity : AppCompatActivity() {
         Log.v("debug", "on newsgroup ${args.parent}")
         mainViewModel.path.value = args.path.toList()
         binding.currentIdenticon.hash = args.parent.hash.contentHashCode()
-        setFabExpand(
-            lowerIcon = R.drawable.ic_baseline_create_new_folder_24,
-            upperIcon = R.drawable.ic_baseline_email_24
-        ) { type, _ ->
+        mainViewModel.postListType.observe(this) { type ->
             when(type) {
-                FabType.UPPER -> {
-                    val action = PostListFragmentDirections.actionPostListFragmentToPostCreationDialog(args.parent)
-                    navController.navigate(action)
-                }
-                FabType.LOWER -> {
-                    val action = PostListFragmentDirections.actionPostListFragmentToGroupCreateDialog(args.parent)
-                    navController.navigate(action)
-                }
+                PostListType.TYPE_POST -> setFab(
+                    action = PostListFragmentDirections.actionPostListFragmentToPostCreationDialog(args.parent),
+                    icon = R.drawable.ic_baseline_email_24
+                )
+                PostListType.TYPE_GROUP -> setFab(
+                    action = PostListFragmentDirections.actionPostListFragmentToGroupCreateDialog(args.parent),
+                    icon = R.drawable.ic_baseline_create_new_folder_24
+                )
+                null -> Log.e("debug", "type null")
             }
+
         }
         setAppBar(expand = true, text = args.parent.groupName)
 
     }
 
     private fun changeDestinationUserListFragment() {
+        mainViewModel.postListType.removeObservers(this)
         setFabExpand(
             lowerIcon = R.drawable.ic_baseline_person_add_alt_1_24,
             upperIcon = R.drawable.ic_baseline_import
@@ -334,6 +334,7 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun changeDestinationGroupListFragment() {
+        mainViewModel.postListType.removeObservers(this)
         setFab(
             action = GroupListFragmentDirections.actionGroupListFragmentToGroupCreateDialog(null),
             icon = R.drawable.ic_baseline_create_new_folder_24
@@ -381,6 +382,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.groupListFragment -> { changeDestinationGroupListFragment() }
                 else -> {
                     setFab()
+                    mainViewModel.postListType.removeObservers(this)
                     setAppBar(expand = false)
                 }
             }

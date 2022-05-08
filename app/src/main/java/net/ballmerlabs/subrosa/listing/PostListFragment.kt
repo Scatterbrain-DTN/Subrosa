@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
@@ -18,7 +19,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import net.ballmerlabs.subrosa.MainViewModel
 import net.ballmerlabs.subrosa.NewsRepository
+import net.ballmerlabs.subrosa.PostListType
 import net.ballmerlabs.subrosa.R
 import net.ballmerlabs.subrosa.databinding.FragmentPostListBinding
 import net.ballmerlabs.subrosa.scatterbrain.NewsGroup
@@ -34,6 +37,7 @@ import javax.inject.Inject
 class PostListFragment @Inject constructor() : Fragment() {
 
     private val args: PostListFragmentArgs by navArgs()
+    private val mainViewModel by activityViewModels<MainViewModel>()
     private lateinit var binding: FragmentPostListBinding
     private val postAdapter = PostListRecylerViewAdapter()
 
@@ -119,6 +123,26 @@ class PostListFragment @Inject constructor() : Fragment() {
         binding.slidingPaneLayout.open()
     }
 
+    private fun setupSlidingPaneLayout() {
+        binding.slidingPaneLayout.addPanelSlideListener(object: SlidingPaneLayout.PanelSlideListener {
+            override fun onPanelSlide(panel: View, slideOffset: Float) {}
+
+            override fun onPanelOpened(panel: View) {
+                mainViewModel.postListType.postValue(PostListType.TYPE_GROUP)
+            }
+
+            override fun onPanelClosed(panel: View) {
+                mainViewModel.postListType.postValue(PostListType.TYPE_POST)
+            }
+
+        })
+        if(binding.slidingPaneLayout.isOpen) {
+            mainViewModel.postListType.postValue(PostListType.TYPE_POST)
+        } else {
+            mainViewModel.postListType.postValue(PostListType.TYPE_GROUP)
+        }
+    }
+
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
             savedInstanceState: Bundle?
@@ -126,6 +150,7 @@ class PostListFragment @Inject constructor() : Fragment() {
         binding = FragmentPostListBinding.inflate(inflater)
         initialSetupGroupList()
         initialSetupPosts()
+        setupSlidingPaneLayout()
         binding.nestedAppbar.setExpanded(false, true)
         binding.descriptionText.text = args.parent.description.ifEmpty {
             getString(R.string.default_description)
