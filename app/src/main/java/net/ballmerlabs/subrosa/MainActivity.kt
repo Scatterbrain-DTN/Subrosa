@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
     @Inject lateinit var broadcastReceiver: ScatterbrainBroadcastReceiver
-
+    
     @Inject lateinit var repository: NewsRepository
 
     private lateinit var navController: NavController
@@ -285,7 +285,6 @@ class MainActivity : AppCompatActivity() {
         binding.connectionLostBanner.setLeftButtonListener { b -> b.dismiss() }
         binding.connectionLostBanner.setRightButtonListener {
             lifecycleScope.launch {
-                repository.sdkComponent.binderWrapper.bindService()
                 checkRouterConnected()
             }
         }
@@ -467,8 +466,10 @@ class MainActivity : AppCompatActivity() {
         return try {
             val permission = net.ballmerlabs.subrosa.util.checkPermission(ScatterbrainApi.PERMISSION_ACCESS, applicationContext)
             if (permission) {
+                Log.v("debug", "permission granted")
                 repository.sdkComponent.binderWrapper.bindService()
             } else {
+                Log.e("debug", "permission denied")
                 accessPermissionLauncher.launch(ScatterbrainApi.PERMISSION_ACCESS)
             }
             true
