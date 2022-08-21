@@ -82,18 +82,18 @@ class NewsPathFlow(context: Context, private val attributeSet: AttributeSet) : M
                 .alpha(0F)
                 .setDuration(removeDuration.toLong())
                 .setListener(object: Animator.AnimatorListener {
-                    override fun onAnimationStart(p0: Animator?) {
+                    override fun onAnimationStart(p0: Animator) {
                     }
 
-                    override fun onAnimationEnd(p0: Animator?) {
+                    override fun onAnimationEnd(p0: Animator) {
                         removeParams(path)
                         removeView(path)
                     }
 
-                    override fun onAnimationCancel(p0: Animator?) {
+                    override fun onAnimationCancel(p0: Animator) {
                     }
 
-                    override fun onAnimationRepeat(p0: Animator?) {
+                    override fun onAnimationRepeat(p0: Animator) {
                     }
 
                 })
