@@ -44,6 +44,7 @@ import net.ballmerlabs.subrosa.scatterbrain.NewsGroup
 import net.ballmerlabs.subrosa.user.UserListFragmentDirections
 import net.ballmerlabs.subrosa.util.uuidSha256
 import java.lang.Exception
+import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 import kotlin.math.abs
 
@@ -57,6 +58,8 @@ class MainActivity : AppCompatActivity() {
     @Inject lateinit var repository: NewsRepository
 
     private lateinit var navController: NavController
+
+    private val navGraphSetup = AtomicBoolean()
 
     private val accessPermissionLauncher = registerForActivityResult(RequestPermission()) { isGranted ->
         if (isGranted) {
@@ -319,7 +322,6 @@ class MainActivity : AppCompatActivity() {
 
         }
         setAppBar(expand = true, text = args.parent.groupName)
-
     }
 
     private fun changeDestinationUserListFragment() {
@@ -373,16 +375,17 @@ class MainActivity : AppCompatActivity() {
         val search = findViewById<View>(R.id.action_search)
         if (destination != R.id.groupListFragment) {
             hideSearch(animate = false)
-            search.visibility = View.GONE
+            search?.visibility = View.GONE
         } else {
-            search.visibility = View.VISIBLE
+            search?.visibility = View.VISIBLE
         }
 
         val nested = findViewById<View>(R.id.action_subgroups)
         if (destination != R.id.PostListFragment) {
-            nested.visibility = View.GONE
+
+            nested?.visibility = View.GONE
         } else {
-            nested.visibility = View.VISIBLE
+            nested?.visibility = View.VISIBLE
         }
     }
 
@@ -489,6 +492,7 @@ class MainActivity : AppCompatActivity() {
         setupPathsView()
         setupAppBarLayout()
         setupNavController()
+        setupNavGraph()
         setupSearch()
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         lifecycleScope.launch { tryBind() }
@@ -505,8 +509,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_main, menu)
-        setupNavController()
-        setupNavGraph()
         return true
     }
 

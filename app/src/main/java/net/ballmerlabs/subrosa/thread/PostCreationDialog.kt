@@ -98,7 +98,7 @@ class PostCreationDialog @Inject constructor() : DialogFragment() {
                             .show()
                     }
                 }
-                withContext(Dispatchers.Main) { findNavController().popBackStack() }
+                withContext(Dispatchers.Main) { dismiss() }
             }
         }
         return binding.root
