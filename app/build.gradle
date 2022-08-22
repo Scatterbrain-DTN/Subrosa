@@ -60,6 +60,16 @@ processResources {
 }
 
 
+repositories {
+    maven {
+        url "https://plugins.gradle.org/m2/"
+    }
+    google()
+    mavenCentral()
+    gradlePluginPortal()
+    maven { url "https://jitpack.io" }
+}
+
 protobuf {
     protoc {
         artifact = "com.google.protobuf:protoc:$protobuf_version"
@@ -117,12 +127,3 @@ dependencies {
     kapt "org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.5.0"
 }
 
-repositories {
-    maven {
-        url "https://plugins.gradle.org/m2/"
-    }
-    google()
-    mavenCentral()
-    gradlePluginPortal()
-    maven { url "https://jitpack.io" }
-}

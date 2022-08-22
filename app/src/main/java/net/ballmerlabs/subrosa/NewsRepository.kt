@@ -304,7 +304,7 @@ class NewsRepository @Inject constructor(
             return false
         }
         val messages = withContext(Dispatchers.IO) { sdkComponent.binderWrapper.getScatterMessages(context.getString(R.string.scatterbrainapplication)) }
-        withContext(Dispatchers.Default) { processScatterMessages(messages) }
+        withContext(Dispatchers.Default) { processScatterMessages(messages.toList()) }
         refreshInProgress.set(false)
         return true
     }
@@ -318,7 +318,7 @@ class NewsRepository @Inject constructor(
             sdkComponent.binderWrapper.getScatterMessages(context.getString(R.string.scatterbrainapplication), since)
         }
         withContext(Dispatchers.Default) {
-            processScatterMessages(messages)
+            processScatterMessages(messages.toList())
         }
         refreshInProgress.set(false)
         return true
@@ -332,7 +332,7 @@ class NewsRepository @Inject constructor(
         val messages = withContext(Dispatchers.IO) {
             sdkComponent.binderWrapper.getScatterMessages(context.getString(R.string.scatterbrainapplication), start, end)
         }
-        withContext(Dispatchers.Default) { processScatterMessages(messages) }
+        withContext(Dispatchers.Default) { processScatterMessages(messages.toList()) }
         refreshInProgress.set(false)
         return true
     }
