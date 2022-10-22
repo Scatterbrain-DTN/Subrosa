@@ -10,6 +10,6 @@ import javax.inject.Inject
 class MainSettings @Inject constructor() : PreferenceFragmentCompat() {
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
-        setPreferencesFromResource(R.xml.root_preferences, rootKey)
+
     }
 }

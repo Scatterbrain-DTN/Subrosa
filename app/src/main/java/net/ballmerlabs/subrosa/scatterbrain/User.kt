@@ -1,29 +1,23 @@
 package net.ballmerlabs.subrosa.scatterbrain
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.ImageDecoder
 import androidx.core.graphics.scale
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.google.protobuf.ByteString
 import kotlinx.coroutines.*
-import net.ballmerlabs.scatterbrainsdk.ScatterMessage
 import net.ballmerlabs.subrosa.SubrosaProto
 import net.ballmerlabs.subrosa.util.HasKey
 import net.ballmerlabs.subrosa.util.uuidConvertProto
-import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.InputStream
 import java.util.*
 
 @Entity
 class User(
-   packet: SubrosaProto.User
-): Message<SubrosaProto.User>(packet) , HasKey<UUID> {
+    packet: SubrosaProto.User
+) : Message<SubrosaProto.User>(packet), HasKey<UUID> {
 
     @PrimaryKey
     var identity: UUID = uuidConvertProto(packet.identity)
@@ -34,10 +28,11 @@ class User(
 
     var owned: Boolean = false
 
-    var imageBytes: ByteArray? = if (packet.imageCase.equals(SubrosaProto.User.ImageCase.IMAGE_NOT_SET))
-        null
-    else
-        packet.imagebytes.toByteArray()
+    var imageBytes: ByteArray? =
+        if (packet.imageCase.equals(SubrosaProto.User.ImageCase.IMAGE_NOT_SET))
+            null
+        else
+            packet.imagebytes.toByteArray()
 
     @Ignore
     override val typePacket: SubrosaProto.Type = SubrosaProto.Type.newBuilder()
@@ -57,34 +52,38 @@ class User(
         return if (imageBytes == null) {
             null
         } else {
-            BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size )
+            BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
         }
     }
 
-    constructor( identity: UUID,
-                 userName: String,
-                 bio: String,
-                 owned: Boolean = false,
-    ): this (
+    constructor(
+        identity: UUID,
+        userName: String,
+        bio: String,
+        owned: Boolean = false,
+    ) : this(
         compress(null)
             .setIdentity(uuidConvertProto(identity))
             .setBio(bio)
             .setName(userName)
-            .build()) {
+            .build()
+    ) {
         this.owned = owned
     }
 
-    constructor( identity: UUID,
-                 userName: String,
-                 bio: String,
-                 owned: Boolean = false,
-                 image: Bitmap? = null
-    ): this (
-         compress(image)
+    constructor(
+        identity: UUID,
+        userName: String,
+        bio: String,
+        owned: Boolean = false,
+        image: Bitmap? = null
+    ) : this(
+        compress(image)
             .setIdentity(uuidConvertProto(identity))
             .setBio(bio)
             .setName(userName)
-            .build()) {
+            .build()
+    ) {
         this.owned = owned
     }
 
@@ -92,9 +91,9 @@ class User(
     companion object {
         fun compress(bitmap: Bitmap?): SubrosaProto.User.Builder {
             val builder = SubrosaProto.User.newBuilder()
-           return if (bitmap != null) {
-            val os = ByteArrayOutputStream()
-                 resizeBitmapCentered(bitmap, 512).compress(Bitmap.CompressFormat.PNG, 90, os)
+            return if (bitmap != null) {
+                val os = ByteArrayOutputStream()
+                resizeBitmapCentered(bitmap, 512).compress(Bitmap.CompressFormat.PNG, 90, os)
                 builder.setImagebytes(ByteString.copyFrom(os.toByteArray()))
             } else {
                 builder
@@ -110,9 +109,11 @@ class User(
             return new.scale(width, width)
         }
 
-        class Parser: Message.Companion.Parser<SubrosaProto.User, User>(SubrosaProto.User.parser()) {
+        class Parser :
+            Message.Companion.Parser<SubrosaProto.User, User>(SubrosaProto.User.parser()) {
             override val type: SubrosaProto.Type.PostType = SubrosaProto.Type.PostType.USER
         }
+
         val parser = Parser()
     }
 }

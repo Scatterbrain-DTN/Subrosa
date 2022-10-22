@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="net.ballmerlabs.subrosa">
+<manifest package="net.ballmerlabs.subrosa"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="net.ballmerlabs.scatterroutingservice.permission.ACCESS"/>
     <uses-permission android:name="net.ballmerlabs.scatterroutingservice.permission.ADMIN"/>
@@ -15,7 +15,6 @@
         android:theme="@style/Theme.Subrosa">
         <activity
             android:name=".MainActivity"
-            android:label="@string/app_name"
             android:exported="true"
             android:windowSoftInputMode="adjustResize"
             android:theme="@style/Theme.Subrosa.NoActionBar">

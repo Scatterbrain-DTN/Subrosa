@@ -23,6 +23,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDirections
 import androidx.navigation.NavGraph
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import androidx.transition.Slide
 import androidx.transition.TransitionManager
@@ -390,7 +391,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupNavController() {
-        navController  = findNavController(R.id.nav_host_fragment)
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        navController  = navHostFragment.navController
         NavigationUI.setupWithNavController(binding.bottomNavigation, navController)
 
         navController.addOnDestinationChangedListener { _, destination, arguments ->
