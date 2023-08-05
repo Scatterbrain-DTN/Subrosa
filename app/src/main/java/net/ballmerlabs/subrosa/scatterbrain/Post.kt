@@ -36,6 +36,9 @@ class Post(
 
     var sig = packet.sig.toByteArray()
 
+    @ColumnInfo(defaultValue = 0.toString())
+    var receivedDate: Long = Date().time
+
     @PrimaryKey() var id: String = hasKey()
 
     constructor(

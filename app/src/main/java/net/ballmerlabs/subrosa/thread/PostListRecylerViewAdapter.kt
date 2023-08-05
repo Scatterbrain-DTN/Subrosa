@@ -14,8 +14,10 @@ import net.ballmerlabs.subrosa.databinding.ThreadCardBinding
 import net.ballmerlabs.subrosa.scatterbrain.Post
 import net.ballmerlabs.subrosa.util.MapRecyclerViewAdapter
 
-class PostListRecylerViewAdapter(private val repository: NewsRepository? = null):
-    MapRecyclerViewAdapter<String, Post, PostListRecylerViewAdapter.ViewHolder>() {
+class PostListRecylerViewAdapter(
+    var values: MutableList<Post> = mutableListOf()
+):
+    RecyclerView.Adapter<PostListRecylerViewAdapter.ViewHolder>() {
 
     inner class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
         private val binding: ThreadCardBinding = ThreadCardBinding.bind(view)
@@ -51,15 +53,11 @@ class PostListRecylerViewAdapter(private val repository: NewsRepository? = null)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = valueMap[values[position]]
-        if (item != null) {
-            holder.body = item.body
-            holder.fingerprint = item.author?.toString()
-            holder.header = item.header
-            holder.name = item.user?.userName?: "unknown"
-        } else {
-            Log.e("debug", "post at $position was null")
-        }
+        val item = values[position]
+        holder.body = item.body
+        holder.fingerprint = item.author?.toString()
+        holder.header = item.header
+        holder.name = item.user?.userName?: "unknown"
     }
 
     override fun getItemCount(): Int = values.size

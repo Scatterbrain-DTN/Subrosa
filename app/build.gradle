@@ -14,8 +14,8 @@ android {
     defaultConfig {
         applicationId "net.ballmerlabs.subrosa"
         minSdkVersion 29
-        targetSdkVersion 33
-        compileSdkVersion 33
+        targetSdkVersion 34
+        compileSdkVersion 34
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
@@ -37,8 +37,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
     buildFeatures {
@@ -49,6 +49,7 @@ android {
         main.java.srcDirs +=  "${protobuf.generatedFilesBaseDir}"
         main.java.srcDirs += "$projectDir/src/main/proto"
     }
+    namespace 'net.ballmerlabs.subrosa'
 }
 
 
@@ -84,27 +85,27 @@ protobuf {
 
 dependencies {
 
-    implementation "androidx.room:room-runtime:2.5.0"
-    implementation "androidx.room:room-ktx:2.5.0"
-    kapt "androidx.room:room-compiler:2.5.0"
+    implementation "androidx.room:room-runtime:2.5.2"
+    implementation "androidx.room:room-ktx:2.5.2"
+    kapt "androidx.room:room-compiler:2.5.2"
 
     // optional - Paging 3 Integration
-    implementation "androidx.room:room-paging:2.5.0"
+    implementation "androidx.room:room-paging:2.5.2"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation 'androidx.core:core-ktx:1.9.0'
+    implementation 'androidx.core:core-ktx:1.10.1'
     implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.8.0'
+    implementation 'com.google.android.material:material:1.9.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.5.3'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.5.3'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.6.0'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.6.0'
     implementation 'com.github.lelloman:android-identicons:v11'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.5.1'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.6.1'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1'
     implementation "com.sergivonavi:materialbanner:1.2.0"
     implementation "com.google.dagger:hilt-android:$hilt_version"
     implementation "com.google.protobuf:protobuf-javalite:$protobuf_version"
-    implementation 'androidx.recyclerview:recyclerview:1.2.1'
+    implementation 'androidx.recyclerview:recyclerview:1.3.0'
     implementation 'androidx.preference:preference-ktx:1.2.0'
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
     implementation project(':sdk')

@@ -1,5 +1,6 @@
 package net.ballmerlabs.subrosa.database
 
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverter
@@ -28,8 +29,9 @@ class UuidTypeConverter {
         Post::class,
         User::class
                ],
-    version = 1,
-    exportSchema = true
+    version = 2,
+    exportSchema = true,
+    autoMigrations = [AutoMigration(from = 1, to = 2)]
 )
 @TypeConverters(UuidTypeConverter::class)
 abstract class RoomDatabase : RoomDatabase() {

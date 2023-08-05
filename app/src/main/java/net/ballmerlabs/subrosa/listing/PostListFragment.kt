@@ -1,5 +1,6 @@
 package net.ballmerlabs.subrosa.listing
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -101,6 +102,7 @@ class PostListFragment @Inject constructor() : Fragment() {
         binding.groupsGoneText.visibility = if (groups.isEmpty()) View.VISIBLE else View.GONE
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun initialSetupPosts() {
         with(binding.threadRecyclerview) {
             layoutManager = LinearLayoutManager(context)
@@ -111,7 +113,8 @@ class PostListFragment @Inject constructor() : Fragment() {
             Log.v("debug", "starting post observation")
             repository.observePosts(args.parent).observe(viewLifecycleOwner) { posts ->
                 Log.e("debug", "livedata received posts ${posts.size}")
-                postAdapter.addItems(posts)
+                postAdapter.values = posts.toMutableList()
+                postAdapter.notifyDataSetChanged()
             }
 
         }

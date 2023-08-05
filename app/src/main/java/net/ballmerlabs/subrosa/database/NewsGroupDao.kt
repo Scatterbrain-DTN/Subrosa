@@ -15,7 +15,7 @@ interface NewsGroupDao {
     suspend fun getPostsForGroup(parent: UUID): List<Post>
 
     @Transaction
-    @Query("SELECT * FROM posts LEFT JOIN user ON user.identity = posts.author WHERE uuid = (:parent)")
+    @Query("SELECT * FROM posts LEFT JOIN user ON user.identity = posts.author WHERE uuid = (:parent) ORDER BY receivedDate DESC")
     fun observePostsForGroup(parent: UUID): LiveData<List<Post>>
 
     @Query("SELECT * FROM newsgroup WHERE uuid = (:uuid)")
