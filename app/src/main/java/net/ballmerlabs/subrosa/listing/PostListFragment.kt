@@ -165,7 +165,7 @@ class PostListFragment @Inject constructor() : Fragment() {
         }
         val menu = requireActivity().findViewById<View>(R.id.action_subgroups)
         binding.slidingPaneLayout.lockMode = SlidingPaneLayout.LOCK_MODE_UNLOCKED
-        menu.setOnClickListener { openGroupList() }
+        menu?.setOnClickListener { openGroupList() }
         binding.swipeRefreshLayout.setOnRefreshListener {
             lifecycleScope.launch {
                 refreshLatest()

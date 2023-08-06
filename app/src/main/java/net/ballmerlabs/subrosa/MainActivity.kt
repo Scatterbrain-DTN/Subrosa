@@ -44,9 +44,9 @@ import net.ballmerlabs.subrosa.listing.PostListFragmentDirections
 import net.ballmerlabs.subrosa.scatterbrain.NewsGroup
 import net.ballmerlabs.subrosa.user.UserListFragmentDirections
 import net.ballmerlabs.subrosa.util.uuidSha256
-import java.lang.Exception
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
+import kotlin.Exception
 import kotlin.math.abs
 
 @AndroidEntryPoint
@@ -59,8 +59,6 @@ class MainActivity : AppCompatActivity() {
     @Inject lateinit var repository: NewsRepository
 
     private lateinit var navController: NavController
-
-    private val navGraphSetup = AtomicBoolean()
 
     private val accessPermissionLauncher = registerForActivityResult(RequestPermission()) { isGranted ->
         if (isGranted) {
@@ -450,7 +448,13 @@ class MainActivity : AppCompatActivity() {
                         description = ""
                     ) }
 
-            withContext(Dispatchers.IO) { repository.insertGroup(groups)}
+            withContext(Dispatchers.IO) {
+                try {
+                    repository.insertGroup(groups)
+                } catch (exc: Exception) {
+                    Log.w("debug", "failed to insert group: $exc")
+                }
+            }
             Log.e("debug", "groups inserted")
 
             withContext(Dispatchers.Main) { navController.graph = navGraph }
