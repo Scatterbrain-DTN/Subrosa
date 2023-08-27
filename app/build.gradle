@@ -16,8 +16,8 @@ android {
         minSdkVersion 29
         targetSdkVersion 34
         compileSdkVersion 34
-        versionCode 1
-        versionName "1.0"
+        versionCode 7
+        versionName "1.1"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         javaCompileOptions {

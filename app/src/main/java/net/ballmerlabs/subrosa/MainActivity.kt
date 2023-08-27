@@ -436,6 +436,7 @@ class MainActivity : AppCompatActivity() {
     private fun setupNavGraph() {
         val inflater = navController.navInflater
         navGraph = inflater.inflate(R.navigation.nav_graph)
+        navController.graph = navGraph
         lifecycleScope.launch(Dispatchers.Default) {
             val groups = resources.getStringArray(R.array.default_newsgroups)
                 .map { s ->
@@ -446,7 +447,8 @@ class MainActivity : AppCompatActivity() {
                         parentCol = null,
                         parentHash = null,
                         description = ""
-                    ) }
+                    )
+                }
 
             withContext(Dispatchers.IO) {
                 try {
@@ -457,7 +459,6 @@ class MainActivity : AppCompatActivity() {
             }
             Log.e("debug", "groups inserted")
 
-            withContext(Dispatchers.Main) { navController.graph = navGraph }
         }
     }
 
