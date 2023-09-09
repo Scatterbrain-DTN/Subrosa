@@ -32,7 +32,6 @@ class GroupListFragment : Fragment() {
 
     @Inject lateinit var repository: NewsRepository
 
-    private val viewModel by viewModels<GroupListViewModel>()
     private val mainViewModel by activityViewModels<MainViewModel>()
 
     private lateinit var groupAdapter: GroupListRecyclerViewAdapter
@@ -40,14 +39,18 @@ class GroupListFragment : Fragment() {
 
     private fun onGroupListItemClick(group: NewsGroup) {
         lifecycleScope.launch {
-            val children = withContext(Dispatchers.IO) { repository.getChildren(group.uuid) }
-            val action = GroupListFragmentDirections.actionGroupListFragmentToPostListFragment(
-                children.toTypedArray(),
-                false,
-                group,
-                arrayOf(group)
-            )
-            binding.root.findNavController().navigate(action)
+            try {
+                val children = withContext(Dispatchers.IO) { repository.getChildren(group.uuid) }
+                val action = GroupListFragmentDirections.actionGroupListFragmentToPostListFragment(
+                    children.toTypedArray(),
+                    false,
+                    group,
+                    arrayOf(group)
+                )
+                binding.root.findNavController().navigate(action)
+            } catch (exc: Exception) {
+                Log.w("debug", "failed to navigate to group $group: $exc")
+            }
         }
     }
 

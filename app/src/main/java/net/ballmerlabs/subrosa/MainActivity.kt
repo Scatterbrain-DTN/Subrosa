@@ -60,13 +60,29 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var navController: NavController
 
+    private val navGraphLock = AtomicBoolean()
+
     private val accessPermissionLauncher = registerForActivityResult(RequestPermission()) { isGranted ->
         if (isGranted) {
-            lifecycleScope.launch { repository.sdkComponent.binderWrapper.bindService() }
+            lifecycleScope.launch {
+                try {
+                    repository.sdkComponent.binderWrapper.bindService()
+                } catch (exc: Exception) {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            applicationContext,
+                            "Failed to bind service: $exc", Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+            }
         } else {
-            val toast = Toast(applicationContext)
-            toast.setText(R.string.access_permission)
-            toast.duration = Toast.LENGTH_LONG
+
+            val toast = Toast.makeText(
+                applicationContext,
+                R.string.access_permission,
+                Toast.LENGTH_LONG
+            )
             toast.show()
         }
     }
@@ -77,24 +93,36 @@ class MainActivity : AppCompatActivity() {
     private val mainViewModel by viewModels<MainViewModel>()
 
     private val importIdentity = registerForActivityResult(IdentityImportContract()) { idList ->
-        if (idList != null) {
-            if (idList.size == 1) {
-                Log.v("debug", "registered ${idList.size} identities")
-                val action =
-                    UserListFragmentDirections.actionUserListFragmentToUserCreationFragment(idList.first().fingerprint.toString())
-                navController.navigate(action)
+        try {
+            if (idList != null) {
+                if (idList.size == 1) {
+                    Log.v("debug", "registered ${idList.size} identities")
+                    val action =
+                        UserListFragmentDirections.actionUserListFragmentToUserCreationFragment(
+                            idList.first().fingerprint.toString()
+                        )
+                    navController.navigate(action)
+                }
             }
+        } catch (exc: Exception) {
+            Log.e("debug", "exception when importing identity")
+            Toast.makeText(applicationContext, "Failed to import identity", Toast.LENGTH_LONG)
         }
     }
 
     private val adminPermissionListener = registerForActivityResult(RequestPermission()) { isGranted ->
-        if (isGranted) {
-            val action =
-                UserListFragmentDirections.actionUserListFragmentToUserCreationFragment()
-            navController.navigate(action)
-        } else {
-            val snackbar = Snackbar.make(binding.root,R.string.permissions_fail, Snackbar.LENGTH_LONG)
-            snackbar.show()
+        try {
+            if (isGranted) {
+                val action =
+                    UserListFragmentDirections.actionUserListFragmentToUserCreationFragment()
+                navController.navigate(action)
+            } else {
+                val snackbar =
+                    Snackbar.make(binding.root, R.string.permissions_fail, Snackbar.LENGTH_LONG)
+                snackbar.show()
+            }
+        } catch (exc: Exception) {
+            Log.e("debug", "exception in adminPermissionsListener: $exc")
         }
     }
 
@@ -172,7 +200,11 @@ class MainActivity : AppCompatActivity() {
         binding.fab.setImageResource(icon ?: 0)
         if (action != null) {
             binding.fab.setOnClickListener {
-                navController.navigate(action)
+                try {
+                    navController.navigate(action)
+                } catch (exc: Exception) {
+                    Log.w("debug", "failed to navigate to $action: $exc")
+                }
             }
             binding.fab.show()
             binding.fabAlt.show()
@@ -234,17 +266,23 @@ class MainActivity : AppCompatActivity() {
     }
 
     private suspend fun checkRouterConnected(): Boolean {
-        val res = tryBind()
-        if (!res) {
-            val toast = Toast(baseContext)
-            toast.setText(R.string.router_not_connected)
-            binding.connectionLostBanner.show()
-            toast.show()
-        } else {
-            Log.v("debug", "router connected")
-            binding.connectionLostBanner.dismiss()
+        try {
+            val res = tryBind()
+            if (!res) {
+                val toast = Toast(baseContext)
+                toast.setText(R.string.router_not_connected)
+                binding.connectionLostBanner.show()
+                toast.show()
+            } else {
+                Log.v("debug", "router connected")
+                binding.connectionLostBanner.dismiss()
+            }
+
+            return res
+        } catch (exc: Exception) {
+            Log.e("debug", "checkRouterConnected error $exc")
+            return false
         }
-        return res
     }
 
     private fun setTitle(text: String?, isTitleEnabled: Boolean = true) {
@@ -329,22 +367,28 @@ class MainActivity : AppCompatActivity() {
             lowerIcon = R.drawable.ic_baseline_person_add_alt_1_24,
             upperIcon = R.drawable.ic_baseline_import
         ) { type, _ ->
-            val permission = ScatterbrainApi.PERMISSION_ADMIN
-            if (ContextCompat.checkSelfPermission(applicationContext, permission)
-                == PackageManager.PERMISSION_GRANTED) {
-                when (type) {
-                    FabType.LOWER -> {
-                        val action =
-                            UserListFragmentDirections.actionUserListFragmentToUserCreationFragment()
-                        navController.navigate(action)
-                    }
-                    FabType.UPPER -> {
-                        importIdentity.launch(1)
-                    }
+            try {
+                val permission = ScatterbrainApi.PERMISSION_ADMIN
+                if (ContextCompat.checkSelfPermission(applicationContext, permission)
+                    == PackageManager.PERMISSION_GRANTED
+                ) {
+                    when (type) {
+                        FabType.LOWER -> {
+                            val action =
+                                UserListFragmentDirections.actionUserListFragmentToUserCreationFragment()
+                            navController.navigate(action)
+                        }
 
+                        FabType.UPPER -> {
+                            importIdentity.launch(1)
+                        }
+
+                    }
+                } else {
+                    adminPermissionListener.launch(permission)
                 }
-            } else {
-                adminPermissionListener.launch(permission)
+            } catch (exc: Exception) {
+                Log.e("debug", "exception in changeDestinationUserListFragment: $exc")
             }
         }
         setAppBar(false, text = getString(R.string.user_list_title), isTitleEnabled = false)
@@ -362,10 +406,14 @@ class MainActivity : AppCompatActivity() {
 
     override fun onSupportNavigateUp(): Boolean {
         Log.v("debug", "nav up")
-        if(binding.searchBox.visibility == View.VISIBLE) {
-            hideSearch()
-        } else {
-            navController.popBackStack()
+        try {
+            if (binding.searchBox.visibility == View.VISIBLE) {
+                hideSearch()
+            } else {
+                navController.popBackStack()
+            }
+        } catch (exc: Exception) {
+            Log.w("debug",   "exception in onSupportNavigateUp: $exc")
         }
         return super.onSupportNavigateUp()
     }
@@ -438,27 +486,45 @@ class MainActivity : AppCompatActivity() {
         navGraph = inflater.inflate(R.navigation.nav_graph)
         navController.graph = navGraph
         lifecycleScope.launch(Dispatchers.Default) {
-            val groups = resources.getStringArray(R.array.default_newsgroups)
-                .map { s ->
-                    val uuid = uuidSha256(s.encodeToByteArray())
-                    NewsGroup(
-                        uuid = uuid,
-                        groupName = s,
-                        parentCol = null,
-                        parentHash = null,
-                        description = ""
-                    )
-                }
+            try {
+                val groups = resources.getStringArray(R.array.default_newsgroups)
+                    .map { s ->
+                        val uuid = uuidSha256(s.encodeToByteArray())
+                        NewsGroup(
+                            uuid = uuid,
+                            groupName = s,
+                            parentCol = null,
+                            parentHash = null,
+                            description = ""
+                        )
+                    }
 
-            withContext(Dispatchers.IO) {
-                try {
-                    repository.insertGroup(groups)
-                } catch (exc: Exception) {
-                    Log.w("debug", "failed to insert group: $exc")
+                withContext(Dispatchers.IO) {
+                    try {
+                        repository.insertGroup(groups)
+                    } catch (exc: Exception) {
+                        Log.w("debug", "failed to insert group: $exc")
+                    }
+                }
+                Log.e("debug", "groups inserted")
+            } catch (exc: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        applicationContext,
+                        "Failed to setup initial groups",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
-            Log.e("debug", "groups inserted")
 
+        }
+    }
+
+
+    private fun trySetupNavGraph() {
+        if(!navGraphLock.getAndSet(true)) {
+            setupNavController()
+            setupNavGraph()
         }
     }
 
@@ -493,13 +559,12 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
+        trySetupNavGraph()
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
         setupBottomNavigation()
         setupPathsView()
         setupAppBarLayout()
-        setupNavController()
-        setupNavGraph()
         setupSearch()
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         lifecycleScope.launch { tryBind() }
@@ -515,6 +580,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
+        trySetupNavGraph()
         menuInflater.inflate(R.menu.menu_main, menu)
         return true
     }

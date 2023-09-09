@@ -15,9 +15,9 @@ android {
         applicationId "net.ballmerlabs.subrosa"
         minSdkVersion 29
         targetSdkVersion 34
-        compileSdkVersion 34
-        versionCode 7
-        versionName "1.1"
+        compileSdk 34
+        versionCode 12
+        versionName "1.2.4"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         javaCompileOptions {

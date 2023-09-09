@@ -36,13 +36,17 @@ class UserListFragment @Inject constructor() : Fragment() {
 
     private suspend fun onUserDelete(uuid: UUID) {
         Log.v("debug", "onUserDelete $uuid")
-        val res = withContext(Dispatchers.IO) { repository.deleteUser(uuid) }
-        if (!res) {
-            withContext(Dispatchers.Main) {
-                val toast = Toast(requireContext())
-                toast.setText(R.string.fail_delete_user)
-                toast.show()
+        try {
+            val res = withContext(Dispatchers.IO) { repository.deleteUser(uuid) }
+            if (!res) {
+                withContext(Dispatchers.Main) {
+                    val toast = Toast(requireContext())
+                    toast.setText(R.string.fail_delete_user)
+                    toast.show()
+                }
             }
+        } catch (exc: Exception) {
+            Log.w("debug", "failed to handle user delete: $exc")
         }
     }
 
@@ -56,12 +60,12 @@ class UserListFragment @Inject constructor() : Fragment() {
                 columnCount <= 1 -> LinearLayoutManager(context)
                 else -> GridLayoutManager(context, columnCount)
             }
-            lifecycleScope.launch(Dispatchers.IO) {
-                withContext(Dispatchers.Main) {
+            lifecycleScope.launch(Dispatchers.Main) {
+                try {
                     userAdapter = UserListRecyclerViewAdapter(requireContext())
                     repository.observeUsers()
                         .observe(viewLifecycleOwner) { users ->
-                            Log.v("debug", "observed users ${users.size}" )
+                            Log.v("debug", "observed users ${users.size}")
                             userAdapter.addItems(users)
                         }
                     adapter = userAdapter
@@ -70,6 +74,12 @@ class UserListFragment @Inject constructor() : Fragment() {
                             onUserDelete(uuid)
                         }
                     }
+                } catch (exc: Exception) {
+                    Toast.makeText(
+                        requireContext(),
+                        "Failed to fetch user list: $exc",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
         }

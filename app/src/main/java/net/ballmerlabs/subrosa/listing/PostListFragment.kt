@@ -27,9 +27,9 @@ import net.ballmerlabs.subrosa.R
 import net.ballmerlabs.subrosa.databinding.FragmentPostListBinding
 import net.ballmerlabs.subrosa.scatterbrain.NewsGroup
 import net.ballmerlabs.subrosa.thread.PostListRecylerViewAdapter
-import java.lang.Exception
 import java.util.*
 import javax.inject.Inject
+import kotlin.Exception
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
@@ -50,15 +50,26 @@ class PostListFragment @Inject constructor() : Fragment() {
     private fun onGroupListItemClick(group: NewsGroup) {
         Log.e("debug", "entering group with parent ${group.groupName} ${args.path.size}")
         lifecycleScope.launch {
-            val children = withContext(Dispatchers.IO) { repository.getChildren(group.uuid) }
-            Log.e("debug", "found ${children.size} children")
-            val action = PostListFragmentDirections.actionPostListFragmentToSelf(
-                children.toTypedArray(),
-                false,
-                group,
-                args.path + arrayOf(group)
-            )
-            binding.root.findNavController().navigate(action)
+            try {
+                val children = withContext(Dispatchers.IO) { repository.getChildren(group.uuid) }
+                Log.e("debug", "found ${children.size} children")
+                val action = PostListFragmentDirections.actionPostListFragmentToSelf(
+                    children.toTypedArray(),
+                    false,
+                    group,
+                    args.path + arrayOf(group)
+                )
+                binding.root.findNavController().navigate(action)
+            } catch (exc: Exception) {
+                Log.e("debug", "exception on group click $exc")
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        context,
+                        "Error opening group: $exc",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
         }
     }
 
