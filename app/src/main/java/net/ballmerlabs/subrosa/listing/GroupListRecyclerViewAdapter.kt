@@ -12,6 +12,7 @@ import net.ballmerlabs.subrosa.R
 import net.ballmerlabs.subrosa.databinding.GroupItemBinding
 import net.ballmerlabs.subrosa.scatterbrain.NewsGroup
 import net.ballmerlabs.subrosa.util.MapRecyclerViewAdapter
+import net.ballmerlabs.subrosa.util.srLog
 import java.util.*
 
 class GroupListRecyclerViewAdapter(
@@ -20,6 +21,7 @@ class GroupListRecyclerViewAdapter(
     ) :
     MapRecyclerViewAdapter<UUID, NewsGroup, GroupListRecyclerViewAdapter.ViewHolder>() {
 
+    private val log by srLog()
     inner class ViewHolder(view: View, private val listener: (group: NewsGroup) -> Unit):
         RecyclerView.ViewHolder(view) {
         private val binding: GroupItemBinding = GroupItemBinding.bind(view)
@@ -55,7 +57,7 @@ class GroupListRecyclerViewAdapter(
         holder.newsGroup = item
         repository?.coroutineScope?.launch(Dispatchers.Main) {
             val count = repository.countPost(item.uuid)
-            Log.v("debug", "post count for ${item.uuid}: $count")
+            log.v("post count for ${item.uuid}: $count")
             holder.unread = count
         }
     }

@@ -27,6 +27,7 @@ import net.ballmerlabs.subrosa.R
 import net.ballmerlabs.subrosa.databinding.FragmentPostListBinding
 import net.ballmerlabs.subrosa.scatterbrain.NewsGroup
 import net.ballmerlabs.subrosa.thread.PostListRecylerViewAdapter
+import net.ballmerlabs.subrosa.util.srLog
 import java.util.*
 import javax.inject.Inject
 import kotlin.Exception
@@ -36,7 +37,7 @@ import kotlin.Exception
  */
 @AndroidEntryPoint
 class PostListFragment @Inject constructor() : Fragment() {
-
+    private val log by srLog()
     private val args: PostListFragmentArgs by navArgs()
     private val mainViewModel by activityViewModels<MainViewModel>()
     private lateinit var binding: FragmentPostListBinding
@@ -48,11 +49,11 @@ class PostListFragment @Inject constructor() : Fragment() {
 
 
     private fun onGroupListItemClick(group: NewsGroup) {
-        Log.e("debug", "entering group with parent ${group.groupName} ${args.path.size}")
+        log.e("entering group with parent ${group.groupName} ${args.path.size}")
         lifecycleScope.launch {
             try {
                 val children = withContext(Dispatchers.IO) { repository.getChildren(group.uuid) }
-                Log.e("debug", "found ${children.size} children")
+                log.e("found ${children.size} children")
                 val action = PostListFragmentDirections.actionPostListFragmentToSelf(
                     children.toTypedArray(),
                     false,
@@ -61,7 +62,7 @@ class PostListFragment @Inject constructor() : Fragment() {
                 )
                 binding.root.findNavController().navigate(action)
             } catch (exc: Exception) {
-                Log.e("debug", "exception on group click $exc")
+                log.e("exception on group click $exc")
                 withContext(Dispatchers.Main) {
                     Toast.makeText(
                         context,
@@ -81,7 +82,7 @@ class PostListFragment @Inject constructor() : Fragment() {
             }
         } else {
             repository.observeChildren(args.parent.uuid).observe(viewLifecycleOwner) { children ->
-                Log.v("debug", "observing groups ${children.size}")
+                log.v("observing groups ${children.size}")
                 setGroupText(children)
                 groupListAdapter.addItems(children)
             }
@@ -102,7 +103,7 @@ class PostListFragment @Inject constructor() : Fragment() {
                     repository.setLastSyncTime(Date())
                 }
             } catch (exc: Exception) {
-                Log.e("debug", "exception: $exc while refreshing posts")
+                log.e("exception: $exc while refreshing posts")
             }
         } else {
             Toast.makeText(context, R.string.not_connected, Toast.LENGTH_LONG).show()
@@ -121,9 +122,9 @@ class PostListFragment @Inject constructor() : Fragment() {
         }
 
         if (!args.immutable) {
-            Log.v("debug", "starting post observation")
+            log.v("starting post observation")
             repository.observePosts(args.parent).observe(viewLifecycleOwner) { posts ->
-                Log.e("debug", "livedata received posts ${posts.size}")
+                log.e("livedata received posts ${posts.size}")
                 postAdapter.values = posts.toMutableList()
                 postAdapter.notifyDataSetChanged()
             }

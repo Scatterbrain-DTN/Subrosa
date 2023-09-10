@@ -89,6 +89,9 @@ dependencies {
     implementation "androidx.room:room-ktx:2.5.2"
     kapt "androidx.room:room-compiler:2.5.2"
 
+    //reflect for logging
+    implementation 'org.jetbrains.kotlin:kotlin-reflect:1.8.20'
+
     // optional - Paging 3 Integration
     implementation "androidx.room:room-paging:2.5.2"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"

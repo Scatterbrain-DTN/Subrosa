@@ -5,6 +5,7 @@ import androidx.room.*
 import com.google.protobuf.ByteString
 import net.ballmerlabs.subrosa.SubrosaProto
 import net.ballmerlabs.subrosa.util.HasKey
+import net.ballmerlabs.subrosa.util.srLog
 import net.ballmerlabs.subrosa.util.uuidConvertProto
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
@@ -16,6 +17,8 @@ import java.util.*
 class Post(
     packet: SubrosaProto.Post
 ): Message<SubrosaProto.Post>(packet), HasKey<String> {
+
+    private val log by srLog()
 
     @Ignore
     override val typePacket: SubrosaProto.Type =  SubrosaProto.Type.newBuilder()

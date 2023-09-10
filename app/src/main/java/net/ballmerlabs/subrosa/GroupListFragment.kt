@@ -23,11 +23,13 @@ import net.ballmerlabs.subrosa.listing.GroupListViewModel
 import net.ballmerlabs.subrosa.listing.PostListFragment
 import net.ballmerlabs.subrosa.listing.PostListFragmentDirections
 import net.ballmerlabs.subrosa.scatterbrain.NewsGroup
+import net.ballmerlabs.subrosa.util.srLog
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class GroupListFragment : Fragment() {
-
+    private val log by srLog()
+    
     private lateinit var binding: FragmentGroupListBinding
 
     @Inject lateinit var repository: NewsRepository
@@ -49,7 +51,7 @@ class GroupListFragment : Fragment() {
                 )
                 binding.root.findNavController().navigate(action)
             } catch (exc: Exception) {
-                Log.w("debug", "failed to navigate to group $group: $exc")
+                log.w("failed to navigate to group $group: $exc")
             }
         }
     }
@@ -73,15 +75,16 @@ class GroupListFragment : Fragment() {
                 repository.observeGroups()
             }
         }.observe(viewLifecycleOwner) { groups ->
-                Log.v("debug", "observed groups ${groups.size}")
+                log.v("observed groups ${groups.size}")
                 groupAdapter.addItems(groups)
             }
         return binding.root
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
-            R.id.action_search -> Log.v("debug", "search2")
+            R.id.action_search -> log.v("search2")
         }
         return true
     }

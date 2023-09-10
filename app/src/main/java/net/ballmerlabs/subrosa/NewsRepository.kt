@@ -18,6 +18,7 @@ import net.ballmerlabs.subrosa.database.NewsGroupChildren
 import net.ballmerlabs.subrosa.database.NewsGroupDao
 import net.ballmerlabs.subrosa.scatterbrain.User
 import net.ballmerlabs.subrosa.scatterbrain.*
+import net.ballmerlabs.subrosa.util.srLog
 import net.ballmerlabs.subrosa.util.uuidConvert
 import java.util.*
 import java.util.concurrent.atomic.AtomicReference
@@ -32,6 +33,8 @@ class NewsRepository @Inject constructor(
     val sdkComponent: ScatterbrainApi,
     @Named(ScatterbrainModule.API_COROUTINE_SCOPE) val coroutineScope: CoroutineScope
     ) {
+
+    private val log by srLog()
 
     private val prefs = context.getSharedPreferences(SubrosaApplication.SHARED_PREFS_DEFAULT, Context.MODE_PRIVATE)
 
@@ -88,7 +91,7 @@ class NewsRepository @Inject constructor(
             null
         }
 
-        Log.v("debug", "send post got identity ${identity?.fingerprint}")
+        log.v("send post got identity ${identity?.fingerprint}")
         val post = Post(
             parent,
             user,
@@ -97,7 +100,7 @@ class NewsRepository @Inject constructor(
             sig
         )
 
-        Log.v("debug", "send post signed post")
+        log.v("send post signed post")
         val message = ScatterMessage.Builder.newInstance(post.bytes)
             .setApplication(context.getString(R.string.scatterbrainapplication))
             .build()
@@ -111,9 +114,9 @@ class NewsRepository @Inject constructor(
                 .build()
             groupMsgs.add(groupMsg)
         }
-        Log.v("debug", "send post sent newsgroups")
+        log.v("send post sent newsgroups")
         dao.insertPost(post)
-        Log.v("debug", "send post inserted post")
+        log.v("send post inserted post")
         if (isConnected()) {
             sdkComponent.binderWrapper.sendMessage(groupMsgs)
             val author = post.author
@@ -158,7 +161,7 @@ class NewsRepository @Inject constructor(
     }
 
     private fun getUsersWithFiles(userlist: List<User>): LiveData<List<User>> = liveData {
-        Log.v(TAG, "emit")
+        log.v("emit")
         emit(userlist)
     }
 
@@ -166,7 +169,7 @@ class NewsRepository @Inject constructor(
         return if(owned == null) {
             dao.observeAllUsers()
                 .switchMap { userlist ->
-                    Log.v(TAG, "fnmef")
+                    log.v("fnmef")
                     getUsersWithFiles(userlist)
                   }
         } else {
@@ -217,7 +220,7 @@ class NewsRepository @Inject constructor(
 
     suspend fun createGroup(name: String, description: String, parent: NewsGroup): NewsGroup {
         val uuid = UUID.randomUUID()
-        Log.e("debug", "parent emptu: ${parent.empty}")
+        log.e("parent emptu: ${parent.empty}")
         val group = NewsGroup(
             uuid = uuid,
             parentCol = if (parent.empty) null else parent.uuid,
@@ -260,7 +263,7 @@ class NewsRepository @Inject constructor(
             try {
                 if (!message.isFile) {
                     val type = Message.parse(message.body!!)
-                    Log.v(TAG, "processing message type ${type.typeVal}")
+                    log.v("processing message type ${type.typeVal}")
                     when (type.typeVal) {
                         TypeVal.POST -> {
                             val post = Message.parse<Post>(message.body!!, type)
@@ -275,12 +278,12 @@ class NewsRepository @Inject constructor(
                             insertUser(user)
                         }
                         else -> {
-                            Log.e(TAG, "invalid message type received")
+                            log.e("invalid message type received")
                         }
                     }
                 }
             } catch (exc: Exception) {
-                Log.e(TAG, "failed to process message from ${message.id}: $exc")
+                log.e("failed to process message from ${message.id}: $exc")
                 exc.printStackTrace()
             }
         }

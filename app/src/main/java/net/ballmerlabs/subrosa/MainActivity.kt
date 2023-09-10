@@ -43,6 +43,7 @@ import net.ballmerlabs.subrosa.listing.PostListFragmentArgs
 import net.ballmerlabs.subrosa.listing.PostListFragmentDirections
 import net.ballmerlabs.subrosa.scatterbrain.NewsGroup
 import net.ballmerlabs.subrosa.user.UserListFragmentDirections
+import net.ballmerlabs.subrosa.util.srLog
 import net.ballmerlabs.subrosa.util.uuidSha256
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
@@ -51,6 +52,8 @@ import kotlin.math.abs
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+
+    private val log by srLog()
 
     private lateinit var binding: ActivityMainBinding
 
@@ -96,7 +99,7 @@ class MainActivity : AppCompatActivity() {
         try {
             if (idList != null) {
                 if (idList.size == 1) {
-                    Log.v("debug", "registered ${idList.size} identities")
+                    log.v("registered ${idList.size} identities")
                     val action =
                         UserListFragmentDirections.actionUserListFragmentToUserCreationFragment(
                             idList.first().fingerprint.toString()
@@ -105,7 +108,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         } catch (exc: Exception) {
-            Log.e("debug", "exception when importing identity")
+            log.e("exception when importing identity")
             Toast.makeText(applicationContext, "Failed to import identity", Toast.LENGTH_LONG)
         }
     }
@@ -122,7 +125,7 @@ class MainActivity : AppCompatActivity() {
                 snackbar.show()
             }
         } catch (exc: Exception) {
-            Log.e("debug", "exception in adminPermissionsListener: $exc")
+            log.e("exception in adminPermissionsListener: $exc")
         }
     }
 
@@ -154,7 +157,7 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun expandFab() {
-        Log.v("debug", "fab expanding ${binding.fabAlt2.y}")
+        log.v("fab expanding ${binding.fabAlt2.y}")
         if (!fabExpanded) {
             binding.fabAlt.animate().translationY(-resources.getDimension(R.dimen.fab_expand_lower))
             binding.fabAlt2.animate().translationY(-resources.getDimension(R.dimen.fab_expand_upper))
@@ -163,7 +166,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun contractFab() {
-        Log.v("debug", "fab contracting ${binding.fabAlt2.y}")
+        log.v("fab contracting ${binding.fabAlt2.y}")
         if (fabExpanded) {
             binding.fabAlt.animate().translationY(0.toFloat())
             binding.fabAlt2.animate().translationY(0.toFloat())
@@ -172,7 +175,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun popTitle() {
-        Log.v("debug", "popTitle $fabExpanded")
+        log.v("popTitle $fabExpanded")
         if (mainViewModel.strPath.isNotEmpty()) {
             val list = mainViewModel.strPath.toMutableList()
             val front = list.removeLast()
@@ -203,7 +206,7 @@ class MainActivity : AppCompatActivity() {
                 try {
                     navController.navigate(action)
                 } catch (exc: Exception) {
-                    Log.w("debug", "failed to navigate to $action: $exc")
+                    log.w("failed to navigate to $action: $exc")
                 }
             }
             binding.fab.show()
@@ -274,19 +277,19 @@ class MainActivity : AppCompatActivity() {
                 binding.connectionLostBanner.show()
                 toast.show()
             } else {
-                Log.v("debug", "router connected")
+                log.v("router connected")
                 binding.connectionLostBanner.dismiss()
             }
 
             return res
         } catch (exc: Exception) {
-            Log.e("debug", "checkRouterConnected error $exc")
+            log.e("checkRouterConnected error $exc")
             return false
         }
     }
 
     private fun setTitle(text: String?, isTitleEnabled: Boolean = true) {
-        Log.v("debug", "isTitleEnabled ${binding.collapsingToolbar.title}")
+        log.v("isTitleEnabled ${binding.collapsingToolbar.title}")
         binding.collapsingToolbar.isTitleEnabled = isTitleEnabled
         binding.toolbar.title = text
         binding.collapsingToolbar.title = text
@@ -341,7 +344,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun changeDestinationPostListFragment(arguments: Bundle) {
         val args = PostListFragmentArgs.fromBundle(arguments)
-        Log.v("debug", "on newsgroup ${args.parent}")
+        log.v("on newsgroup ${args.parent}")
         mainViewModel.path.value = args.path.toList()
         binding.currentIdenticon.hash = args.parent.hash.contentHashCode()
         mainViewModel.postListType.observe(this) { type ->
@@ -354,7 +357,7 @@ class MainActivity : AppCompatActivity() {
                     action = PostListFragmentDirections.actionPostListFragmentToGroupCreateDialog(args.parent),
                     icon = R.drawable.ic_baseline_create_new_folder_24
                 )
-                null -> Log.e("debug", "type null")
+                null -> log.e("type null")
             }
 
         }
@@ -388,7 +391,7 @@ class MainActivity : AppCompatActivity() {
                     adminPermissionListener.launch(permission)
                 }
             } catch (exc: Exception) {
-                Log.e("debug", "exception in changeDestinationUserListFragment: $exc")
+                log.e("exception in changeDestinationUserListFragment: $exc")
             }
         }
         setAppBar(false, text = getString(R.string.user_list_title), isTitleEnabled = false)
@@ -405,7 +408,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        Log.v("debug", "nav up")
+        log.v("nav up")
         try {
             if (binding.searchBox.visibility == View.VISIBLE) {
                 hideSearch()
@@ -413,7 +416,7 @@ class MainActivity : AppCompatActivity() {
                 navController.popBackStack()
             }
         } catch (exc: Exception) {
-            Log.w("debug",   "exception in onSupportNavigateUp: $exc")
+            log.w(  "exception in onSupportNavigateUp: $exc")
         }
         return super.onSupportNavigateUp()
     }
@@ -442,7 +445,7 @@ class MainActivity : AppCompatActivity() {
         NavigationUI.setupWithNavController(binding.bottomNavigation, navController)
 
         navController.addOnDestinationChangedListener { _, destination, arguments ->
-            Log.v("debug", "navigating to $destination")
+            log.v("navigating to $destination")
             handleMenuVisibility(destination.id)
             when(destination.id) {
                 R.id.PostListFragment -> { changeDestinationPostListFragment(arguments!!) }
@@ -503,10 +506,10 @@ class MainActivity : AppCompatActivity() {
                     try {
                         repository.insertGroup(groups)
                     } catch (exc: Exception) {
-                        Log.w("debug", "failed to insert group: $exc")
+                        log.w("failed to insert group: $exc")
                     }
                 }
-                Log.e("debug", "groups inserted")
+                log.e("groups inserted")
             } catch (exc: Exception) {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(
@@ -542,15 +545,15 @@ class MainActivity : AppCompatActivity() {
         return try {
             val permission = net.ballmerlabs.subrosa.util.checkPermission(ScatterbrainApi.PERMISSION_ACCESS, applicationContext)
             if (permission) {
-                Log.v("debug", "permission granted")
+                log.v("permission granted")
                 repository.sdkComponent.binderWrapper.bindService()
             } else {
-                Log.e("debug", "permission denied")
+                log.e("permission denied")
                 accessPermissionLauncher.launch(ScatterbrainApi.PERMISSION_ACCESS)
             }
             true
         } catch (exc: Exception) {
-            Log.e("debug", "failed to bind service")
+            log.e("failed to bind service")
             exc.printStackTrace()
             false
         }

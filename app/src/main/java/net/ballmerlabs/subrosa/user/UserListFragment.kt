@@ -18,6 +18,7 @@ import kotlinx.coroutines.withContext
 import net.ballmerlabs.subrosa.NewsRepository
 import net.ballmerlabs.subrosa.R
 import net.ballmerlabs.subrosa.databinding.FragmentUserlistListBinding
+import net.ballmerlabs.subrosa.util.srLog
 import java.util.*
 import javax.inject.Inject
 
@@ -26,6 +27,7 @@ import javax.inject.Inject
  */
 @AndroidEntryPoint
 class UserListFragment @Inject constructor() : Fragment() {
+    private val log by srLog()
 
     private var columnCount = 1
     private lateinit var binding: FragmentUserlistListBinding
@@ -35,7 +37,7 @@ class UserListFragment @Inject constructor() : Fragment() {
     @Inject lateinit var repository: NewsRepository
 
     private suspend fun onUserDelete(uuid: UUID) {
-        Log.v("debug", "onUserDelete $uuid")
+        log.v("onUserDelete $uuid")
         try {
             val res = withContext(Dispatchers.IO) { repository.deleteUser(uuid) }
             if (!res) {
@@ -46,7 +48,7 @@ class UserListFragment @Inject constructor() : Fragment() {
                 }
             }
         } catch (exc: Exception) {
-            Log.w("debug", "failed to handle user delete: $exc")
+            log.w("failed to handle user delete: $exc")
         }
     }
 
