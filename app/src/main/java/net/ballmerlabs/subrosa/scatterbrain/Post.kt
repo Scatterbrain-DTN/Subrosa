@@ -18,8 +18,6 @@ class Post(
     packet: SubrosaProto.Post
 ): Message<SubrosaProto.Post>(packet), HasKey<String> {
 
-    private val log by srLog()
-
     @Ignore
     override val typePacket: SubrosaProto.Type =  SubrosaProto.Type.newBuilder()
         .setType(toProto(TypeVal.POST))
