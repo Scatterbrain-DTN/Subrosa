@@ -22,7 +22,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.NavDirections
 import androidx.navigation.NavGraph
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import androidx.transition.Slide
@@ -199,24 +198,28 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setFab(action: NavDirections? = null, icon: Int? = null) {
-        contractFab()
-        binding.fab.setImageResource(icon ?: 0)
-        if (action != null) {
-            binding.fab.setOnClickListener {
-                try {
-                    navController.navigate(action)
-                } catch (exc: Exception) {
-                    log.w("failed to navigate to $action: $exc")
+        try {
+            contractFab()
+            binding.fab.setImageResource(icon ?: 0)
+            if (action != null) {
+                binding.fab.setOnClickListener {
+                    try {
+                        navController.navigate(action)
+                    } catch (exc: Exception) {
+                        log.w("failed to navigate to $action: $exc")
+                    }
                 }
+                binding.fab.show()
+                binding.fabAlt.show()
+                binding.fabAlt2.show()
+            } else {
+                binding.fabAlt.hide()
+                binding.fabAlt2.hide()
+                binding.fab.hide()
+                binding.fab.setOnClickListener { }
             }
-            binding.fab.show()
-            binding.fabAlt.show()
-            binding.fabAlt2.show()
-        } else {
-            binding.fabAlt.hide()
-            binding.fabAlt2.hide()
-            binding.fab.hide()
-            binding.fab.setOnClickListener {  }
+        } catch (exc: Exception) {
+            log.e("setFab exception $exc")
         }
     }
 
@@ -249,23 +252,31 @@ class MainActivity : AppCompatActivity() {
         binding.bottomNavigation.background = null
     }
 
-    private fun setAppBar(expand: Boolean = false, text: String? = null, isTitleEnabled: Boolean = true) {
-        binding.pathscroll.visibility = if (expand) View.VISIBLE else View.GONE
-        if(!expand) {
-            binding.currentIdenticon.visibility = View.GONE
-        } else {
-            binding.currentIdenticon.visibility = View.VISIBLE
+    private fun setAppBar(expand: Boolean = false, text: String? = null, isTitleEnabled: Boolean = true, noBack: Boolean = false) {
+        log.v("setAppBar $noBack $supportActionBar")
+        try {
+            binding.pathscroll.visibility = if (expand) View.VISIBLE else View.GONE
+            if (!expand) {
+                binding.currentIdenticon.visibility = View.GONE
+            } else {
+                binding.currentIdenticon.visibility = View.VISIBLE
+            }
+
+            (binding.collapsingToolbar.layoutParams as AppBarLayout.LayoutParams).apply {
+                scrollFlags = if (expand)
+                    AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
+                else
+                    AppBarLayout.LayoutParams.SCROLL_FLAG_NO_SCROLL
+            }
+            setTitle(text, isTitleEnabled = isTitleEnabled)
+            ViewCompat.setNestedScrollingEnabled(binding.collapsingToolbar, expand)
+            binding.appbarlayout.setExpanded(expand, true)
+            binding.appbarlayout.requestFocus()
+            supportActionBar?.setDisplayHomeAsUpEnabled(!noBack)
+            supportActionBar?.setHomeButtonEnabled(!noBack)
+        } catch (exc: Exception) {
+            log.e("setAppBar exception $exc")
         }
-        (binding.collapsingToolbar.layoutParams as AppBarLayout.LayoutParams).apply {
-            scrollFlags = if (expand)
-                AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
-            else
-                AppBarLayout.LayoutParams.SCROLL_FLAG_NO_SCROLL
-        }
-        setTitle(text, isTitleEnabled = isTitleEnabled)
-        ViewCompat.setNestedScrollingEnabled(binding.collapsingToolbar, expand)
-        binding.appbarlayout.setExpanded(expand, true)
-        binding.appbarlayout.requestFocus()
     }
 
     private suspend fun checkRouterConnected(): Boolean {
@@ -404,7 +415,7 @@ class MainActivity : AppCompatActivity() {
             action = GroupListFragmentDirections.actionGroupListFragmentToGroupCreateDialog(null),
             icon = R.drawable.ic_baseline_create_new_folder_24
         )
-        setAppBar(expand = false, text = getString(R.string.grouplist_title), isTitleEnabled = false)
+        setAppBar(expand = false, text = getString(R.string.grouplist_title), isTitleEnabled = false, noBack = true)
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -443,7 +454,6 @@ class MainActivity : AppCompatActivity() {
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController  = navHostFragment.navController
         NavigationUI.setupWithNavController(binding.bottomNavigation, navController)
-
         navController.addOnDestinationChangedListener { _, destination, arguments ->
             log.v("navigating to $destination")
             handleMenuVisibility(destination.id)
@@ -579,6 +589,9 @@ class MainActivity : AppCompatActivity() {
                         null -> binding.connectionLostBanner.show()
                     }
                 }
+
+        setAppBar(expand = false, text = getString(R.string.grouplist_title), isTitleEnabled = false, noBack = true)
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
