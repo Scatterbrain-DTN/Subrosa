@@ -101,7 +101,7 @@ class NewsRepository @Inject constructor(
         )
 
         log.v("send post signed post")
-        val message = ScatterMessage.Builder.newInstance(post.bytes)
+        val message = ScatterMessage.Builder.newInstance(context, post.bytes)
             .setApplication(context.getString(R.string.scatterbrainapplication))
             .build()
         var par = post.parent
@@ -109,7 +109,7 @@ class NewsRepository @Inject constructor(
         while (par.hasParent) {
             yield()
             par = dao.getGroup(par.parentCol!!)
-            val groupMsg = ScatterMessage.Builder.newInstance(post.bytes)
+            val groupMsg = ScatterMessage.Builder.newInstance(context, post.bytes)
                 .setApplication(context.getString(R.string.scatterbrainapplication))
                 .build()
             groupMsgs.add(groupMsg)
@@ -148,7 +148,7 @@ class NewsRepository @Inject constructor(
             owned = true,
             image = imageBitmap
         )
-        val message = ScatterMessage.Builder.newInstance(user.bytes)
+        val message = ScatterMessage.Builder.newInstance(context, user.bytes)
             .setApplication(context.getString(R.string.scatterbrainapplication))
             .build()
         sdkComponent.binderWrapper.sendMessage(message)
@@ -191,7 +191,7 @@ class NewsRepository @Inject constructor(
     }
 
     suspend fun insertGroup(group: NewsGroup) {
-        val message = ScatterMessage.Builder.newInstance(group.bytes)
+        val message = ScatterMessage.Builder.newInstance(context, group.bytes)
             .setApplication(context.getString(R.string.scatterbrainapplication))
             .build()
         dao.insertGroup(group)
@@ -204,7 +204,7 @@ class NewsRepository @Inject constructor(
     suspend fun insertGroup(group: List<NewsGroup>) {
         dao.insertGroups(group)
         val messages = group.map { g ->
-            ScatterMessage.Builder.newInstance(g.bytes)
+            ScatterMessage.Builder.newInstance(context, g.bytes)
                 .setApplication(context.getString(R.string.scatterbrainapplication))
                 .build()
         }
