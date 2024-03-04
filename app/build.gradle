@@ -16,8 +16,8 @@ android {
         minSdkVersion 29
         targetSdkVersion 34
         compileSdk 34
-        versionCode 14
-        versionName "1.2.5-1"
+        versionCode 15
+        versionName "1.2.6"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         ksp {
