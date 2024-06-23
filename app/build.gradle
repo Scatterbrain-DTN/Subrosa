@@ -16,7 +16,7 @@ android {
         minSdkVersion 29
         targetSdkVersion 34
         compileSdk 34
-        versionCode 15
+        versionCode 16
         versionName "1.2.6"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -105,21 +105,21 @@ dependencies {
     ksp "androidx.room:room-compiler:2.6.1"
 
     //reflect for logging
-    implementation 'org.jetbrains.kotlin:kotlin-reflect:1.9.0'
+    implementation 'org.jetbrains.kotlin:kotlin-reflect:1.9.20'
 
     // optional - Paging 3 Integration
     implementation "androidx.room:room-paging:2.6.1"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation 'androidx.core:core-ktx:1.12.0'
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.11.0'
+    implementation 'androidx.core:core-ktx:1.13.1'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'com.google.android.material:material:1.12.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.7.6'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.7.6'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.7.7'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.7.7'
     implementation 'com.github.lelloman:android-identicons:v11'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.7.0'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.8.2'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.2'
     implementation "com.sergivonavi:materialbanner:1.2.0"
     implementation "com.google.dagger:hilt-android:$hilt_version"
     implementation "com.google.protobuf:protobuf-javalite:$protobuf_version"
@@ -128,8 +128,8 @@ dependencies {
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
     implementation project(':sdk')
     ksp "com.google.dagger:hilt-compiler:$hilt_version"
-    implementation 'com.google.dagger:dagger:2.48.1'
-    ksp 'com.google.dagger:dagger-compiler:2.48.1'
+    implementation 'com.google.dagger:dagger:2.51.1'
+    ksp 'com.google.dagger:dagger-compiler:2.51.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     implementation "androidx.slidingpanelayout:slidingpanelayout:1.2.0"
