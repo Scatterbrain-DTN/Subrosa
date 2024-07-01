@@ -250,14 +250,6 @@ class NewsRepository @Inject constructor(
             .map { children -> children.children }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    suspend fun observePosts(): Flow<Post> = flow {
-        requireConnected()
-        sdkComponent.binderWrapper.observeMessages(context.getString(R.string.scatterbrainapplication))
-            .onEach { currentCoroutineContext().ensureActive() }
-            .map { messages -> processScatterMessages(messages) }
-    }
-
     private suspend fun processScatterMessages(messages: List<ScatterMessage>) {
         messages.forEach { message ->
             try {
