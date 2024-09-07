@@ -1,6 +1,6 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
-    ext.kotlin_version = "1.9.22"
+    ext.kotlin_version = "1.9.25"
     ext.hilt_version = "2.51"
     repositories {
         maven {
@@ -21,7 +21,7 @@ buildscript {
 }
 
 plugins {
-    id 'com.google.devtools.ksp' version '1.9.22-1.0.17' apply false
+    id 'com.google.devtools.ksp' version '1.9.25-1.0.20' apply false
 }
 
 tasks.register('clean', Delete) {

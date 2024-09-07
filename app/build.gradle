@@ -6,7 +6,7 @@ plugins {
     id 'dagger.hilt.android.plugin'
     id 'com.google.protobuf'
 }
-def protobuf_version = "4.26.0-RC1"
+def protobuf_version = "4.27.3"
 
 android {
     buildToolsVersion "30.0.3"
