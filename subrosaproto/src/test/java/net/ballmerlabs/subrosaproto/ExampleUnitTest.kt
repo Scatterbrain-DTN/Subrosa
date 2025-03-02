@@ -1,4 +1,4 @@
-package net.ballmerlabs.subrosa
+package net.ballmerlabs.subrosaproto
 
 import org.junit.Test
 

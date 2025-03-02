@@ -263,6 +263,7 @@ class NewsRepository @Inject constructor(
                         }
                         TypeVal.NEWSGROUP -> {
                             val newsgroup = Message.parse<NewsGroup>(message.body!!, type)
+                            log.v("got newsgroup ${newsgroup.groupName}")
                             dao.insertGroup(newsgroup)
                         }
                         TypeVal.USER -> {
@@ -310,10 +311,15 @@ class NewsRepository @Inject constructor(
             return false
         }
         val messages = withContext(Dispatchers.IO) {
-            sdkComponent.binderWrapper.getScatterMessages(context.getString(R.string.scatterbrainapplication), since)
+            sdkComponent.binderWrapper.getScatterMessages(context.getString(R.string.scatterbrainapplication))
+        }.toList()
+
+        for (message in messages) {
+            Log.v("debug", "got message")
         }
+
         withContext(Dispatchers.Default) {
-            processScatterMessages(messages.toList())
+            processScatterMessages(messages)
         }
         refreshInProgress.set(false)
         return true

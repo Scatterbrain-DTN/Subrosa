@@ -5,7 +5,7 @@ import android.content.pm.PackageManager
 import android.content.res.Resources
 import androidx.core.content.ContextCompat
 import kotlinx.coroutines.suspendCancellableCoroutine
-import net.ballmerlabs.subrosa.SubrosaProto
+import subrosaproto.Subrosa
 import java.nio.ByteBuffer
 import java.security.MessageDigest
 import java.util.*
@@ -17,7 +17,7 @@ fun uuidConvert(uuid: UUID): ByteArray {
     return buf.array()
 }
 
-fun uuidConvert(uuid: SubrosaProto.UUID): ByteArray {
+fun uuidConvert(uuid: Subrosa.ProtoUuid): ByteArray {
     val buf = ByteBuffer.wrap(ByteArray(16))
     buf.putLong(uuid.upper)
     buf.putLong(uuid.lower)
@@ -32,14 +32,14 @@ fun uuidConvert(bytes: ByteArray): UUID {
 }
 
 
-fun uuidConvertProto(uuid: UUID): SubrosaProto.UUID {
-    return SubrosaProto.UUID.newBuilder()
+fun uuidConvertProto(uuid: UUID): Subrosa.ProtoUuid {
+    return Subrosa.ProtoUuid.newBuilder()
         .setLower(uuid.leastSignificantBits)
         .setUpper(uuid.mostSignificantBits)
         .build()
 }
 
-fun uuidConvertProto(uuid: SubrosaProto.UUID): UUID {
+fun uuidConvertProto(uuid: Subrosa.ProtoUuid): UUID {
     return UUID(uuid.upper, uuid.lower)
 }
 

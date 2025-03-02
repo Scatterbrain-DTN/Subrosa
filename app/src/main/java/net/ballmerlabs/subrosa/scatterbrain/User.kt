@@ -8,16 +8,16 @@ import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.google.protobuf.ByteString
 import kotlinx.coroutines.*
-import net.ballmerlabs.subrosa.SubrosaProto
 import net.ballmerlabs.subrosa.util.HasKey
 import net.ballmerlabs.subrosa.util.uuidConvertProto
+import subrosaproto.Subrosa
 import java.io.ByteArrayOutputStream
 import java.util.*
 
 @Entity
 class User(
-    packet: SubrosaProto.User
-) : Message<SubrosaProto.User>(packet), HasKey<UUID> {
+    packet: Subrosa.User
+) : Message<Subrosa.User>(packet), HasKey<UUID> {
 
     @PrimaryKey
     var identity: UUID = uuidConvertProto(packet.identity)
@@ -29,14 +29,14 @@ class User(
     var owned: Boolean = false
 
     var imageBytes: ByteArray? =
-        if (packet.imageCase.equals(SubrosaProto.User.ImageCase.IMAGE_NOT_SET))
+        if (packet.imageCase.equals(Subrosa.User.ImageCase.IMAGE_NOT_SET))
             null
         else
             packet.imagebytes.toByteArray()
 
     @Ignore
-    override val typePacket: SubrosaProto.Type = SubrosaProto.Type.newBuilder()
-        .setType(toProto(TypeVal.USER))
+    override val typePacket: Subrosa.TypePrefix = Subrosa.TypePrefix.newBuilder()
+        .setPostType(toProto(TypeVal.USER))
         .build()
 
     override fun hasKey(): UUID {
@@ -89,8 +89,8 @@ class User(
 
 
     companion object {
-        fun compress(bitmap: Bitmap?): SubrosaProto.User.Builder {
-            val builder = SubrosaProto.User.newBuilder()
+        fun compress(bitmap: Bitmap?): Subrosa.User.Builder {
+            val builder = Subrosa.User.newBuilder()
             return if (bitmap != null) {
                 val os = ByteArrayOutputStream()
                 resizeBitmapCentered(bitmap, 512).compress(Bitmap.CompressFormat.PNG, 90, os)
@@ -110,8 +110,8 @@ class User(
         }
 
         class Parser :
-            Message.Companion.Parser<SubrosaProto.User, User>(SubrosaProto.User.parser()) {
-            override val type: SubrosaProto.Type.PostType = SubrosaProto.Type.PostType.USER
+            Message.Companion.Parser<Subrosa.User, User>(Subrosa.User.parser()) {
+            override val type: Subrosa.PostType = Subrosa.PostType.USER
         }
 
         val parser = Parser()

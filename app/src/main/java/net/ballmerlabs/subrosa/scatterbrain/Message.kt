@@ -5,7 +5,7 @@ import androidx.room.Ignore
 import com.google.protobuf.MessageLite
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import net.ballmerlabs.subrosa.SubrosaProto
+import subrosaproto.Subrosa
 import java.io.ByteArrayOutputStream
 import java.io.OutputStream
 import java.nio.ByteBuffer
@@ -22,7 +22,7 @@ abstract class Message<T: MessageLite>(@Ignore val packet: T) {
     @Ignore
     val os = ByteArrayOutputStream()
 
-    abstract val typePacket: SubrosaProto.Type
+    abstract val typePacket: Subrosa.TypePrefix
 
     val bytes: ByteArray
     get() {
@@ -47,7 +47,7 @@ abstract class Message<T: MessageLite>(@Ignore val packet: T) {
         abstract class Parser<T: MessageLite, V: Message<T>>(
             val parser: com.google.protobuf.Parser<T>
         ) {
-            abstract val type: SubrosaProto.Type.PostType
+            abstract val type: Subrosa.PostType
         }
 
         inline fun <reified T: Message<V>, reified V: MessageLite> parse(

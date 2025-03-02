@@ -3,24 +3,23 @@ package net.ballmerlabs.subrosa.scatterbrain
 import android.util.Log
 import androidx.room.*
 import com.google.protobuf.ByteString
-import net.ballmerlabs.subrosa.SubrosaProto
 import net.ballmerlabs.subrosa.util.HasKey
-import net.ballmerlabs.subrosa.util.srLog
 import net.ballmerlabs.subrosa.util.uuidConvertProto
+import subrosaproto.Subrosa
 import java.security.MessageDigest
-import java.security.NoSuchAlgorithmException
 import java.util.*
 
 @Entity(
-    tableName = "posts"
+    tableName = "posts",
+    indices = [ Index("post_id", unique = true) ]
 )
 class Post(
-    packet: SubrosaProto.Post
-): Message<SubrosaProto.Post>(packet), HasKey<String> {
+    packet: Subrosa.Post
+): Message<Subrosa.Post>(packet), HasKey<String> {
 
     @Ignore
-    override val typePacket: SubrosaProto.Type =  SubrosaProto.Type.newBuilder()
-        .setType(toProto(TypeVal.POST))
+    override val typePacket: Subrosa.TypePrefix =  Subrosa.TypePrefix.newBuilder()
+        .setPostType(toProto(TypeVal.POST))
         .build()
 
     @Embedded
@@ -37,6 +36,9 @@ class Post(
 
     var sig = packet.sig.toByteArray()
 
+    @ColumnInfo(name = "post_id")
+    var postId: UUID? = uuidConvertProto(packet.uuid)
+
     @ColumnInfo(defaultValue = 0.toString())
     var receivedDate: Long = Date().time
 
@@ -50,18 +52,20 @@ class Post(
         sig: ByteArray?,
     ): this(
         if (author != null) {
-            SubrosaProto.Post.newBuilder()
+            Subrosa.Post.newBuilder()
                 .setParent(parent.packet)
                 .setAuthor(uuidConvertProto(author))
                 .setHeader(header)
                 .setBody(body)
                 .setSig(ByteString.copyFrom(sig))
+                .setUuid(uuidConvertProto(UUID.randomUUID()))
                 .build()
         } else {
-            SubrosaProto.Post.newBuilder()
+            Subrosa.Post.newBuilder()
                 .setParent(parent.packet)
                 .setHeader(header)
                 .setBody(body)
+                .setUuid(uuidConvertProto(UUID.randomUUID()))
                 .build()
         }
     )
@@ -76,8 +80,8 @@ class Post(
 
 
     companion object {
-        class Parser: Message.Companion.Parser<SubrosaProto.Post, Post>(SubrosaProto.Post.parser()) {
-            override val type: SubrosaProto.Type.PostType = SubrosaProto.Type.PostType.POST
+        class Parser: Message.Companion.Parser<Subrosa.Post, Post>(Subrosa.Post.parser()) {
+            override val type: Subrosa.PostType = Subrosa.PostType.POST
         }
         val parser = Parser()
     }

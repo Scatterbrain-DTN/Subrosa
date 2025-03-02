@@ -1,6 +1,6 @@
 package net.ballmerlabs.subrosa.scatterbrain
 
-import net.ballmerlabs.subrosa.SubrosaProto
+import subrosaproto.Subrosa
 
 enum class TypeVal {
     POST,
@@ -10,36 +10,36 @@ enum class TypeVal {
     USER
 }
 
-fun toProto(typeVal: TypeVal): SubrosaProto.Type.PostType {
+fun toProto(typeVal: TypeVal): Subrosa.PostType {
     return when(typeVal) {
-        TypeVal.POST -> SubrosaProto.Type.PostType.POST
-        TypeVal.NEWSGROUP -> SubrosaProto.Type.PostType.NEWSGROUP
-        TypeVal.TYPE -> SubrosaProto.Type.PostType.TYPE
-        TypeVal.USER -> SubrosaProto.Type.PostType.USER
-        else -> SubrosaProto.Type.PostType.UNRECOGNIZED
+        TypeVal.POST -> Subrosa.PostType.POST
+        TypeVal.NEWSGROUP -> Subrosa.PostType.NEWSGROUP
+        TypeVal.TYPE -> Subrosa.PostType.TYPE
+        TypeVal.USER -> Subrosa.PostType.USER
+        else -> Subrosa.PostType.UNRECOGNIZED
     }
 }
 
-fun fromProto(type: SubrosaProto.Type.PostType): TypeVal {
+fun fromProto(type: Subrosa.PostType): TypeVal {
     return when(type) {
-        SubrosaProto.Type.PostType.NEWSGROUP -> TypeVal.NEWSGROUP
-        SubrosaProto.Type.PostType.POST -> TypeVal.POST
-        SubrosaProto.Type.PostType.TYPE -> TypeVal.TYPE
-        SubrosaProto.Type.PostType.USER -> TypeVal.USER
+        Subrosa.PostType.NEWSGROUP -> TypeVal.NEWSGROUP
+        Subrosa.PostType.POST -> TypeVal.POST
+        Subrosa.PostType.TYPE -> TypeVal.TYPE
+        Subrosa.PostType.USER -> TypeVal.USER
         else -> TypeVal.INVALID
     }
 }
 
-class Type(packet: SubrosaProto.Type, val size: Int) : Message<SubrosaProto.Type>(packet) {
-    val typeVal = fromProto(packet.type)
+class Type(packet: Subrosa.TypePrefix, val size: Int) : Message<Subrosa.TypePrefix>(packet) {
+    val typeVal = fromProto(packet.postType)
 
-    override val typePacket: SubrosaProto.Type =  SubrosaProto.Type.newBuilder()
-        .setType(toProto(TypeVal.TYPE))
+    override val typePacket: Subrosa.TypePrefix =  Subrosa.TypePrefix.newBuilder()
+        .setPostType(toProto(TypeVal.TYPE))
         .build()
 
     companion object {
-        class Parser: Message.Companion.Parser<SubrosaProto.Type, Type>(SubrosaProto.Type.parser()) {
-            override val type: SubrosaProto.Type.PostType = SubrosaProto.Type.PostType.TYPE
+        class Parser: Message.Companion.Parser<Subrosa.TypePrefix, Type>(Subrosa.TypePrefix.parser()) {
+            override val type: Subrosa.PostType = Subrosa.PostType.TYPE
         }
         val parser = Parser()
     }

@@ -16,6 +16,7 @@ class DatabaseModule {
     @Singleton
     fun providesRoomDatabase(@ApplicationContext context: Context): RoomDatabase {
         return Room.databaseBuilder(context, RoomDatabase::class.java, "maindatabase")
+            .addMigrations(Migrate2to3())
             .build()
     }
     
