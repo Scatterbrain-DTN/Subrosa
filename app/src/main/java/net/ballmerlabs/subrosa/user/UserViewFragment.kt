@@ -25,9 +25,10 @@ class UserViewFragment : Fragment() {
         return inflater.inflate(R.layout.user_view_fragment, container, false)
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(UserViewViewModel::class.java)
+        viewModel = ViewModelProvider(this)[UserViewViewModel::class.java]
         // TODO: Use the ViewModel
     }
 

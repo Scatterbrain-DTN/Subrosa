@@ -2,5 +2,7 @@ rootProject.name = "Subrosa"
 
 include ':app'
 include ':sdk'
+include ':banner'
 project(':sdk').projectDir = new File(rootDir, 'ScatterbrainSDK/scatterbrainSDK/')
+project(':banner').projectDir = new File(rootDir, 'MaterialBanner/library/')
 include ':subrosaproto'

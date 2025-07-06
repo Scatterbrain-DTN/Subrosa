@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
@@ -14,7 +16,7 @@ android {
     defaultConfig {
         applicationId "net.ballmerlabs.subrosa"
         minSdkVersion 29
-        targetSdkVersion 35
+        targetSdkVersion 36
         compileSdk 35
         versionCode 17
         versionName "1.2.7"
@@ -26,15 +28,15 @@ android {
         }
 
         compileOptions {
-            sourceCompatibility JavaVersion.VERSION_17
-            targetCompatibility JavaVersion.VERSION_17
+            sourceCompatibility JavaVersion.VERSION_21
+            targetCompatibility JavaVersion.VERSION_21
         }
 
         java {
-            sourceCompatibility = JavaVersion.VERSION_17
-            targetCompatibility = JavaVersion.VERSION_17
+            sourceCompatibility = JavaVersion.VERSION_21
+            targetCompatibility = JavaVersion.VERSION_21
             toolchain {
-                languageVersion = JavaLanguageVersion.of(17)
+                languageVersion = JavaLanguageVersion.of(21)
             }
         }
 
@@ -56,8 +58,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 
     buildFeatures {
@@ -70,7 +72,6 @@ android {
     }
     namespace 'net.ballmerlabs.subrosa'
 }
-
 
 repositories {
     maven {
@@ -115,40 +116,40 @@ afterEvaluate {
 
 dependencies {
 
-    implementation "androidx.room:room-runtime:2.6.1"
-    implementation "androidx.room:room-ktx:2.6.1"
-    ksp "androidx.room:room-compiler:2.6.1"
+    implementation libs.androidx.room.runtime.v261
+    implementation libs.androidx.room.ktx.v261
+    ksp libs.androidx.room.compiler.v261
 
     //reflect for logging
-    implementation 'org.jetbrains.kotlin:kotlin-reflect:2.0.21'
+    implementation libs.kotlin.reflect
 
     // optional - Paging 3 Integration
-    implementation "androidx.room:room-paging:2.6.1"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation 'androidx.core:core-ktx:1.15.0'
-    implementation 'androidx.appcompat:appcompat:1.7.0'
-    implementation 'com.google.android.material:material:1.12.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.8.8'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.8.8'
-    implementation 'com.github.lelloman:android-identicons:v11'
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.8.7'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7'
-    implementation "com.sergivonavi:materialbanner:1.2.0"
-    implementation "com.google.dagger:hilt-android:$hilt_version"
-    implementation "com.google.protobuf:protobuf-javalite:$protobuf_version"
-    implementation 'androidx.recyclerview:recyclerview:1.4.0'
-    implementation 'androidx.preference:preference-ktx:1.2.1'
-    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
+    implementation libs.androidx.room.paging
+    implementation libs.kotlin.stdlib
+    implementation libs.androidx.core.ktx
+    implementation libs.androidx.appcompat.v170
+    implementation libs.material
+    implementation libs.constraintlayout
+    implementation libs.androidx.navigation.fragment.ktx.v288
+    implementation libs.androidx.navigation.ui.ktx.v288
+    implementation libs.android.identicons
+    implementation libs.androidx.legacy.support.v4
+    implementation libs.androidx.lifecycle.livedata.ktx.v287
+    implementation libs.androidx.lifecycle.viewmodel.ktx.v287
+    implementation libs.hilt.android.v251
+    implementation libs.protobuf.javalite
+    implementation libs.androidx.recyclerview
+    implementation libs.androidx.preference.ktx
+    implementation libs.androidx.swiperefreshlayout
     implementation project(':sdk')
+    implementation project(':banner')
     ksp "com.google.dagger:hilt-compiler:$hilt_version"
-    implementation 'com.google.dagger:dagger:2.51.1'
-    ksp 'com.google.dagger:dagger-compiler:2.51.1'
-    androidTestImplementation 'androidx.test.ext:junit:1.2.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'
-    implementation "androidx.slidingpanelayout:slidingpanelayout:1.2.0"
-    ksp "org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.5.0"
+    implementation libs.dagger.v2511
+    ksp libs.dagger.compiler
+    androidTestImplementation libs.ext.junit
+    androidTestImplementation libs.espresso.core
+    implementation libs.androidx.slidingpanelayout
+    ksp libs.kotlinx.metadata.jvm
 }
 
 
