@@ -55,6 +55,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
         }
     }
     compileOptions {
@@ -137,7 +138,7 @@ dependencies {
     implementation libs.androidx.lifecycle.livedata.ktx.v287
     implementation libs.androidx.lifecycle.viewmodel.ktx.v287
     implementation libs.hilt.android.v251
-    implementation libs.protobuf.javalite
+    implementation libs.protobuf.kotlin
     implementation libs.androidx.recyclerview
     implementation libs.androidx.preference.ktx
     implementation libs.androidx.swiperefreshlayout
