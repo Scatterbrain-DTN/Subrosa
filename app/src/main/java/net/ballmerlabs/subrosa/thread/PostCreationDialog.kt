@@ -80,6 +80,7 @@ class PostCreationDialog @Inject constructor() : DialogFragment() {
             val user = selectedUser
             repository.coroutineScope.launch {
                 try {
+                    withContext(Dispatchers.Main) { dismiss() }
                     repository.sendPost(
                         args.current,
                         user?.identity,
@@ -102,7 +103,6 @@ class PostCreationDialog @Inject constructor() : DialogFragment() {
                             .show()
                     }
                 }
-                withContext(Dispatchers.Main) { dismiss() }
             }
         }
         return binding.root
