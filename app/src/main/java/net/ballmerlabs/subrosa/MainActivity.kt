@@ -181,7 +181,7 @@ class MainActivity : AppCompatActivity() {
         log.v("popTitle $fabExpanded")
         if (mainViewModel.strPath.isNotEmpty()) {
             val list = mainViewModel.strPath.toMutableList()
-            val front = list.removeLast()
+            val front = list.removeAt(list.lastIndex)
             setTitle(front)
             binding.flowlayout.setPaths(list.toTypedArray())
         }
