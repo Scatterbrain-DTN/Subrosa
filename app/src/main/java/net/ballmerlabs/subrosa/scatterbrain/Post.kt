@@ -3,6 +3,7 @@ package net.ballmerlabs.subrosa.scatterbrain
 import android.util.Log
 import androidx.room.*
 import com.google.protobuf.ByteString
+import com.google.protobuf.kotlin.isNotEmpty
 import net.ballmerlabs.subrosa.util.HasKey
 import net.ballmerlabs.subrosa.util.uuidConvertProto
 import subrosaproto.Subrosa
@@ -13,7 +14,7 @@ import java.util.*
     tableName = "posts",
     indices = [ Index("post_id", unique = true) ]
 )
-class Post(
+class Post @Ignore constructor(
     packet: Subrosa.Post
 ): Message<Subrosa.Post>(packet), HasKey<String> {
 
@@ -23,33 +24,40 @@ class Post(
         .build()
 
     @Embedded
-    var parent: NewsGroup = NewsGroup(packet.parent)
+    var parent: NewsGroup = NewsGroup.fromPacket(packet.parent)
 
     @Embedded
     var user: User? = null
 
     var author: UUID? = if(packet.hasAuthor()) { uuidConvertProto(packet.author) } else { null }
 
-    var header = packet.header
+    var header: String = packet.header
 
-    var body = packet.body
+    var body: String = packet.body
 
-    var sig = packet.sig.toByteArray()
+    var sig: ByteArray? = if (packet.sig.isNotEmpty())
+        packet.sig.toByteArray()
+    else
+        null
 
     @ColumnInfo(name = "post_id")
     var postId: UUID? = uuidConvertProto(packet.uuid)
 
     @ColumnInfo(defaultValue = 0.toString())
-    var receivedDate: Long = Date().time
+    val receivedDate: Long = Date().time
 
     @PrimaryKey() var id: String = hasKey()
 
     constructor(
         parent: NewsGroup,
-        author: UUID?,
+        user: User? = null,
+        author: UUID? = null,
         header: String,
         body: String,
-        sig: ByteArray?,
+        sig: ByteArray? = null,
+        postId: UUID? = null,
+        receivedDate: Long = Date().time,
+        id: String = ""
     ): this(
         if (author != null) {
             Subrosa.Post.newBuilder()

@@ -8,7 +8,7 @@ plugins {
     id 'dagger.hilt.android.plugin'
     id 'com.google.protobuf'
 }
-def protobuf_version = "4.27.3"
+def protobuf_version = "4.30.2"
 
 android {
     buildToolsVersion "30.0.3"
@@ -17,8 +17,8 @@ android {
         applicationId "net.ballmerlabs.subrosa"
         minSdkVersion 29
         targetSdkVersion 36
-        compileSdk 35
-        versionCode 19
+        compileSdk 36
+        versionCode 20
         versionName "1.2.7"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -68,8 +68,11 @@ android {
     }
 
     sourceSets {
-        main.java.srcDirs +=  "${protobuf.generatedFilesBaseDir}"
-        main.java.srcDirs += "$projectDir/src/main/proto"
+        main {
+            java.srcDirs +=  "${protobuf.generatedFilesBaseDir}"
+            java.srcDirs += "$projectDir/src/main/proto"
+            proto.srcDirs = ["src/main/proto"]
+        }
     }
     namespace 'net.ballmerlabs.subrosa'
 }
@@ -85,19 +88,17 @@ repositories {
 }
 
 protobuf {
+
     protoc {
         artifact = "com.google.protobuf:protoc:$protobuf_version"
-    }
-    plugins {
-        javalite {
-            artifact = "com.google.protobuf:protoc-gen-javalite:$protobuf_version"
-        }
     }
     generateProtoTasks {
         all().each { task ->
             task.builtins {
                 java {
                     option "lite"
+                }
+                kotlin {
                 }
             }
         }
@@ -145,7 +146,7 @@ dependencies {
     implementation project(':sdk')
     implementation project(':banner')
     ksp "com.google.dagger:hilt-compiler:$hilt_version"
-    implementation libs.dagger.v2511
+    implementation libs.dagger
     ksp libs.dagger.compiler
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core

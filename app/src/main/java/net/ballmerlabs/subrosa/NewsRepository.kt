@@ -28,10 +28,10 @@ import kotlin.collections.ArrayList
 import kotlin.collections.HashSet
 
 class NewsRepository @Inject constructor(
-    @ApplicationContext val context: Context,
+    @param:ApplicationContext val context: Context,
     val dao: NewsGroupDao,
     val sdkComponent: ScatterbrainApi,
-    @Named(ScatterbrainModule.API_COROUTINE_SCOPE) val coroutineScope: CoroutineScope
+    @param:Named(ScatterbrainModule.API_COROUTINE_SCOPE) val coroutineScope: CoroutineScope
     ) {
 
     private val log by srLog()
@@ -81,7 +81,7 @@ class NewsRepository @Inject constructor(
             null
         }
         val sig = if (identity != null && user != null) {
-            sdkComponent.binderWrapper.sign(identity, postToArray(
+            sdkComponent.binderWrapper.sign(identity.fingerprint, postToArray(
                 parent,
                 user,
                 header,
@@ -93,11 +93,11 @@ class NewsRepository @Inject constructor(
 
         log.v("send post got identity ${identity?.fingerprint}")
         val post = Post(
-            parent,
-            user,
-            header,
-            body,
-            sig
+            parent = parent,
+            author = user ,
+            header =  header,
+            body = body,
+            sig = sig
         )
 
         log.v("send post signed post")

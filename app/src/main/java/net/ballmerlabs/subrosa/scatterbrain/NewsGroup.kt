@@ -74,7 +74,7 @@ data class Parent(
         )
     ]
 )
-class NewsGroup(
+class NewsGroup private constructor(
     packet: Subrosa.NewsGroup
 ): Message<Subrosa.NewsGroup>(packet), Parcelable, HasKey<UUID> {
     @Ignore
@@ -120,7 +120,7 @@ class NewsGroup(
         return value
     }
 
-    var groupName = packet.name
+    var groupName: String = packet.name
 
     override fun hasKey(): UUID {
         return uuid
@@ -183,6 +183,7 @@ class NewsGroup(
     }
 
 
+
     companion object CREATOR : Parcelable.Creator<NewsGroup> {
         class Parser: Companion.Parser<Subrosa.NewsGroup, NewsGroup>(Subrosa.NewsGroup.parser()) {
             override val type: Subrosa.PostType = Subrosa.PostType.NEWSGROUP
@@ -195,6 +196,10 @@ class NewsGroup(
 
         override fun newArray(size: Int): Array<NewsGroup?> {
             return arrayOfNulls(size)
+        }
+
+        fun fromPacket(packet: Subrosa.NewsGroup): NewsGroup {
+            return NewsGroup(packet)
         }
 
         fun empty(): NewsGroup {
