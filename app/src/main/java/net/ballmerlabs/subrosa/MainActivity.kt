@@ -8,6 +8,7 @@ import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
 
 import android.view.inputmethod.EditorInfo
@@ -52,6 +53,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 import kotlin.Exception
 import kotlin.math.abs
+import androidx.core.view.isVisible
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -178,13 +180,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun popTitle() {
-        log.v("popTitle $fabExpanded")
-        if (mainViewModel.strPath.isNotEmpty()) {
+        val id = navController.currentDestination?.id
+        log.v("popTitle $fabExpanded $id")
+        if (mainViewModel.strPath.isNotEmpty() && id != R.id.groupListFragment)  {
             val list = mainViewModel.strPath.toMutableList()
             val front = list.removeAt(list.lastIndex)
             setTitle(front)
             binding.flowlayout.setPaths(list.toTypedArray())
         }
+    }
+
+    private fun hideTitle() {
+        setTitle(null, isTitleEnabled = false)
+        binding.flowlayout.setPaths(arrayOf())
     }
 
     private fun onExpanding() {
@@ -260,17 +268,21 @@ class MainActivity : AppCompatActivity() {
         log.v("setAppBar $noBack $supportActionBar")
         try {
             binding.pathscroll.visibility = if (expand) View.VISIBLE else View.GONE
-            if (!expand) {
+            if (expand) {
                 binding.currentIdenticon.visibility = View.GONE
+                binding.pathscroll.visibility = View.GONE
+                binding.flowlayout.visibility = View.GONE
             } else {
                 binding.currentIdenticon.visibility = View.VISIBLE
+                binding.pathscroll.visibility = View.VISIBLE
+                binding.flowlayout.visibility = View.VISIBLE
             }
 
             (binding.collapsingToolbar.layoutParams as AppBarLayout.LayoutParams).apply {
                 scrollFlags = if (expand)
                     AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
                 else
-                    AppBarLayout.LayoutParams.SCROLL_FLAG_NO_SCROLL
+                    AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED
             }
             setTitle(text, isTitleEnabled = isTitleEnabled)
             ViewCompat.setNestedScrollingEnabled(binding.collapsingToolbar, expand)
@@ -376,7 +388,7 @@ class MainActivity : AppCompatActivity() {
             }
 
         }
-        setAppBar(expand = true, text = args.parent.groupName)
+        setAppBar(expand = false, text = args.parent.groupName)
     }
 
     private fun changeDestinationUserListFragment() {
@@ -419,13 +431,14 @@ class MainActivity : AppCompatActivity() {
             action = GroupListFragmentDirections.actionGroupListFragmentToGroupCreateDialog(null),
             icon = R.drawable.ic_baseline_create_new_folder_24
         )
-        setAppBar(expand = false, text = getString(R.string.grouplist_title), isTitleEnabled = false, noBack = true)
+        hideTitle()
+        setAppBar(expand = true, text = getString(R.string.grouplist_title), isTitleEnabled = false, noBack = true)
     }
 
     override fun onSupportNavigateUp(): Boolean {
         log.v("nav up")
         try {
-            if (binding.searchBox.visibility == View.VISIBLE) {
+            if (binding.searchBox.isVisible) {
                 hideSearch()
             } else {
                 navController.popBackStack()
@@ -459,7 +472,10 @@ class MainActivity : AppCompatActivity() {
         navController  = navHostFragment.navController
         NavigationUI.setupWithNavController(binding.bottomNavigation, navController)
         navController.addOnDestinationChangedListener { _, destination, arguments ->
-            log.v("navigating to $destination")
+            log.v("navigating to ${destination.id}")
+//            if (destination.id != R.id.groupListFragment) {
+//                popTitle()
+//            }
             handleMenuVisibility(destination.id)
             when(destination.id) {
                 R.id.PostListFragment -> { changeDestinationPostListFragment(arguments!!) }
@@ -603,7 +619,8 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
 
-        setAppBar(expand = false, text = getString(R.string.grouplist_title), isTitleEnabled = false, noBack = true)
+      //  setAppBar(expand = false, text = getString(R.string.grouplist_title), isTitleEnabled = false, noBack = true)
+        setAppBar(expand = true, isTitleEnabled = false, noBack = true, text = getString(R.string.grouplist_title))
 
     }
 
