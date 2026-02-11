@@ -1,7 +1,6 @@
 [versions]
 androidIdenticons = "v11"
 appcompat = "1.7.1"
-appcompatVersion = "1.7.1"
 constraintlayout = "2.2.1"
 core = "1.7.0"
 core-ktx = "1.17.0"
@@ -15,7 +14,6 @@ kotlin-stdlib = "2.3.10"
 kotlinx-collections-immutable = "0.4.0"
 kotlinx-coroutines-core-version = "1.10.2"
 kotlinxMetadataJvm = "0.9.0"
-legacySupportV4 = "1.0.0"
 lifecycle = "2.10.0"
 material = "1.13.0"
 navigationFragmentKtxVersion = "2.9.7"
@@ -32,10 +30,7 @@ swiperefreshlayout = "1.2.0"
 [libraries]
 
 android-identicons = { module = "com.github.lelloman:android-identicons", version.ref = "androidIdenticons" }
-androidx-appcompat-v170 = { module = "androidx.appcompat:appcompat", version.ref = "appcompatVersion" }
 androidx-core-ktx = { module = "androidx.test:core-ktx", version.ref = "core" }
-androidx-legacy-support-v4 = { module = "androidx.legacy:legacy-support-v4", version.ref = "legacySupportV4" }
-androidx-lifecycle-livedata-ktx-v287 = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "lifecycle" }
 androidx-lifecycle-viewmodel-ktx-v287 = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
 androidx-navigation-fragment-ktx-v288 = { module = "androidx.navigation:navigation-fragment-ktx", version.ref = "navigationFragmentKtxVersion" }
 androidx-navigation-safe-args-gradle-plugin = { module = "androidx.navigation:navigation-safe-args-gradle-plugin", version.ref = "navigationFragmentKtxVersion" }

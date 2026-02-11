@@ -129,14 +129,13 @@ dependencies {
     implementation libs.androidx.room.paging
     implementation libs.kotlin.stdlib
     implementation libs.androidx.core.ktx
-    implementation libs.androidx.appcompat.v170
+    implementation libs.appcompat
     implementation libs.material
     implementation libs.constraintlayout
     implementation libs.androidx.navigation.fragment.ktx.v288
     implementation libs.androidx.navigation.ui.ktx.v288
     implementation libs.android.identicons
-    implementation libs.androidx.legacy.support.v4
-    implementation libs.androidx.lifecycle.livedata.ktx.v287
+    implementation libs.lifecycle.livedata.ktx
     implementation libs.androidx.lifecycle.viewmodel.ktx.v287
     implementation libs.hilt.android.v251
     implementation libs.protobuf.kotlin

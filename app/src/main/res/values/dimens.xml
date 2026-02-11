@@ -5,4 +5,5 @@
 
     <dimen name="fab_expand_lower">60dp</dimen>
     <dimen name="fab_expand_upper">120dp</dimen>
+    <dimen name="toolbar_padding">50dp</dimen>
 </resources>

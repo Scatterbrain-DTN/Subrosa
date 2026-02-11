@@ -15,13 +15,18 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.HorizontalScrollView
 import android.widget.Toast
+import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
@@ -54,6 +59,30 @@ import javax.inject.Inject
 import kotlin.Exception
 import kotlin.math.abs
 import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
+import com.google.android.material.appbar.CollapsingToolbarLayout
+import net.ballmerlabs.subrosa.util.toDp
+
+fun View.applyEdgeToEdgePadding(
+    applyTop: Boolean = true,
+    applyBottom: Boolean = true,
+    applyStart: Boolean = false,
+    applyEnd: Boolean = false
+) {
+    ViewCompat.setOnApplyWindowInsetsListener(this) { view, insets ->
+        val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+        view.setPadding(
+            if (applyStart) bars.left else view.paddingLeft,
+            if (applyTop) bars.top else view.paddingTop,
+            if (applyEnd) bars.right else view.paddingRight,
+            if (applyBottom) bars.bottom else view.paddingBottom
+        )
+        insets
+    }
+    ViewCompat.requestApplyInsets(this)
+}
+
+
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -591,23 +620,37 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+
+
         binding = ActivityMainBinding.inflate(layoutInflater)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        enableEdgeToEdge()
+        binding.toolbar.applyEdgeToEdgePadding(applyBottom = false)
+
+
         trySetupNavGraph()
         setContentView(binding.root)
+        WindowInsetsControllerCompat(window, window.decorView).apply {
+            isAppearanceLightStatusBars = true
+            isAppearanceLightNavigationBars = true
+        }
+
+
+//        val paddingTop = binding.toolbar.paddingTop
+//        val paddingBottom = binding.toolbar.paddingBottom
+//        ViewCompat.setOnApplyWindowInsetsListener(binding.toolbar) { v, windowInsets ->
+//            val typeMask = WindowInsetsCompat.Type.systemBars()
+//            val insets = windowInsets.getInsets(typeMask)
+//            v.updatePadding(top = insets.top + paddingTop)
+//            //   v.minimumHeight = 200.toDp()
+//            windowInsets
+//        }
         setSupportActionBar(binding.toolbar)
         setupBottomNavigation()
         setupPathsView()
         setupAppBarLayout()
         setupSearch()
-        ViewCompat.setOnApplyWindowInsetsListener(binding.collapsingToolbar) { v, windowInsets ->
-            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
 
-            v.updateLayoutParams<MarginLayoutParams> {
-                topMargin = insets.top
-            }
-            WindowInsetsCompat.CONSUMED
-        }
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         lifecycleScope.launch { tryBind() }
         repository.observeConnectionState()

@@ -11,29 +11,30 @@
         android:id="@+id/appbarlayout"
         android:layout_width="match_parent"
         android:elevation="500dp"
-        android:layout_height="wrap_content"
-        android:theme="@style/Theme.Subrosa.AppBarOverlay">
+        android:fitsSystemWindows="false"
+        android:layout_height="wrap_content">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:id="@+id/collapsing_toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:focusedByDefault="true"
-            android:fitsSystemWindows="true"
             android:elevation="500dp"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:elevation="500dp"
-                android:layout_height="?attr/actionBarSize"
+                android:layout_height="100dp"
+                android:paddingTop="@dimen/toolbar_padding"
                 android:background="?attr/colorPrimary"
-                app:layout_collapseMode="pin"
-                app:popupTheme="@style/Theme.Subrosa.PopupOverlay">
+                app:layout_collapseMode="pin">
             </androidx.appcompat.widget.Toolbar>
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/toolbar_layout"
                 android:layout_width="match_parent"
+                android:paddingTop="@dimen/toolbar_padding"
                 android:layout_height="match_parent">
             <HorizontalScrollView
                 android:id="@+id/pathscroll"
@@ -94,6 +95,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/search_framelayout"
         android:elevation="1dp"
+        android:clipToPadding="false"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
