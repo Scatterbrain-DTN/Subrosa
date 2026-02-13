@@ -1,12 +1,12 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 3,
-    "identityHash": "60731e9f8d4cefa719bb290dbf9a4cf9",
+    "version": 4,
+    "identityHash": "61799095c38e1acdd8332dafe6b09a03",
     "entities": [
       {
         "tableName": "newsgroup",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uuid` TEXT NOT NULL, `description` TEXT NOT NULL DEFAULT '', `parentHash` BLOB, `parent` TEXT, `groupName` TEXT, PRIMARY KEY(`uuid`), FOREIGN KEY(`parent`) REFERENCES `newsgroup`(`uuid`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uuid` TEXT NOT NULL, `description` TEXT NOT NULL DEFAULT '', `parentHash` BLOB, `parent` TEXT, `groupName` TEXT NOT NULL, PRIMARY KEY(`uuid`), FOREIGN KEY(`parent`) REFERENCES `newsgroup`(`uuid`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "uuid",
@@ -24,20 +24,18 @@
           {
             "fieldPath": "parentHash",
             "columnName": "parentHash",
-            "affinity": "BLOB",
-            "notNull": false
+            "affinity": "BLOB"
           },
           {
             "fieldPath": "parentCol",
             "columnName": "parent",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "groupName",
             "columnName": "groupName",
             "affinity": "TEXT",
-            "notNull": false
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -73,37 +71,34 @@
       },
       {
         "tableName": "posts",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`author` TEXT, `header` TEXT, `body` TEXT, `sig` BLOB, `post_id` TEXT, `receivedDate` INTEGER NOT NULL DEFAULT 0, `id` TEXT NOT NULL, `uuid` TEXT NOT NULL, `description` TEXT NOT NULL DEFAULT '', `parentHash` BLOB, `parent` TEXT, `groupName` TEXT, `identity` TEXT, `userName` TEXT, `bio` TEXT, `owned` INTEGER, `imageBytes` BLOB, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`author` TEXT, `header` TEXT NOT NULL, `body` TEXT NOT NULL, `sig` BLOB, `post_id` TEXT, `receivedDate` INTEGER NOT NULL DEFAULT 0, `id` TEXT NOT NULL, `uuid` TEXT NOT NULL, `description` TEXT NOT NULL DEFAULT '', `parentHash` BLOB, `parent` TEXT, `groupName` TEXT NOT NULL, `identity` TEXT, `userName` TEXT, `bio` TEXT, `owned` INTEGER, `imageBytes` BLOB, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "author",
             "columnName": "author",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "header",
             "columnName": "header",
             "affinity": "TEXT",
-            "notNull": false
+            "notNull": true
           },
           {
             "fieldPath": "body",
             "columnName": "body",
             "affinity": "TEXT",
-            "notNull": false
+            "notNull": true
           },
           {
             "fieldPath": "sig",
             "columnName": "sig",
-            "affinity": "BLOB",
-            "notNull": false
+            "affinity": "BLOB"
           },
           {
             "fieldPath": "postId",
             "columnName": "post_id",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "receivedDate",
@@ -134,50 +129,43 @@
           {
             "fieldPath": "parent.parentHash",
             "columnName": "parentHash",
-            "affinity": "BLOB",
-            "notNull": false
+            "affinity": "BLOB"
           },
           {
             "fieldPath": "parent.parentCol",
             "columnName": "parent",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "parent.groupName",
             "columnName": "groupName",
             "affinity": "TEXT",
-            "notNull": false
+            "notNull": true
           },
           {
             "fieldPath": "user.identity",
             "columnName": "identity",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "user.userName",
             "columnName": "userName",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "user.bio",
             "columnName": "bio",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "user.owned",
             "columnName": "owned",
-            "affinity": "INTEGER",
-            "notNull": false
+            "affinity": "INTEGER"
           },
           {
             "fieldPath": "user.imageBytes",
             "columnName": "imageBytes",
-            "affinity": "BLOB",
-            "notNull": false
+            "affinity": "BLOB"
           }
         ],
         "primaryKey": {
@@ -196,8 +184,7 @@
             "orders": [],
             "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_posts_post_id` ON `${TABLE_NAME}` (`post_id`)"
           }
-        ],
-        "foreignKeys": []
+        ]
       },
       {
         "tableName": "User",
@@ -230,8 +217,7 @@
           {
             "fieldPath": "imageBytes",
             "columnName": "imageBytes",
-            "affinity": "BLOB",
-            "notNull": false
+            "affinity": "BLOB"
           }
         ],
         "primaryKey": {
@@ -239,15 +225,12 @@
           "columnNames": [
             "identity"
           ]
-        },
-        "indices": [],
-        "foreignKeys": []
+        }
       }
     ],
-    "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '60731e9f8d4cefa719bb290dbf9a4cf9')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '61799095c38e1acdd8332dafe6b09a03')"
     ]
   }
 }

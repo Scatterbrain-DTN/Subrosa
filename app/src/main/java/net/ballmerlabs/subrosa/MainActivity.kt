@@ -450,7 +450,7 @@ class MainActivity : AppCompatActivity() {
                 log.e("exception in changeDestinationUserListFragment: $exc")
             }
         }
-        setAppBar(false, text = getString(R.string.user_list_title), isTitleEnabled = false)
+        setAppBar(true, text = getString(R.string.user_list_title), isTitleEnabled = false)
     }
 
 
@@ -625,7 +625,8 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         enableEdgeToEdge()
-        binding.toolbar.applyEdgeToEdgePadding(applyBottom = false)
+        window.isNavigationBarContrastEnforced = false
+        //binding.toolbar.applyEdgeToEdgePadding(applyBottom = false)
 
 
         trySetupNavGraph()
