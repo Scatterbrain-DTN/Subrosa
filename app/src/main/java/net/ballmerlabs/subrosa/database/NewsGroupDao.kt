@@ -68,6 +68,13 @@ interface NewsGroupDao {
     """)
     suspend fun getTotalPosts(group: UUID): Int
 
+
+    @Query("SELECT * FROM posts")
+    suspend fun getAllPosts(): List<Post>
+
+    @Query("SELECT * FROM newsgroup")
+    suspend fun getAllGroups(): List<NewsGroup>
+
     @Query("DELETE FROM user WHERE identity = :identity")
     suspend fun deleteByIdentity(identity: UUID): Int
 

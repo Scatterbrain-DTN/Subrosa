@@ -29,7 +29,7 @@ class NewsPathElement(context: Context, attrs: AttributeSet) : View(context, att
     private val leftDoinkPath = Path()
     
     private val rightDoinkPath = Path()
-    
+
     init {
         context.theme.obtainStyledAttributes(
                 attrs,
@@ -40,7 +40,7 @@ class NewsPathElement(context: Context, attrs: AttributeSet) : View(context, att
             try {
                 text = getString(R.styleable.NewsPathElement_text)?: "fmef"
                 when (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
-                    Configuration.UI_MODE_NIGHT_NO -> {
+                    Configuration.UI_MODE_NIGHT_NO-> {
                         textPaint.color = getColor(R.styleable.NewsPathElement_textColor, Color.GRAY)
                         rectPaint.color = getColor(R.styleable.NewsPathElement_backgroundColor, Color.BLACK)
                     }

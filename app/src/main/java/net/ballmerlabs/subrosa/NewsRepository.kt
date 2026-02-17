@@ -9,34 +9,41 @@ import androidx.lifecycle.liveData
 import androidx.lifecycle.map
 import androidx.lifecycle.switchMap
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.yield
 import net.ballmerlabs.scatterbrainsdk.BinderWrapper
 import net.ballmerlabs.scatterbrainsdk.ScatterMessage
 import net.ballmerlabs.scatterbrainsdk.ScatterbrainApi
 import net.ballmerlabs.subrosa.database.NewsGroupChildren
 import net.ballmerlabs.subrosa.database.NewsGroupDao
+import net.ballmerlabs.subrosa.scatterbrain.Message
+import net.ballmerlabs.subrosa.scatterbrain.NewsGroup
+import net.ballmerlabs.subrosa.scatterbrain.Post
+import net.ballmerlabs.subrosa.scatterbrain.ScatterbrainModule
+import net.ballmerlabs.subrosa.scatterbrain.TypeVal
 import net.ballmerlabs.subrosa.scatterbrain.User
-import net.ballmerlabs.subrosa.scatterbrain.*
 import net.ballmerlabs.subrosa.util.srLog
 import net.ballmerlabs.subrosa.util.uuidConvert
-import java.util.*
+import java.util.Date
+import java.util.UUID
 import java.util.concurrent.atomic.AtomicReference
 import javax.inject.Inject
 import javax.inject.Named
-import kotlin.collections.ArrayList
-import kotlin.collections.HashSet
 
 class NewsRepository @Inject constructor(
     @param:ApplicationContext val context: Context,
     val dao: NewsGroupDao,
     val sdkComponent: ScatterbrainApi,
     @param:Named(ScatterbrainModule.API_COROUTINE_SCOPE) val coroutineScope: CoroutineScope
-    ) {
+) {
 
     private val log by srLog()
 
-    private val prefs = context.getSharedPreferences(SubrosaApplication.SHARED_PREFS_DEFAULT, Context.MODE_PRIVATE)
+    private val prefs =
+        context.getSharedPreferences(SubrosaApplication.SHARED_PREFS_DEFAULT, Context.MODE_PRIVATE)
 
     private val connectedCallback: MutableSet<(connected: Boolean) -> Unit> = HashSet()
     private var isConnected = false
@@ -47,13 +54,14 @@ class NewsRepository @Inject constructor(
     }
 
     suspend fun isConnected(): Boolean {
+        sdkComponent.binderWrapper.bindService()
         val c = sdkComponent.binderWrapper.isConnected()
         updateConnected(c)
         return c
     }
 
     private fun updateConnected(connected: Boolean) {
-        if (isConnected != connected ) {
+        if (isConnected != connected) {
             connectedCallback.forEach { v ->
                 v(connected)
             }
@@ -67,45 +75,26 @@ class NewsRepository @Inject constructor(
         }
     }
 
-    private fun postToArray(parent: NewsGroup, user: UUID, header: String, body: String): ByteArray {
+    private fun postToArray(
+        parent: NewsGroup,
+        user: UUID,
+        header: String,
+        body: String
+    ): ByteArray {
         return parent.hash + uuidConvert(user) + header.encodeToByteArray() + body.encodeToByteArray()
     }
 
-    suspend fun sendPost(parent: NewsGroup, user: UUID?, header: String, body: String) {
-        requireConnected()
 
-        val identity = if (user != null) {
-           sdkComponent.binderWrapper.getIdentity(user)
-                ?: throw IllegalStateException("user does not exist")
-        } else {
-            null
-        }
-        val sig = if (identity != null && user != null) {
-            sdkComponent.binderWrapper.sign(identity.fingerprint, postToArray(
-                parent,
-                user,
-                header,
-                body
-            ))
-        } else {
-            null
-        }
-
-        log.v("send post got identity ${identity?.fingerprint}")
-        val post = Post(
-            parent = parent,
-            author = user ,
-            header =  header,
-            body = body,
-            sig = sig
-        )
-
-        log.v("send post signed post")
+    suspend fun sbSendPost(post: Post) {
         val message = ScatterMessage.Builder.newInstance(context, post.bytes)
             .setApplication(context.getString(R.string.scatterbrainapplication))
             .build()
         var par = post.parent
-        val groupMsgs = ArrayList<ScatterMessage>()
+        val groupMsgs = mutableListOf(
+            ScatterMessage.Builder.newInstance(context, post.bytes)
+                .setApplication(context.getString(R.string.scatterbrainapplication))
+                .build()
+        )
         while (par.hasParent) {
             yield()
             par = dao.getGroup(par.parentCol!!)
@@ -114,9 +103,7 @@ class NewsRepository @Inject constructor(
                 .build()
             groupMsgs.add(groupMsg)
         }
-        log.v("send post sent newsgroups")
-        dao.insertPost(post)
-        log.v("send post inserted post")
+
         if (isConnected()) {
             sdkComponent.binderWrapper.sendMessage(groupMsgs)
             val author = post.author
@@ -128,11 +115,64 @@ class NewsRepository @Inject constructor(
         }
     }
 
+
+    suspend fun sbSendGroup(group: NewsGroup) {
+        val message = ScatterMessage.Builder.newInstance(context, group.bytes)
+            .setApplication(context.getString(R.string.scatterbrainapplication))
+            .build()
+        dao.insertGroup(group)
+        if (isConnected()) {
+            sdkComponent.binderWrapper.sendMessage(message)
+        }
+    }
+
+    suspend fun sendPost(parent: NewsGroup, user: UUID?, header: String, body: String) {
+        requireConnected()
+
+        val identity = if (user != null) {
+            sdkComponent.binderWrapper.getIdentity(user)
+                ?: throw IllegalStateException("user does not exist")
+        } else {
+            null
+        }
+        val sig = if (identity != null && user != null) {
+            sdkComponent.binderWrapper.sign(
+                identity.fingerprint, postToArray(
+                    parent,
+                    user,
+                    header,
+                    body
+                )
+            )
+        } else {
+            null
+        }
+
+        log.v("send post got identity ${identity?.fingerprint}")
+        val post = Post(
+            parent = parent,
+            author = user,
+            header = header,
+            body = body,
+            sig = sig
+        )
+
+        log.v("send post signed post")
+        sbSendPost(post)
+        log.v("send post sent newsgroups")
+        dao.insertPost(post)
+    }
+
     suspend fun countPost(newsGroup: UUID): Int {
         return dao.getTotalPosts(newsGroup)
     }
 
-    suspend fun createUser(name: String, bio: String, imageBitmap: Bitmap? = null, identity: UUID? = null) : User = withContext(
+    suspend fun createUser(
+        name: String,
+        bio: String,
+        imageBitmap: Bitmap? = null,
+        identity: UUID? = null
+    ): User = withContext(
         Dispatchers.IO
     ) {
         requireConnected()
@@ -166,12 +206,12 @@ class NewsRepository @Inject constructor(
     }
 
     fun observeUsers(owned: Boolean? = null): LiveData<List<User>> {
-        return if(owned == null) {
+        return if (owned == null) {
             dao.observeAllUsers()
                 .switchMap { userlist ->
                     log.v("fnmef")
                     getUsersWithFiles(userlist)
-                  }
+                }
         } else {
             dao.observeAllOwnedUsers(owned)
                 .switchMap { userlist -> getUsersWithFiles(userlist) }
@@ -191,13 +231,8 @@ class NewsRepository @Inject constructor(
     }
 
     suspend fun insertGroup(group: NewsGroup) {
-        val message = ScatterMessage.Builder.newInstance(context, group.bytes)
-            .setApplication(context.getString(R.string.scatterbrainapplication))
-            .build()
         dao.insertGroup(group)
-        if (isConnected()) {
-            sdkComponent.binderWrapper.sendMessage(message)
-        }
+        sbSendGroup(group)
     }
 
 
@@ -214,7 +249,7 @@ class NewsRepository @Inject constructor(
     }
 
     suspend fun deleteUser(user: UUID): Boolean {
-        val u = dao.getUsersByIdentity(user)
+        dao.getUsersByIdentity(user)
         return dao.deleteByIdentity(user) == 1
     }
 
@@ -233,13 +268,14 @@ class NewsRepository @Inject constructor(
     }
 
     suspend fun getChildren(group: UUID): List<NewsGroup> {
-        val dbchild: NewsGroupChildren?= dao.getGroupWithChildren(group)
-        return dbchild?.children?: ArrayList()
+        val dbchild: NewsGroupChildren = dao.getGroupWithChildren(group)
+        return dbchild?.children ?: ArrayList()
     }
 
     fun observeGroups(): LiveData<List<NewsGroup>> {
         return dao.observeAllGroups()
     }
+
     fun observeGroups(name: String): LiveData<List<NewsGroup>> {
         return dao.observeAllGroups(name)
     }
@@ -261,15 +297,18 @@ class NewsRepository @Inject constructor(
                             val post = Message.parse<Post>(message.body!!, type)
                             dao.insertPost(post)
                         }
+
                         TypeVal.NEWSGROUP -> {
                             val newsgroup = Message.parse<NewsGroup>(message.body!!, type)
-                            log.v("got newsgroup ${newsgroup.groupName}")
+                            log.v("got newsgroup ${newsgroup.groupName} id=${newsgroup.uuid} parent=${newsgroup.parent}")
                             dao.insertGroup(newsgroup)
                         }
+
                         TypeVal.USER -> {
                             val user = Message.parse<User>(message.body!!, type)
                             insertUser(user)
                         }
+
                         else -> {
                             log.e("invalid message type received")
                         }
@@ -299,7 +338,11 @@ class NewsRepository @Inject constructor(
         if (refreshInProgress.getAndSet(true)) {
             return false
         }
-        val messages = withContext(Dispatchers.IO) { sdkComponent.binderWrapper.getScatterMessages(context.getString(R.string.scatterbrainapplication)) }
+        val messages = withContext(Dispatchers.IO) {
+            sdkComponent.binderWrapper.getScatterMessages(
+                context.getString(R.string.scatterbrainapplication)
+            )
+        }
         withContext(Dispatchers.Default) { processScatterMessages(messages.toList()) }
         refreshInProgress.set(false)
         return true
@@ -314,13 +357,20 @@ class NewsRepository @Inject constructor(
             sdkComponent.binderWrapper.getScatterMessages(context.getString(R.string.scatterbrainapplication))
         }.toList()
 
-        for (message in messages) {
-            Log.v("debug", "got message")
-        }
+        processScatterMessages(messages)
 
-        withContext(Dispatchers.Default) {
-            processScatterMessages(messages)
-        }
+
+//        val posts = dao.getAllPosts()
+//        val groups = dao.getAllGroups()
+//
+//        for (post in posts) {
+//            sbSendPost(post)
+//        }
+//
+//        for (group in groups) {
+//            sbSendGroup(group)
+//        }
+
         refreshInProgress.set(false)
         return true
     }
@@ -331,7 +381,11 @@ class NewsRepository @Inject constructor(
             return false
         }
         val messages = withContext(Dispatchers.IO) {
-            sdkComponent.binderWrapper.getScatterMessages(context.getString(R.string.scatterbrainapplication), start, end)
+            sdkComponent.binderWrapper.getScatterMessages(
+                context.getString(R.string.scatterbrainapplication),
+                start,
+                end
+            )
         }
         withContext(Dispatchers.Default) { processScatterMessages(messages.toList()) }
         refreshInProgress.set(false)
@@ -340,7 +394,7 @@ class NewsRepository @Inject constructor(
 
     companion object {
         const val TAG = "NewsRepository"
-        const val PREF_LAST_SYNC_TIME  = "last_sync_time"
+        const val PREF_LAST_SYNC_TIME = "last_sync_time"
     }
 
 }

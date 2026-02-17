@@ -104,7 +104,6 @@ class NewsGroup private constructor(
 
     @ColumnInfo(name = "parent")
     var parentCol: UUID? = if (hasParent) uuidConvertProto(packet.parent.parentuuid) else null
-    get() = checkEmpty(field)
 
     @Ignore
     val parent = if(hasParent)
