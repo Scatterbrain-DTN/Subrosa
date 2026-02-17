@@ -74,7 +74,7 @@ data class Parent(
         )
     ]
 )
-class NewsGroup private constructor(
+class NewsGroup @Ignore constructor(
     packet: Subrosa.NewsGroup
 ): Message<Subrosa.NewsGroup>(packet), Parcelable, HasKey<UUID> {
     @Ignore
@@ -135,10 +135,10 @@ class NewsGroup private constructor(
 
     constructor(
         uuid: UUID,
-        parentCol: UUID?,
+        parentCol: UUID? = null,
         groupName: String,
         description: String,
-        parentHash: ByteArray?
+        parentHash: ByteArray? = null
     ): this(
         if (parentCol == null && parentHash == null)
             Subrosa.NewsGroup.newBuilder()
