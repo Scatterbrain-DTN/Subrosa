@@ -125,6 +125,8 @@ class PostListFragment @Inject constructor() : Fragment() {
             log.v("starting post observation")
             repository.observePosts(args.parent).observe(viewLifecycleOwner) { posts ->
                 log.e("livedata received posts ${posts.size}")
+                val userCount = posts.count { p -> p.user != null }
+                log.e("users: $userCount")
                 postAdapter.values = posts.toMutableList()
                 postAdapter.notifyDataSetChanged()
             }

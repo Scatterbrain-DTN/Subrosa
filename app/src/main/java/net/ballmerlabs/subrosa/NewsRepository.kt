@@ -22,6 +22,7 @@ import net.ballmerlabs.subrosa.database.NewsGroupDao
 import net.ballmerlabs.subrosa.scatterbrain.Message
 import net.ballmerlabs.subrosa.scatterbrain.NewsGroup
 import net.ballmerlabs.subrosa.scatterbrain.Post
+import net.ballmerlabs.subrosa.scatterbrain.PostWithUsers
 import net.ballmerlabs.subrosa.scatterbrain.ScatterbrainModule
 import net.ballmerlabs.subrosa.scatterbrain.TypeVal
 import net.ballmerlabs.subrosa.scatterbrain.User
@@ -218,7 +219,7 @@ class NewsRepository @Inject constructor(
         }
     }
 
-    fun observePosts(group: NewsGroup): LiveData<List<Post>> {
+    fun observePosts(group: NewsGroup): LiveData<List<PostWithUsers>> {
         return dao.observePostsForGroup(group.uuid)
     }
 

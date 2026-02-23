@@ -12,7 +12,13 @@ import java.util.*
 
 @Entity(
     tableName = "posts",
-    indices = [ Index("post_id", unique = true) ]
+    indices = [
+        Index("post_id", unique = true),
+        Index("author", unique = false)
+              ],
+    foreignKeys = [
+        ForeignKey(entity = User::class, parentColumns = ["identity"], childColumns = ["author"])
+    ]
 )
 class Post @Ignore constructor(
     packet: Subrosa.Post
@@ -25,9 +31,6 @@ class Post @Ignore constructor(
 
     @Embedded
     var parent: NewsGroup = NewsGroup.fromPacket(packet.parent)
-
-    @Embedded
-    var user: User? = null
 
     var author: UUID? = if(packet.hasAuthor()) { uuidConvertProto(packet.author) } else { null }
 
@@ -44,13 +47,12 @@ class Post @Ignore constructor(
     var postId: UUID? = uuidConvertProto(packet.uuid)
 
     @ColumnInfo(defaultValue = 0.toString())
-    val receivedDate: Long = Date().time
+    var receivedDate: Long = Date().time
 
     @PrimaryKey() var id: String = hasKey()
 
     constructor(
         parent: NewsGroup,
-        user: User? = null,
         author: UUID? = null,
         header: String,
         body: String,

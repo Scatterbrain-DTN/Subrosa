@@ -12,10 +12,11 @@ import net.ballmerlabs.subrosa.NewsRepository
 import net.ballmerlabs.subrosa.R
 import net.ballmerlabs.subrosa.databinding.ThreadCardBinding
 import net.ballmerlabs.subrosa.scatterbrain.Post
+import net.ballmerlabs.subrosa.scatterbrain.PostWithUsers
 import net.ballmerlabs.subrosa.util.MapRecyclerViewAdapter
 
 class PostListRecylerViewAdapter(
-    var values: MutableList<Post> = mutableListOf()
+    var values: MutableList<PostWithUsers> = mutableListOf()
 ):
     RecyclerView.Adapter<PostListRecylerViewAdapter.ViewHolder>() {
 
@@ -54,9 +55,9 @@ class PostListRecylerViewAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = values[position]
-        holder.body = item.body
-        holder.fingerprint = item.author?.toString()
-        holder.header = item.header
+        holder.body = item.post.body
+        holder.fingerprint = item.post.author?.toString()
+        holder.header = item.post.header
         holder.name = item.user?.userName?: "unknown"
     }
 

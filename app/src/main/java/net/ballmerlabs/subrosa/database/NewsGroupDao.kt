@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.*
 import net.ballmerlabs.subrosa.scatterbrain.NewsGroup
 import net.ballmerlabs.subrosa.scatterbrain.Post
+import net.ballmerlabs.subrosa.scatterbrain.PostWithUsers
 import net.ballmerlabs.subrosa.scatterbrain.User
 import java.util.*
 
@@ -11,12 +12,12 @@ import java.util.*
 interface NewsGroupDao {
 
     @Transaction
-    @Query("SELECT * FROM posts LEFT JOIN user ON user.identity =  posts.author WHERE uuid = (:parent)")
-    suspend fun getPostsForGroup(parent: UUID): List<Post>
+    @Query("SELECT * FROM posts  WHERE uuid = (:parent)")
+    suspend fun getPostsForGroup(parent: UUID): List<PostWithUsers>
 
     @Transaction
-    @Query("SELECT * FROM posts LEFT JOIN user ON user.identity = posts.author WHERE uuid = (:parent) ORDER BY receivedDate DESC")
-    fun observePostsForGroup(parent: UUID): LiveData<List<Post>>
+    @Query("SELECT * FROM posts  WHERE uuid = (:parent) ORDER BY receivedDate DESC")
+    fun observePostsForGroup(parent: UUID): LiveData<List<PostWithUsers>>
 
     @Query("SELECT * FROM newsgroup WHERE uuid = (:uuid)")
     suspend fun getGroup(uuid: UUID): NewsGroup
